@@ -1,0 +1,68 @@
+# Python bytecode and cached files
+*.py[cod]
+__pycache__/
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Django-related files
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+
+# Local settings
+settings_local.py
+
+# Media and static files
+/media/
+/staticfiles/
+
+# macOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+
+# IDE/editor specific
+.vscode/
+.idea/
+*.swp
+*~
+
+# Test coverage and reports
+htmlcov/
+coverage.xml
+*.cover
+.cache
+.nosetests.xml
+coverage/
+
+# Node modules (if applicable)
+node_modules/
+
+# Cloudinary config (if using Cloudinary)
+cloudinary.config.json
+
+# Other files to ignore
+*.lock
+*.bak
+*.pid
+*.seed
+*.swo
+*.orig
+
+# Pycharm specific
+*.iml
+*.ipr
+*.iws
+
+
+.env
