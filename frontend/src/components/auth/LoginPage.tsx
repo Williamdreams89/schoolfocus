@@ -13,6 +13,7 @@ import {
 import { Facebook, Twitter, LinkedIn } from "@mui/icons-material";
 import axios from "axios";
 import { TextInput } from "@mantine/core";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -41,6 +42,8 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const isSmallDevice = useMediaQuery("(max-width:1045px)")
+
   return (
     <Box
       display="flex"
@@ -49,7 +52,7 @@ const LoginPage: React.FC = () => {
       sx={{ overflow: "hidden", position: "fixed", top: 0, bottom: 0 }}
     >
       {/* Left Column */}
-      <Box
+      {isSmallDevice &&<Box
         flex={1}
         bgcolor="#1E88E5"
         display="flex"
@@ -83,7 +86,7 @@ const LoginPage: React.FC = () => {
             </Link>
           </Typography>
         </Box>
-      </Box>
+      </Box>}
 
       {/* Right Column */}
       <Box
