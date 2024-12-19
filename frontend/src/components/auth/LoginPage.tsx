@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post("http://127.0.0.1:8000/users/login/", {
+      const response = await axios.post("https://schoolfocusapi.onrender.com/users/login/", {
         email,
         password,
       });
