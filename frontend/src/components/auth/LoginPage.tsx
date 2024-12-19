@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
       sx={{ overflow: "hidden", position: "fixed", top: 0, bottom: 0 }}
     >
       {/* Left Column */}
-      {isSmallDevice &&<Box
+      {!isSmallDevice &&<Box
         flex={1}
         bgcolor="#1E88E5"
         display="flex"
