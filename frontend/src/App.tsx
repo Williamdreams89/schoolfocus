@@ -71,7 +71,21 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
     console.log("System unlocked");
   };
 
+  // const handleInactive = () => {
+  //   if (!isLocked) { // Prevent re-triggering if already locked
+  //     setIsLocked(true);
+  //     localStorage.setItem("isLocked", "true"); // Persist the locked state
+  //     navigate("/lock-screen"); // Redirect to lock screen
+  //   }
+  // };
+
   const handleInactive = () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      console.log("No access token found. Inactivity lock is disabled.");
+      return; // Exit if no token is found
+    }
+  
     if (!isLocked) { // Prevent re-triggering if already locked
       setIsLocked(true);
       localStorage.setItem("isLocked", "true"); // Persist the locked state
