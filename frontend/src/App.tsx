@@ -97,7 +97,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
     location.pathname === "/auth/login" ||
     location.pathname === "/auth/forgot-password";
   // Track user inactivity (30 seconds)
-  useInactivityTracker(1000, handleInactive, isLocked ||isAuthPage);
+  useInactivityTracker(100, handleInactive, isLocked ||isAuthPage);
 
   
 
