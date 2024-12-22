@@ -33,7 +33,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["schoolfocusapi.onrender.com"]
+ALLOWED_HOSTS = ["schoolfocusapi.onrender.com",'127.0.0.1']
 
 
 # Application definition
@@ -144,10 +144,12 @@ USE_TZ = True
 
 AUTH_USER_MODEL = "users.User"
 EMAIL_BACKENDS="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'f49329c53c4082'
-EMAIL_HOST_PASSWORD = 'a9b9fadfd86e2e'
-EMAIL_PORT = '2525'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'schoolfocus311@gmail.com'
+EMAIL_HOST_PASSWORD = 'yjfu psrh xzkk gwow'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 cloudinary.config( 
