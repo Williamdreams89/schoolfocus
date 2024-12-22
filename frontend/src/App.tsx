@@ -69,6 +69,21 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
     setIsLocked(false); // Unlock logic
     localStorage.setItem("isLocked", "false");
     console.log("System unlocked");
+
+    // Restore URL and scroll position
+    const savedURL = localStorage.getItem("savedURL");
+    const savedScrollPosition = localStorage.getItem("savedScrollPosition");
+
+    if (savedURL) {
+      navigate(savedURL);
+      localStorage.removeItem("savedURL");
+    }
+
+    if (savedScrollPosition) {
+      const [x, y] = savedScrollPosition.split(",").map(Number);
+      window.scrollTo(x, y);
+      localStorage.removeItem("savedScrollPosition");
+    }
   };
 
   // const handleInactive = () => {
@@ -87,6 +102,13 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
     }
   
     if (!isLocked) { // Prevent re-triggering if already locked
+
+       // Save current URL and scroll position
+       localStorage.setItem("savedURL", location.pathname);
+       localStorage.setItem(
+         "savedScrollPosition",
+         `${window.scrollX},${window.scrollY}`
+       );
       setIsLocked(true);
       localStorage.setItem("isLocked", "true"); // Persist the locked state
       navigate("/lock-screen"); // Redirect to lock screen
@@ -201,3 +223,6 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
 };
 
 export default App;
+
+
+

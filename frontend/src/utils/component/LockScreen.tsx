@@ -23,7 +23,7 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
       console.log("Access granted");
       setPinError(false); // Reset the error state
       onUnlock(); // Call the onUnlock callback
-      navigate("/")
+      // navigate("/")
     } else {
       console.log("Incorrect PIN");
       setPinError(true); // Display error message

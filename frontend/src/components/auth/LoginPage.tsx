@@ -151,7 +151,7 @@ const LoginPage: React.FC = () => {
             {loading ? <CircularProgress size={24} color="inherit" /> : "SIGN IN"}
           </Button>
           <Box mt={2} display="flex" justifyContent="space-between">
-            <Link href="#" underline="none">
+            <Link href="/auth/forgot-password" underline="none">
               Forgot Password?
             </Link>
             <Link href="#" underline="none">
