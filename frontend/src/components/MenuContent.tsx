@@ -30,13 +30,9 @@ const mainListItems = [
   { text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
   { text: 'People', icon: <AnalyticsRoundedIcon />, path: '/people' },
   { text: 'Academics', icon: <AnalyticsRoundedIcon />, path: '/academics' },
-  { text: 'Results', icon: <AnalyticsRoundedIcon />, path: '/academics' },
+  { text: 'Performance Report', icon: <AssignmentRoundedIcon />, path: '/exams-report' },
   { text: 'Finance', icon: <AnalyticsRoundedIcon />, path: '/academics' },
   { text: 'Attendance', icon: <AnalyticsRoundedIcon />, path: '/academics' },
-  { text: 'Grade Book', icon: <AssignmentRoundedIcon />, path: '/exams-report' },
-  // { text: 'Student Promotion', icon: <AssignmentRoundedIcon />, path: '/studentPromotion' },
-  { text: 'Attendance Report', icon: <AssignmentRoundedIcon />, path: '/attendance-report' },
-  { text: 'School Fees', icon: <AutoGraphIcon />, path: '/school-fees' },
 ];
 
 
@@ -51,7 +47,7 @@ export default function MenuContent() {
   };
 
   return (
-    <Stack sx={{  p: 1, justifyContent: 'space-between' }}>
+    <Stack sx={{  p: 1, justifyContent: 'space-between', mb:'4rem' }}>
       <List dense>
         {mainListItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>

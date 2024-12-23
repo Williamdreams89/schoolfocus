@@ -74,7 +74,7 @@ const ForgotPassword = () => {
 
       {/* Back to Login */}
       <Link
-        href="/login" // Replace with the correct route
+        href="/auth/login" // Replace with the correct route
         underline="none"
         sx={{
           marginTop: 3,

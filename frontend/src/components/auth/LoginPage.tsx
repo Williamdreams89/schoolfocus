@@ -14,12 +14,14 @@ import { Facebook, Twitter, LinkedIn } from "@mui/icons-material";
 import axios from "axios";
 import { TextInput } from "@mantine/core";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -32,9 +34,14 @@ const LoginPage: React.FC = () => {
         password,
       });
 
-      const { token } = response.data; // Adjust based on your API response
-      localStorage.setItem("access_token", `${token}`); // Save the token for authenticated requests
-      window.location.href = "/"; // Redirect on successful login
+      const { token, username, user_profile_pic } = response.data; // Adjust based on your API response
+      console.log("Login data =", response.data)
+      localStorage.setItem("access_token", `${token}`);
+      localStorage.setItem("username", `${username}`);
+      localStorage.setItem("user_profile_pic", `${user_profile_pic}`);
+      // window.location.href = "/"; // Redirect on successful login
+      navigate("/")
+      
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     } finally {

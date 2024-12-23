@@ -21,7 +21,7 @@ const SelectContentTwo: React.FC = () => {
         <Avatar radius="xl" size="md" />
         <div style={{flex:3}}>
           <Text style={{fontWeight:500}} size="sm">
-            DANQUAH WILLIAM
+            {localStorage.getItem("username")?.toUpperCase()}
           </Text>
           <Text size="xs" color="dimmed">
             System Administrator
@@ -37,7 +37,7 @@ const SelectContentTwo: React.FC = () => {
   }}
 >
   <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-  <MenuItem onClick={()=>{localStorage.removeItem("access_token"); window.location.href = "/"}}>Logout</MenuItem>
+  <MenuItem onClick={()=>{localStorage.removeItem("access_token");localStorage.removeItem("username"); localStorage.removeItem("user_profile_pic"); window.location.href = "/"}}>Logout</MenuItem>
 </Menu>
       </div>
 

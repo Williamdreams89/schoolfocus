@@ -63,7 +63,7 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
           }}
         />
         <Typography variant="h6" mt={2} fontWeight="bold">
-          DANQUAH WILLIAM
+          {localStorage.getItem("username")?.toUpperCase()}
         </Typography>
         <Typography variant="subtitle1" color="text.secondary">
           System Administrator

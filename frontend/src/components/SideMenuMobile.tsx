@@ -44,12 +44,11 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
           >
             <Avatar
               sizes="small"
-              alt="Danquah William"
-              src="/static/images/avatar/7.jpg"
+              src={`${localStorage.getItem("user_profile_pic")}`}
               sx={{ width: 24, height: 24 }}
             />
             <Typography component="p" variant="h6">
-              Danquah William
+              {localStorage.getItem("username")?.toUpperCase()}
             </Typography>
           </Stack>
           <MenuButton showBadge>
