@@ -33,10 +33,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         ADMIN = "Admin", "Admin" 
         TEACHER = "Teacher", "Teacher"
         STUDENT = "Student", "Student"
+        PARENT = "Parent", "Parent"
         TESTUSER = "TestUser", "TestUser"
-        PRINCIPAL = "Principal", "Principal"
-        CANTEENMANAGER = "CanteenManager", "CanteenManager"
-        ACCOUNTANT = "Accountant", "Accountant"
     email = models.EmailField(unique = True)
     phone_number = models.CharField(max_length=13, blank=True, null=True)
     first_name = models.CharField(max_length=100)
@@ -56,6 +54,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         return "{} {}".format(self.first_name, self.last_name)
     
     @property
+    def profile_image(self):
+        if self.profile_pic:
+            return self.profile_pic.url
+        return None
+
+    def __str__(self):
+        return "{} at {}".format(self.full_name, self.user_type)
+    
+
+    @property
     def index_number(self):
         if self.user_type == "Student":
             if self.id in range(10):
@@ -69,11 +77,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:
             return "N/A"
     
-    @property
-    def profile_image(self):
-        if self.profile_pic:
-            return self.profile_pic.url
-        return None
-
-    def __str__(self):
-        return "{} at {}".format(self.full_name, self.user_type)
