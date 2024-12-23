@@ -36,6 +36,7 @@ import ClassCognitiveAssessment from './components/gradeBook/ClassCognitiveAsses
 import ReviewAndPublishOptions from './components/gradeBook/ReviewAndPublishOptions';
 import PublishResultForm from './components/gradeBook/PublishResults';
 import People from './components/people/People';
+import BulEnrollStudent from "./components/people/students/BulkEnrollStudents"
 import GuardiansTable from './components/people/parents/GuardiansTable';
 import AddGuardianForm from './components/people/parents/AddGuardian';
 import NewStaff from './components/people/staffs/NewStaff';
@@ -186,31 +187,32 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                   <Route path='/auth/login' element = {<LoginPage />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   <Route element={<ProtectedRoute />}>
-                  <Route path='/' element = {<MainGrid />} />
-                  <Route path='/people' element={<People />} />
-                  <Route path='/people/students' element={<ManageStudents />} />
-                  <Route path='/people/students/addStudent' element={<StudentAddForm />} />
-                  <Route path='/people/parents' element={<GuardiansTable />} />
-                  <Route path='/people/addParents' element={<AddGuardianForm />} />
-                  <Route path='/people/staffs' element={<StaffTable />} />
-                  <Route path='/people/staffs/new-staff' element={<NewStaff />} />
-                  <Route path='/people/staffs/newStaff' element={<NewStaff />} />
-                  <Route path='/academics' element={<Academics />} />
-                  <Route path='/academics/classes' element={<ClassDataGrid />} />
-                  <Route path='/academics/classes/addClass' element={<AddClass />} />
-                  <Route path='/academics/subject-list' element={<AllSubjects />} />
-                  <Route path='/studentPromotion' element={<StudentPromotion />} />
-                  <Route path='/exams-report' element={<GradeBook />} />
-                  <Route path='/annualPromotionalReport' element={<AnnualPromotion />} />
-                  <Route path='/viewStudentCognitiveSkill' element={<CognitiveSkillsAssessment />} />
-                  <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
-                  <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
-                  <Route path='/printResults' element={<PrintResults />} />
-                  <Route path='/Review&PublishResultsOptions' element={<ReviewAndPublishOptions />} />
-                  <Route path='/Review&PublishResults' element={<ReviewAndPublishResults />} />
-                  <Route path='/publishResults' element={<PublishResultForm />} />
-                  <Route path='/scoreEntryOptions' element={<ScoreEntry />} />
-                  <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
+                      <Route path='/' element = {<MainGrid />} />
+                      <Route path='/people' element={<People />} />
+                      <Route path='/people/students' element={<ManageStudents />} />
+                      <Route path='/people/students/addStudent' element={<StudentAddForm />} />
+                      <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />
+                      <Route path='/people/parents' element={<GuardiansTable />} />
+                      <Route path='/people/addParents' element={<AddGuardianForm />} />
+                      <Route path='/people/staffs' element={<StaffTable />} />
+                      <Route path='/people/staffs/new-staff' element={<NewStaff />} />
+                      <Route path='/people/staffs/newStaff' element={<NewStaff />} />
+                      <Route path='/academics' element={<Academics />} />
+                      <Route path='/academics/classes' element={<ClassDataGrid />} />
+                      <Route path='/academics/classes/addClass' element={<AddClass />} />
+                      <Route path='/academics/subject-list' element={<AllSubjects />} />
+                      <Route path='/studentPromotion' element={<StudentPromotion />} />
+                      <Route path='/exams-report' element={<GradeBook />} />
+                      <Route path='/annualPromotionalReport' element={<AnnualPromotion />} />
+                      <Route path='/viewStudentCognitiveSkill' element={<CognitiveSkillsAssessment />} />
+                      <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
+                      <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
+                      <Route path='/printResults' element={<PrintResults />} />
+                      <Route path='/Review&PublishResultsOptions' element={<ReviewAndPublishOptions />} />
+                      <Route path='/Review&PublishResults' element={<ReviewAndPublishResults />} />
+                      <Route path='/publishResults' element={<PublishResultForm />} />
+                      <Route path='/scoreEntryOptions' element={<ScoreEntry />} />
+                      <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
                   </Route>
                 </Routes>
             </Stack>
