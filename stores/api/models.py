@@ -23,6 +23,7 @@ class Student(models.Model):
     blood_group = models.CharField(max_length=3, blank=True, null=True)
     id_or_birth_cert_number = models.CharField(max_length=100, verbose_name="N.ID or Birth Cert. No")
     religion = models.CharField(max_length=100, blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='images/', blank=True, null=True)
 
     # Contact Information
     contact_phone = models.CharField(max_length=15)
