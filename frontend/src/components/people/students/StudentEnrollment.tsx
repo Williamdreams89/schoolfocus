@@ -43,6 +43,37 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { styled } from '@mui/material/styles';
+
+import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+  width: '100%',
+  margin: theme.spacing(1, 0),
+  [`& .${breadcrumbsClasses.separator}`]: {
+    color: (theme).palette.action.disabled,
+    margin: 1,
+  },
+  [`& .${breadcrumbsClasses.ol}`]: {
+    alignItems: 'left',
+  },
+}));
+
+function NavbarBreadcrumbs() {
+  return (
+    <StyledBreadcrumbs
+      aria-label="breadcrumb"
+      separator={<NavigateNextRoundedIcon fontSize="small" />}
+    >
+      <Typography variant="body1">People</Typography>
+      <Typography variant="body1">
+        Student
+      </Typography>
+      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>Enrollment</Typography>
+    </StyledBreadcrumbs>
+  );
+}
 
 interface Parent {
   id: string;
@@ -517,6 +548,7 @@ const StudentEnrollment = () => {
 
   return (
     <>
+    <NavbarBreadcrumbs />
     {!isSmallScreen?<Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

@@ -9,13 +9,43 @@ import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import { useNavigate } from 'react-router-dom';
 
+import { styled } from '@mui/material/styles';
+
+import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+  width: '100%',
+  margin: theme.spacing(1, 0),
+  [`& .${breadcrumbsClasses.separator}`]: {
+    color: (theme).palette.action.disabled,
+    margin: 1,
+  },
+  [`& .${breadcrumbsClasses.ol}`]: {
+    alignItems: 'left',
+  },
+}));
+
+function NavbarBreadcrumbs() {
+  return (
+    <StyledBreadcrumbs
+      aria-label="breadcrumb"
+      separator={<NavigateNextRoundedIcon fontSize="small" />}
+    >
+      <Typography variant="body1" sx={{  }}>Dashboard</Typography>
+      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>People</Typography>
+
+    </StyledBreadcrumbs>
+  );
+}
+
 
 const People = () => {
     const navigate = useNavigate()
     return (
       <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-          People
+          <NavbarBreadcrumbs />
         </Typography>
       <Box sx={{display:'grid', gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))", width:'100%', mt:'3rem', gap:'2.5rem'}}>
       <Card sx={{ backgroundColor:'white', cursor:'pointer' }} onClick={()=>navigate("/people/students")}>
