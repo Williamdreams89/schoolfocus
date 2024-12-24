@@ -21,10 +21,22 @@ class UserLoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user 
-        raise serializers.ValidationError("Invalid email or password")
+        email = data.get("email")
+        password = data.get("password")
+
+        # Authenticate the user
+        user = authenticate(email=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Invalid credentials")
+
+        # Check if the account is active
+        if not user.is_account_active:
+            raise serializers.ValidationError("Account is inactive")
+
+        # Return the authenticated user
+        data["user"] = user
+        return data
         
         
 class PasswordResetRequestSerializer(serializers.Serializer):

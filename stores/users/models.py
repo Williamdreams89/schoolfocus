@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, first_name, last_name, password, **extra_kwargs):
         user =self.create_user(email, first_name, last_name, password, **extra_kwargs)
         user.is_staff = True
+        user.is_account_active = True
         user.is_superuser = True
         user.save(using=self._db)
         return user 
@@ -36,13 +37,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         PARENT = "Parent", "Parent"
         TESTUSER = "TestUser", "TestUser"
     email = models.EmailField(unique = True)
-    phone_number = models.CharField(max_length=13, blank=True, null=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     user_type = models.CharField(max_length=100, choices=UserTypeChoice.choices, default=UserTypeChoice.TESTUSER)
     is_staff =models.BooleanField(default=False)
+    is_account_active =models.BooleanField(default=False)
     is_verified =models.BooleanField(default=False)
-    profile_pic = models.ImageField(upload_to='images/', blank=True)
     date_created = models.DateField(auto_now_add=True)
 
     objects = UserManager()

@@ -1,21 +1,26 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-class Student(models.Model):
-    # Father's Information
-    father_full_name = models.CharField(max_length=255, blank=True, null=True)
-    father_email = models.EmailField(max_length=255, blank=True, null=True)
-    father_phone = models.CharField(max_length=15, blank=True, null=True)
 
-    # Mother's Information
-    mother_full_name = models.CharField(max_length=255, blank=True, null=True)
-    mother_email = models.EmailField(max_length=255, blank=True, null=True)
-    mother_phone = models.CharField(max_length=15, blank=True, null=True)
+class GuadianOrParent(get_user_model()):
+    class RelationshipChoices(models.TextChoices):
+        MOTHER = "mother", "Mother"
+        FATHER = "father", "Father"
+    full_name = models.CharField(max_length=100)
+    relationship = models.CharField(max_length=100, choices = RelationshipChoices.choices)
+    occupation = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=13)
+    address = models.TextField()
+
+    def __str__(self) -> str:
+        return self.full_name
+    
+class Student(get_user_model()):
+    # Guardian's Information
+    guardian = models.ForeignKey(GuadianOrParent, on_delete=models.PROTECT, blank=True, null=True)
 
     # Student Information
     student_email = models.EmailField(max_length=255, blank=True, null=True)
-    surname = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100)
-    other_names = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female')])
     registration_number = models.CharField(max_length=50, unique=True)
     nationality = models.CharField(max_length=100, blank=True, null=True)
@@ -35,3 +40,6 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.surname} {self.first_name} ({self.registration_number})"
+
+
+
