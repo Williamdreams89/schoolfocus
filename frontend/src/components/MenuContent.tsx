@@ -30,7 +30,7 @@ const mainListItems = [
   { text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
   { text: 'People', icon: <AnalyticsRoundedIcon />, path: '/people' },
   { text: 'Academics', icon: <AnalyticsRoundedIcon />, path: '/academics' },
-  { text: 'Performance Report', icon: <AssignmentRoundedIcon />, path: '/exams-report' },
+  { text: 'Grades', icon: <AssignmentRoundedIcon />, path: '/exams-report' },
   { text: 'Finance', icon: <AnalyticsRoundedIcon />, path: '/academics' },
   { text: 'Attendance', icon: <AnalyticsRoundedIcon />, path: '/academics' },
 ];

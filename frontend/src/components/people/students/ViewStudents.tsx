@@ -4,7 +4,10 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { Input, InputBase, Combobox, useCombobox } from "@mantine/core";
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { styled } from "@mui/material/styles";
-
+import PhoneIcon from '@mui/icons-material/Phone';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import EmailIcon from '@mui/icons-material/Email';
+import ChatIcon from '@mui/icons-material/Chat';
 import Breadcrumbs, { breadcrumbsClasses } from "@mui/material/Breadcrumbs";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 
@@ -36,6 +39,12 @@ type StudentRow = {
   email: string;
   is_active: boolean;
 };
+
+interface Parent {
+    name: string;
+    phone: string;
+    email: string;
+  }
 
 const API_BASE_URL = 'https://example.com/api'; // Replace with your actual API base URL
 
@@ -111,6 +120,62 @@ const StudentDataGrid: React.FC = () => {
         />
       ),
     },
+    {
+        field: 'parents',
+        headerName: 'Parents / Guardian',
+        width: 350,
+        renderCell: (params: GridRenderCellParams) => {
+          const parents = params.value as Parent[];
+          return (
+            <Box>
+              {parents.map((parent, index) => (
+                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', mb: 1 }}>
+                  <Typography variant="subtitle2">{parent.name}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {parent.phone}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                    {/* Call Icon */}
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => window.open(`tel:${parent.phone}`, '_blank')}
+                    >
+                      <PhoneIcon />
+                    </IconButton>
+                    {/* WhatsApp Icon */}
+                    <IconButton
+                      size="small"
+                      color="success"
+                      onClick={() =>
+                        window.open(`https://wa.me/${parent.phone.replace(/\D/g, '')}`, '_blank')
+                      }
+                    >
+                      <WhatsAppIcon />
+                    </IconButton>
+                    {/* Email Icon */}
+                    <IconButton
+                      size="small"
+                      color="info"
+                      onClick={() => window.open(`mailto:${parent.email}`, '_blank')}
+                    >
+                      <EmailIcon />
+                    </IconButton>
+                    {/* Chat Icon */}
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={() => alert(`Initiate chat with ${parent.name}`)}
+                    >
+                      <ChatIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          );
+        },
+    }
   ];
 
   return (
