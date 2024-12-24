@@ -50,6 +50,7 @@ import ForgotPassword from "./components/auth/ForgotPassword";
 import AddClass from "./components/academics/classes/AddClass";
 import AllSubjects from "./components/academics/subjects/AllSubjects";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import StudentEnrollment from "./components/people/students/StudentEnrollment";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -191,6 +192,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/people' element={<People />} />
                       <Route path='/people/students' element={<ManageStudents />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
+                      <Route path='/people/students/enrollment' element={<StudentEnrollment />} />
                       <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />
                       <Route path='/people/parents' element={<GuardiansTable />} />
                       <Route path='/people/addParents' element={<AddGuardianForm />} />

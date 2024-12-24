@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Typography, Box, CircularProgress, Alert } from "@mui/material";
 import axios from "axios";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const BulEnrollStudent: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -47,10 +48,10 @@ const BulEnrollStudent: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 4, maxWidth: 600, mx: "auto", textAlign: "center" }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ width:'100%',mx: "auto", textAlign: "center" }}>
+      {/* <Typography variant="h4" gutterBottom>
         Bulk Enroll Students
-      </Typography>
+      </Typography> */}
 
       {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
       {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
@@ -60,11 +61,11 @@ const BulEnrollStudent: React.FC = () => {
           type="file"
           accept=".xlsx, .xls"
           onChange={handleFileChange}
-          style={{ display: "none" }}
+          style={{ display: "none", width:'100%' }}
           id="file-upload"
         />
         <label htmlFor="file-upload">
-          <Button variant="outlined" component="span">
+          <Button variant="outlined" component="span" fullWidth>
             {file ? file.name : "Choose File"}
           </Button>
         </label>
@@ -75,7 +76,7 @@ const BulEnrollStudent: React.FC = () => {
         color="primary"
         onClick={handleSubmit}
         disabled={loading}
-        startIcon={loading ? <CircularProgress size={20} /> : null}
+        startIcon={loading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
       >
         {loading ? "Uploading..." : "Upload"}
       </Button>
