@@ -12,6 +12,12 @@ import Button from "@mui/material/Button";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material"
+
+import {
   Stepper,
   Step,
   StepLabel,
@@ -33,6 +39,10 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import { format } from 'date-fns';
 import BulEnrollStudent from "./BulkEnrollStudents";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 interface Parent {
   id: string;
@@ -75,6 +85,7 @@ const steps = [
   "Contact Information",
   "Address Information",
 ];
+
 
 const StudentEnrollment = () => {
   const [value, setValue] = React.useState("1");
@@ -210,6 +221,148 @@ const StudentEnrollment = () => {
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+
+  const [activeMobileStep, setActiveMobileStep] = React.useState(0);
+  const maxSteps = steps.length;
+
+  const mobileTheme = useTheme()
+
+  const handleMobileNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleMobileBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const mobileSteps = [
+    {
+      label: "Parent/Guardian Information", 
+      component: <Grid>
+      <Grid.Col span={12}>
+        <MultiSelect
+          id="parents-autocomplete"
+          label="Select Parents/Guardians"
+          data={parentsList.map((parent) => ({
+            value: parent.id,
+            label: parent.name,
+          }))}
+          value={formData.parents.map((parent) => parent.id)}
+          onChange={handleParentSelect}
+        />
+      </Grid.Col>
+      <Grid.Col span={12}>
+        <Button variant="contained" onClick={handleOpenModal}>Add New Parent/Guardian</Button>
+      </Grid.Col>
+    </Grid>
+  }, 
+  {
+    label: "Student's Information",
+    component: <>
+    <Typography component="h2" variant="h4" sx={{textDecoration:'underline', mt:'4rem', mb:'1rem', textAlign:'center'}}>
+      Student's Basic Information
+    </Typography>
+    <Box sx={{display:'flex', gap: "3rem", width:'100%'}}>
+    <Box style={{width:'300px', height:'300px'}}>
+        <img src={imagePreview} style={{width:'200px', height:'200px', border: "1px solid grey"}} />
+        <button style={{width: "200px", position:'relative'}}>+ New Photo
+        <input
+      type="file"
+      accept="image/*"
+      
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        opacity: 0,
+        cursor: "pointer",
+      }}
+      onChange={handleImageChange}
+    />
+        </button>
+    </Box>
+    <Box sx={{display:'grid', gridTemplateColumns:"repeat(2, minmax(200px, 1fr))", gap:'2rem', width:'100%'}}>
+      <TextInput
+        label="Student's Surname"
+        name="surname"
+        value={formData.surname}
+        onChange={handleChange}
+      />
+      <TextInput
+        label="Student's First Name"
+        name="first_name"
+        value={formData.first_name}
+        onChange={handleChange}
+      />
+      <TextInput
+        label="Other Names"
+        name="other_names"
+        value={formData.other_names}
+        onChange={handleChange}
+      />
+      <TextInput
+        label="Registration Number"
+        name="registration_number"
+        value={formData.registration_number}
+        onChange={handleChange}
+      />
+      <TextInput
+        label="Date of Birth"
+        name="date_of_birth"
+        value={formData.date_of_birth}
+        onChange={handleChange}
+        type="date"
+      />
+    </Box>
+  </Box>
+  </>
+  },
+  {
+    label: "Contact Information",
+    component: <Grid>
+    <Grid.Col span={12}>
+      <TextInput
+        label="Student Email"
+        name="student_email"
+        value={formData.student_email}
+        onChange={handleChange}
+      />
+    </Grid.Col>
+    <Grid.Col span={12}>
+      <TextInput
+        label="Contact Phone"
+        name="contact_phone"
+        value={formData.contact_phone}
+        onChange={handleChange}
+      />
+    </Grid.Col>
+  </Grid>
+  },
+  {
+    label: "Address Information",
+    component: <Grid>
+    <Grid.Col span={12}>
+      <TextInput
+        label="Permanent Address"
+        name="permanent_address"
+        value={formData.permanent_address}
+        onChange={handleChange}
+      />
+    </Grid.Col>
+    <Grid.Col span={12}>
+      <TextInput
+        label="Residential Address"
+        name="residential_address"
+        value={formData.residential_address}
+        onChange={handleChange}
+      />
+    </Grid.Col>
+  </Grid>
+  }
+  ]
 
   const renderStepContent = (step: number) => {
     switch (step) {
@@ -350,8 +503,20 @@ const StudentEnrollment = () => {
     window.open(fileUrl, "_blank");
   };
 
+  const [expanded, setExpanded] = useState<number | false>(false);
+
+  const handleAccordionChange = (panel: number) => (
+    event: React.SyntheticEvent,
+    isExpanded: boolean
+  ) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
+  const isSmallScreen = useMediaQuery("(max-width:1045px)")
+
   return (
-    <Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+    <>
+    {!isSmallScreen?<Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={handleTabChange} aria-label="lab API tabs example">
@@ -477,7 +642,96 @@ const StudentEnrollment = () => {
         </TabPanel>
         <TabPanel value="3">Coming soon</TabPanel>
       </TabContext>
-    </Card>
+    </Card>:<Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+    <Accordion>
+        <AccordionSummary
+          expandIcon={<ArrowDownwardIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography component="span">Enroll a Student</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+        <Paper
+        square
+        elevation={0}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          height: 50,
+          pl: 2,
+          bgcolor: 'background.default',
+        }}
+      >
+        <Typography>{mobileSteps[activeStep].label}</Typography>
+      </Paper>
+      <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
+        {mobileSteps[activeStep].component}
+      </Box>
+      <MobileStepper
+        variant="text"
+        steps={maxSteps}
+        position="static"
+        activeStep={activeStep}
+        nextButton={
+          <Button
+            size="small"
+            onClick={handleNext}
+            disabled={activeStep === maxSteps - 1}
+          >
+            Next
+            {mobileTheme.direction === 'rtl' ? (
+              <KeyboardArrowLeft />
+            ) : (
+              <KeyboardArrowRight />
+            )}
+          </Button>
+        }
+        backButton={
+          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+            {mobileTheme.direction === 'rtl' ? (
+              <KeyboardArrowRight />
+            ) : (
+              <KeyboardArrowLeft />
+            )}
+            Back
+          </Button>
+        }
+      />
+        </AccordionDetails>
+      </Accordion>
+    <Accordion>
+        <AccordionSummary
+          expandIcon={<ArrowDownwardIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography component="span">Bulk Enrollment</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    <Accordion>
+        <AccordionSummary
+          expandIcon={<ArrowDownwardIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography component="span">Self Enrollment</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      </Card>}
+    </>
   );
 };
 

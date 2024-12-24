@@ -13,12 +13,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    {/* <StyledEngineProvider injectFirst> */}
+    <StyledEngineProvider injectFirst>
       <MantineProvider>
       <Router>
         <App />
       </Router>
       </MantineProvider>
-    {/* </StyledEngineProvider> */}
+    </StyledEngineProvider>
   </React.StrictMode>
 );
