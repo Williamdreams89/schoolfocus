@@ -115,7 +115,7 @@ const ManageStudents = () => {
       <Card>
       <Box sx={{display: !isSmallDevice?'flex': null, justifyContent:'space-between',alignItems:'center',mb:!isSmallDevice?'2rem':'.7rem', width:'100%'}}>
         <h2>All Students</h2>
-        {!isSmallDevice &&<Button size='large' variant='contained' sx={{}} onClick={()=> navigate("/people/students/addStudent")}><AddIcon /> New Student</Button>}
+        {!isSmallDevice &&<Button size='large' variant='contained' sx={{}} onClick={()=> navigate("/people/students/enrollment")}><AddIcon /> New Student</Button>}
       </Box>
       <Box sx={{display:'flex', flexDirection: isSmallDevice ? 'column':'row', gap:'10px', marginBottom:'2rem', justifyContent:'space-between', alignItems: !isSmallDevice?'center': null}} gap={2} mb={2}>
         <TextField
@@ -189,7 +189,7 @@ const ManageStudents = () => {
             },
           }}
           />
-          <Fab onClick={()=> navigate("/people/students/addStudent")} color="inherit" aria-label="add" sx={{position:'fixed', bottom:'4rem', right: "calc(2rem)", display: !isSmallDevice ? 'none':'block'}}>
+          <Fab onClick={()=> navigate("/people/students/enrollment")} color="inherit" aria-label="add" sx={{position:'fixed', bottom:'4rem', right: "calc(2rem)", display: !isSmallDevice ? 'none':'block'}}>
         <AddIcon fontSize='large' />
       </Fab>
       </Card>
