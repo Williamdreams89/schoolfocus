@@ -152,7 +152,7 @@ const StudentEnrollment = () => {
       [name]: value,
     }));
   };
-
+  const isSmallScreen = useMediaQuery("(max-width:1045px)")
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("/images/avata.png");
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,11 +260,11 @@ const StudentEnrollment = () => {
   {
     label: "Student's Information",
     component: <>
-    <Typography component="h2" variant="h4" sx={{textDecoration:'underline', mt:'4rem', mb:'1rem', textAlign:'center'}}>
+    <Typography component={!isSmallScreen?"h2":'h4'} variant={!isSmallScreen?"h4":"h6"} sx={{textDecoration:'underline', mt: !isSmallScreen?'4rem':'1rem', mb:'1rem', textAlign:!isSmallScreen?'center':'left'}}>
       Student's Basic Information
     </Typography>
-    <Box sx={{display:'flex', gap: "3rem", width:'100%'}}>
-    <Box style={{width:'300px', height:'300px'}}>
+    <Box sx={{display:'flex', gap: "3rem", width:'100%', flexDirection: !isSmallScreen? "row":'column'}}>
+    <Box style={!isSmallScreen?{width:'300px', height:'300px'}:{}}>
         <img src={imagePreview} style={{width:'200px', height:'200px', border: "1px solid grey"}} />
         <button style={{width: "200px", position:'relative'}}>+ New Photo
         <input
@@ -284,7 +284,7 @@ const StudentEnrollment = () => {
     />
         </button>
     </Box>
-    <Box sx={{display:'grid', gridTemplateColumns:"repeat(2, minmax(200px, 1fr))", gap:'2rem', width:'100%'}}>
+    <Box sx={{display:'grid', gridTemplateColumns: !isSmallScreen?"repeat(2, minmax(200px, 1fr))":"repeat(1, minmax(200px, 1fr))", gap:'2rem', width:'100%'}}>
       <TextInput
         label="Student's Surname"
         name="surname"
@@ -490,6 +490,7 @@ const StudentEnrollment = () => {
                 onChange={handleChange}
               />
             </Grid.Col>
+              <Button variant="contained" color="primary" >Save Student</Button>
           </Grid>
         );
       default:
@@ -512,7 +513,7 @@ const StudentEnrollment = () => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const isSmallScreen = useMediaQuery("(max-width:1045px)")
+  
 
   return (
     <>
@@ -665,7 +666,7 @@ const StudentEnrollment = () => {
       >
         <Typography>{mobileSteps[activeStep].label}</Typography>
       </Paper>
-      <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
+      <Box sx={{ width: '100%', p: 2 }}>
         {mobileSteps[activeStep].component}
       </Box>
       <MobileStepper
@@ -677,9 +678,9 @@ const StudentEnrollment = () => {
           <Button
             size="small"
             onClick={handleNext}
-            disabled={activeStep === maxSteps - 1}
+            // disabled={activeStep === maxSteps - 1}
           >
-            Next
+            {activeStep === maxSteps - 1?"Save":"Next"}
             {mobileTheme.direction === 'rtl' ? (
               <KeyboardArrowLeft />
             ) : (
@@ -730,6 +731,23 @@ const StudentEnrollment = () => {
           </Typography>
         </AccordionDetails>
       </Accordion>
+      <Dialog open={openModal} onClose={handleCloseModal}>
+              <DialogTitle>Add New Parent/Guardian</DialogTitle>
+              <DialogContent>
+                {/* Your form for adding a new parent/guardian goes here */}
+                <TextField label="Full Name" fullWidth sx={{ mb: 2 }} />
+                <TextField label="Email" fullWidth sx={{ mb: 2 }} />
+                <TextField label="Phone" fullWidth sx={{ mb: 2 }} />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseModal} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleCloseModal} color="primary">
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
       </Card>}
     </>
   );
