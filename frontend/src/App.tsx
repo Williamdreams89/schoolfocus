@@ -51,6 +51,7 @@ import AddClass from "./components/academics/classes/AddClass";
 import AllSubjects from "./components/academics/subjects/AllSubjects";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StudentEnrollment from "./components/people/students/StudentEnrollment";
+import ViewStudents from "./components/people/students/ViewStudents";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -190,7 +191,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                   <Route element={<ProtectedRoute />}>
                       <Route path='/' element = {<MainGrid />} />
                       <Route path='/people' element={<People />} />
-                      <Route path='/people/students' element={<ManageStudents />} />
+                      <Route path='/people/students' element={<ViewStudents />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
                       <Route path='/people/students/enrollment' element={<StudentEnrollment />} />
                       <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />
