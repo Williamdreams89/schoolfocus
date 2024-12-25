@@ -3,10 +3,13 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
 
 
-class GuadianOrParent(get_user_model()):
+class GuadianOrParent(models.Model):
     class RelationshipChoices(models.TextChoices):
         MOTHER = "mother", "Mother"
         FATHER = "father", "Father"
+    email = models.EmailField(unique=True, blank=True, null=True)
+    first_name = models.EmailField(unique=True, blank=True, null=True)
+    last_name = models.EmailField(unique=True, blank=True, null=True)
     full_name = models.CharField(max_length=100)
     relationship = models.CharField(max_length=100, choices = RelationshipChoices.choices)
     occupation = models.CharField(max_length=100)
@@ -16,14 +19,16 @@ class GuadianOrParent(get_user_model()):
     def __str__(self) -> str:
         return self.full_name
     
-class Student(get_user_model()):
+class Student(models.Model):
     # Guardian's Information
     guardian = models.ManyToManyField(GuadianOrParent, blank=True, null=True, related_name="parents")
 
-    # Student Information
+    # Student Information 
+    email = models.EmailField(unique=True, default="example@email.com")
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     student_email = models.EmailField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female')])
-    registration_number = models.CharField(max_length=50, unique=True)
     nationality = models.CharField(max_length=100, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     blood_group = models.CharField(max_length=3, blank=True, null=True)
@@ -42,7 +47,7 @@ class Student(get_user_model()):
     date_added = models.DateTimeField(auto_now_add = True, null= True, blank=True)
 
     def __str__(self):
-        return f"{self.first_name} ({self.registration_number})"
+        return f"{self.first_name}"
     
     def index_number(self):
         if self.date_added:

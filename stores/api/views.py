@@ -103,18 +103,9 @@ class BulkEnrollStudentsAPIView(GenericAPIView):
 
                 # Map the Excel columns to model fields
                 field_mapping = {
-                    "Father's Full Name": "father_full_name",
-                    "Father's Email": "father_email",
-                    "Father's Phone": "father_phone",
-                    "Mother's Full Name": "mother_full_name",
-                    "Mother's Email": "mother_email",
-                    "Mother's Phone": "mother_phone",
-                    "Student Email": "student_email",
-                    "Surname": "surname",
                     "First Name": "first_name",
-                    "Other Names": "other_names",
+                    "Last Name": "last_name",
                     "Gender": "gender",
-                    "Registration Number": "registration_number",
                     "Nationality": "nationality",
                     "Date of Birth (dd-mm-YYYY)": "date_of_birth",
                     "Blood Group": "blood_group",

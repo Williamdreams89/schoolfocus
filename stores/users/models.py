@@ -37,8 +37,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         PARENT = "Parent", "Parent"
         TESTUSER = "TestUser", "TestUser"
     email = models.EmailField(unique = True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     user_type = models.CharField(max_length=100, choices=UserTypeChoice.choices, default=UserTypeChoice.TESTUSER)
     is_staff =models.BooleanField(default=False)
     is_account_active =models.BooleanField(default=False)
