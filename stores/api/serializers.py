@@ -6,6 +6,14 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__'  # Include all fields of the Student model
 
+class StudentRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["email", 'first_name', 'last_name', 'user_type', 'password']
+        extra_kwargs = {"password":{"write_only": True}}
+
+    def create(self, validated_data):
+        return Student.objects.create_user(**validated_data)
 
 
 class FileUploadSerializer(serializers.Serializer):

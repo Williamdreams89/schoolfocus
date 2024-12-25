@@ -96,7 +96,7 @@ class UserLoginAPIView(generics.GenericAPIView):
             user = User.objects.get(email=serializer.data["email"])
             rToken = RefreshToken.for_user(user)
             access_token = str(rToken.access_token)
-            return Response({"tokens":{"refresh_token": str(rToken), "access_token": access_token}, "username":user.full_name, "user_id":user.id, 'user_role':user.user_type, "user_profile_pic": (user.profile_image)}, status=status.HTTP_200_OK)
+            return Response({"tokens":{"refresh_token": str(rToken), "access_token": access_token}, "username":user.full_name, "user_id":user.id, 'user_role':user.user_type, }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         

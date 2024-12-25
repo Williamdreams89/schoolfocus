@@ -53,11 +53,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)
     
-    @property
-    def profile_image(self):
-        if self.profile_pic:
-            return self.profile_pic.url
-        return None
+    # @property
+    # def profile_image(self):
+    #     if self.profile_pic:
+    #         return self.profile_pic.url
+    #     return None
 
     def __str__(self):
         return "{} at {}".format(self.full_name, self.user_type)

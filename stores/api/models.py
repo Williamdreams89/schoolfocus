@@ -39,7 +39,7 @@ class Student(get_user_model()):
     residential_address = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.surname} {self.first_name} ({self.registration_number})"
+        return f"{self.first_name} ({self.registration_number})"
 
 
 
