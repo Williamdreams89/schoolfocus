@@ -3,15 +3,21 @@ from .models import Student, GuadianOrParent
 
 class StudentsAdmin(admin.ModelAdmin):
     list_display = [
+                    'id',
+                     'index_number',
                      'profile_pic',
                      'email',
                      'first_name',
                      'last_name',
                      'gender',
-                     'registration_number',
-                     'gender',
-                     'is_account_active'
+                     'display_guardian',
+                     'is_account_active',
                     ]
+    def display_guardian(self, obj):
+        # Join all parent names into a single string
+        return ", ".join([f"{guardian.first_name} {guardian.last_name}" for guardian in obj.guardian.all()])
+    display_guardian.short_description = 'Guardian'  # Column name in admin
+
 class ParentAdmin(admin.ModelAdmin):
     list_display = [
                     'email',

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone as tz
 
 
 class GuadianOrParent(get_user_model()):
@@ -17,7 +18,7 @@ class GuadianOrParent(get_user_model()):
     
 class Student(get_user_model()):
     # Guardian's Information
-    guardian = models.ForeignKey(GuadianOrParent, on_delete=models.PROTECT, blank=True, null=True)
+    guardian = models.ManyToManyField(GuadianOrParent, blank=True, null=True, related_name="parents")
 
     # Student Information
     student_email = models.EmailField(max_length=255, blank=True, null=True)
@@ -38,8 +39,15 @@ class Student(get_user_model()):
     permanent_address = models.TextField(blank=True, null=True)
     residential_address = models.TextField(blank=True, null=True)
 
+    date_added = models.DateTimeField(auto_now_add = True, null= True, blank=True)
+
     def __str__(self):
         return f"{self.first_name} ({self.registration_number})"
+    
+    def index_number(self):
+        if self.date_added:
+            date = self.date_added.date().year
+            return f"{date}/0000{self.id}"
 
 
 
