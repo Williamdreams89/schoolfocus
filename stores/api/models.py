@@ -40,7 +40,7 @@ class Student(models.Model):
     contact_phone = models.CharField(max_length=15)
     province_or_state = models.CharField(max_length=100, verbose_name="Province or State (of origin)", blank=True, null=True)
     zip_or_lga = models.CharField(max_length=100, verbose_name="ZIP or LGA (of origin)", blank=True, null=True)
-    town_of_origin = models.CharField(max_length=100, verbose_name="Town (of origin)", blank=True, null=True)
+    place_of_origin = models.CharField(max_length=100, verbose_name="Town (of origin)", blank=True, null=True)
     permanent_address = models.TextField(blank=True, null=True)
     residential_address = models.TextField(blank=True, null=True)
 
