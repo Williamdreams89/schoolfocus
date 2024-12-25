@@ -8,8 +8,8 @@ class GuadianOrParent(models.Model):
         MOTHER = "mother", "Mother"
         FATHER = "father", "Father"
     email = models.EmailField(unique=True, blank=True, null=True)
-    first_name = models.EmailField(unique=True, blank=True, null=True)
-    last_name = models.EmailField(unique=True, blank=True, null=True)
+    first_name = models.CharField(max_length=100,blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     full_name = models.CharField(max_length=100)
     relationship = models.CharField(max_length=100, choices = RelationshipChoices.choices)
     occupation = models.CharField(max_length=100)

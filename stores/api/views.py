@@ -3,7 +3,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Student
-from .serializers import StudentSerializer, StudentRegisterSerializer
+from .serializers import *
 import pandas as pd
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -73,16 +73,25 @@ class StudentLoginAPIView(generics.GenericAPIView):
         except Exception as e:
             return Response(str(e), status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class EnrollStudentView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = StudentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "Student enrolled successfully", "student": serializer.data},
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class EnrollStudentView(generics.GenericAPIView):
+    serializer_class = StudentSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data
+        serializer.save()
+
+        return Response({"message":"Student enrolled successfully", "data":serializer.data})
+
+class AddGuadianOrParentView(generics.GenericAPIView):
+    serializer_class = GuadianOrParentSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data
+        serializer.save()
+
+        return Response({"message":"Guadian added successfully", "data":serializer.data})
 
 
 
