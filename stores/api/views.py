@@ -151,3 +151,6 @@ class BulkEnrollStudentsAPIView(GenericAPIView):
 class StudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+
+    def get_queryset(self):
+        return self.queryset.order_by("-date_added")
