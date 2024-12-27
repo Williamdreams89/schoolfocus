@@ -104,7 +104,7 @@ interface StudentData {
   contact_phone: string;
   province_or_state: string;
   zip_or_lga: string;
-  town_of_origin: string;
+  place_of_origin: string;
   permanent_address: string;
   residential_address: string;
   parents: Parent[]; // This will hold an array of Parent objects
@@ -147,7 +147,7 @@ const StudentEnrollment = () => {
     contact_phone: "",
     province_or_state: "",
     zip_or_lga: "",
-    town_of_origin: "",
+    place_of_origin: "",
     permanent_address: "",
     residential_address: "",
     parents: [], // for storing selected parents

@@ -28,6 +28,7 @@ import {
 import axios from 'axios';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import PrintIcon from '@mui/icons-material/Print';
+import { useNavigate } from "react-router-dom";
 
 type StudentRow = {
   id: number;
@@ -41,25 +42,25 @@ type StudentRow = {
 };
 
 interface Parent {
-    name: string;
-    phone: string;
+    guardian_name: string;
+    guardian_phone: string;
     email: string;
   }
 
-const API_BASE_URL = 'https://example.com/api'; // Replace with your actual API base URL
+const API_BASE_URL = 'https://schoolfocusapi.onrender.com'; // Replace with your actual API base URL
 
 const StudentDataGrid: React.FC = () => {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 100,
   });
 
   // Fetch students data from API
   const fetchStudents = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/students`);
+      const response = await axios.get(`${API_BASE_URL}/api/studentsList/`);
       setRows(response.data);
       setLoading(false);
     } catch (error) {
@@ -92,7 +93,7 @@ const StudentDataGrid: React.FC = () => {
   const columns: GridColDef[] = [
     { field: 'id', headerName: '#', width: 50 },
     {
-      field: 'photo',
+      field: 'profile_pic',
       headerName: 'Photo',
       width: 80,
       renderCell: (params: GridRenderCellParams) => (
@@ -103,10 +104,10 @@ const StudentDataGrid: React.FC = () => {
         />
       ),
     },
-    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'first_name', headerName: 'Name', width: 200 },
     { field: 'gender', headerName: 'Gender', width: 100 },
-    { field: 'regNumber', headerName: 'Reg. No.', width: 150 },
-    { field: 'classArm', headerName: 'Class / Class Arm', width: 150 },
+    { field: 'index_number', headerName: 'Reg. No.', width: 150 },
+    // { field: 'classArm', headerName: 'Class / Class Arm', width: 150 },
     { field: 'email', headerName: 'Email', width: 200 },
     {
       field: 'is_active',
@@ -121,7 +122,7 @@ const StudentDataGrid: React.FC = () => {
       ),
     },
     {
-        field: 'parents',
+        field: 'guardian',
         headerName: 'Parents / Guardian',
         width: 350,
         renderCell: (params: GridRenderCellParams) => {
@@ -129,17 +130,17 @@ const StudentDataGrid: React.FC = () => {
           return (
             <Box>
               {parents.map((parent, index) => (
-                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', mb: 1 }}>
-                  <Typography variant="subtitle2">{parent.name}</Typography>
+                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', mb: 1, justifyContent:'center', alignItems:'center', height:'100px'}}>
+                  <Typography variant="subtitle2">{parent.guardian_name}</Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {parent.phone}
+                    {/* {parent.guardian_phone} */}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                     {/* Call Icon */}
                     <IconButton
                       size="small"
                       color="primary"
-                      onClick={() => window.open(`tel:${parent.phone}`, '_blank')}
+                      onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
                     >
                       <PhoneIcon />
                     </IconButton>
@@ -148,7 +149,7 @@ const StudentDataGrid: React.FC = () => {
                       size="small"
                       color="success"
                       onClick={() =>
-                        window.open(`https://wa.me/${parent.phone.replace(/\D/g, '')}`, '_blank')
+                        window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
                       }
                     >
                       <WhatsAppIcon />
@@ -165,7 +166,7 @@ const StudentDataGrid: React.FC = () => {
                     <IconButton
                       size="small"
                       color="secondary"
-                      onClick={() => alert(`Initiate chat with ${parent.name}`)}
+                      onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
                     >
                       <ChatIcon />
                     </IconButton>
@@ -177,6 +178,10 @@ const StudentDataGrid: React.FC = () => {
         },
     }
   ];
+
+  if(loading){
+    return <Box>loading...</Box>
+  }
 
   return (
     <Box sx={{ height: 600, width: '100%', }}>
@@ -201,6 +206,7 @@ const StudentDataGrid: React.FC = () => {
         <Typography variant="h6">Students</Typography>
       </Box>
       <DataGrid
+        rowHeight={100}
         rows={rows}
         columns={columns}
         loading={loading}
@@ -334,14 +340,18 @@ const ViewStudents = () => {
   ));
 
   const isSmallScreen = useMediaQuery("(max-width:1045px)")
+  const navigate = useNavigate()
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       <NavbarBreadcrumbs />
       <Card
-        sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem" }}
+        sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem", justifyContent:'space-between' }}
       >
-        <FilterAltIcon />
-        <Typography component="h4">Select Class to View</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem" }}>
+            <FilterAltIcon />
+            <Typography component="h4">Select Class to View</Typography>
+        </Box>
+        <Button variant="outlined" onClick={()=>navigate("/people/students/enrollment")}> + New Student</Button>
       </Card>
       <Card sx={{ width:'100%',mb:'.5rem'}}>
         <Box sx={{display:'grid', gridTemplateColumns: !isSmallScreen?"repeat(4, minmax(200px, 1fr))":"repeat(1, minmax(200px, 1fr))", gap:'2rem', width:'100%', mb:'2rem'}}>
