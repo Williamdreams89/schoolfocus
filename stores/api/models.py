@@ -15,6 +15,7 @@ class GuadianOrParent(models.Model):
     occupation = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=13)
     address = models.TextField()
+    date_added = models.DateTimeField(auto_now_add = True, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.full_name

@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Student
+from .models import *
 from .serializers import *
 import pandas as pd
 from rest_framework import generics
@@ -154,3 +154,7 @@ class StudentListView(generics.ListAPIView):
 
     def get_queryset(self):
         return self.queryset.order_by("-date_added")
+
+class ParentOrGuardianView(generics.ListCreateAPIView):
+    serializer_class = GuadianOrParentSerializer
+    queryset = GuadianOrParent.objects.all().order_by("-date_added")
