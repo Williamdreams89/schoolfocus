@@ -11,6 +11,7 @@ class StudentsAdmin(admin.ModelAdmin):
                      'last_name',
                      'gender',
                      'display_guardian',
+                     'registration_number'
                     ]
     def display_guardian(self, obj):
         # Join all parent names into a single string
