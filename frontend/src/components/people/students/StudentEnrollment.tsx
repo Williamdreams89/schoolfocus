@@ -44,9 +44,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { styled } from '@mui/material/styles';
-
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   width: '100%',
@@ -75,21 +75,21 @@ function NavbarBreadcrumbs() {
   );
 }
 
+
+
 interface Parent {
   id: string;
-  name: string;
+  full_name: string;
   email?: string;
   phone?: string;
 }
 
+interface FormData {
+  parents: Parent[]; // Array of selected parents
+}
+
 // Student data type
 interface StudentData {
-  father_full_name	: string;
-  father_email: string;
-  father_phone: string;
-  mother_full_name	: string;
-  mother_email: string;
-  mother_phone: string;
   student_email: string;
   surname: string;
   first_name: string;
@@ -127,12 +127,6 @@ const StudentEnrollment = () => {
 
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<StudentData>({
-    father_full_name: "",
-    father_email: "",
-    father_phone: "",
-    mother_full_name: "",
-    mother_email: "",
-    mother_phone: "",
     student_email: "",
     surname: "",
     first_name: "",
@@ -159,11 +153,13 @@ const StudentEnrollment = () => {
   useEffect(() => {
     const fetchParents = async () => {
       // Here you would call your API to get the list of parents (mocked here)
-      const data = [
-        { id: "1", name: "John Doe" },
-        { id: "2", name: "Jane Smith" },
-      ];
-      setParentsList(data);
+      try{
+        const {data}= await axios.get("http://127.0.0.1:8000/api/parentorguardian/")
+       setParentsList(data);
+       console.log(`This is the parents set`, data)
+      }catch(error){
+        console.log(`This is the error = ${error}`)
+      }
     };
     fetchParents();
   }, []);
@@ -200,14 +196,13 @@ const StudentEnrollment = () => {
     }
   };
 
-  const handleParentSelect = (values: string[]) => {
-    const selectedParents = values.map((id) =>
-      parentsList.find((parent) => parent.id === id)
-    );
-    setFormData((prevData) => ({
-      ...prevData,
-      parents: selectedParents as Parent[],
-    }));
+  const handleParentSelect = (selectedValues: string[]) => {
+    setFormData({
+      ...formData,
+      parents: selectedValues
+        .map((value) => parentsList.find((parent) => parent.id.toString() === value))
+        .filter((parent): parent is Parent => parent !== undefined), // Type guard
+    });
   };
 
   const handleSubmit = () => {
@@ -272,16 +267,16 @@ const StudentEnrollment = () => {
       label: "Parent/Guardian Information", 
       component: <Grid>
       <Grid.Col span={12}>
-        <MultiSelect
-          id="parents-autocomplete"
-          label="Select Parents/Guardians"
-          data={parentsList.map((parent) => ({
-            value: parent.id,
-            label: parent.name,
-          }))}
-          value={formData.parents.map((parent) => parent.id)}
-          onChange={handleParentSelect}
-        />
+      <MultiSelect
+        id="parents-autocomplete"
+        label="Select Parents/Guardians"
+        data={parentsList.map((parent) => ({
+          value: parent.id.toString(), // Convert id to string
+          label: parent.full_name,
+        }))}
+        value={formData.parents.map((parent) => parent.id.toString())} // Ensure this matches `value`
+        onChange={handleParentSelect}
+      />
       </Grid.Col>
       <Grid.Col span={12}>
         <Button variant="contained" onClick={handleOpenModal}>Add New Parent/Guardian</Button>
@@ -296,7 +291,7 @@ const StudentEnrollment = () => {
     </Typography>
     <Box sx={{display:'flex', gap: "3rem", width:'100%', flexDirection: !isSmallScreen? "row":'column'}}>
     <Box style={!isSmallScreen?{width:'300px', height:'300px'}:{}}>
-        <img src={imagePreview} style={{width:'200px', height:'200px', border: "1px solid grey"}} />
+        <img src={imagePreview} style={{width:'200px', height:'200px'}} />
         <button style={{width: "200px", position:'relative'}}>+ New Photo
         <input
       type="file"
@@ -401,16 +396,16 @@ const StudentEnrollment = () => {
         return (
           <Grid>
             <Grid.Col span={12}>
-              <MultiSelect
-                id="parents-autocomplete"
-                label="Select Parents/Guardians"
-                data={parentsList.map((parent) => ({
-                  value: parent.id,
-                  label: parent.name,
-                }))}
-                value={formData.parents.map((parent) => parent.id)}
-                onChange={handleParentSelect}
-              />
+            <MultiSelect
+            id="parents-autocomplete"
+            label="Select Parents/Guardians"
+            data={parentsList.map((parent) => ({
+              value: parent.id.toString(), // Convert id to string
+              label: parent.full_name,
+            }))}
+            value={formData.parents.map((parent) => parent.id.toString())} // Ensure this matches `value`
+            onChange={handleParentSelect}
+          />
             </Grid.Col>
             <Grid.Col span={12}>
               <Button variant="contained" onClick={handleOpenModal}>Add New Parent/Guardian</Button>
@@ -425,7 +420,7 @@ const StudentEnrollment = () => {
             </Typography>
             <Box sx={{display:'flex', gap: "3rem", width:'100%'}}>
             <Box style={{width:'300px', height:'300px'}}>
-                <img src={imagePreview} style={{width:'200px', height:'200px', border: "1px solid grey"}} />
+                <img src={imagePreview} style={{width:'200px', height:'200px', border: ".1px solid grey"}} />
                 <button style={{width: "200px", position:'relative'}}>+ New Photo
                 <input
               type="file"

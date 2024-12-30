@@ -52,6 +52,8 @@ import AllSubjects from "./components/academics/subjects/AllSubjects";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StudentEnrollment from "./components/people/students/StudentEnrollment";
 import ViewStudents from "./components/people/students/ViewStudents";
+import { APIContext } from "./utils/contexts/ReactContext";
+import LoadingScreen from "./utils/component/LoadingScreen";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -139,6 +141,13 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
     }, 3000)
   }, [])
 
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("A context was not found!")
+  }
+
+  const {studentsManagementDetails, setStudentsManagementDetails} = context;
+
   return (
     <div>
       {isLocked ? (
@@ -154,6 +163,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
             <img src="/images/loading.gif" style={{marginTop:'1rem'}} />
           </Box>
         </Box>:<Box sx={{ display: 'flex', position:'relative' }}>
+          {studentsManagementDetails.isLoading && <LoadingScreen />}
         {!isAuthPage &&
                 (
                 <>

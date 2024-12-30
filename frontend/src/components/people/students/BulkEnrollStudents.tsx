@@ -76,7 +76,7 @@ const BulEnrollStudent: React.FC = () => {
         color="primary"
         onClick={handleSubmit}
         disabled={loading}
-        startIcon={loading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+        startIcon={loading ? <CircularProgress size={20} sx={{color:'white', '&:hover':{color:'white'}}} /> : <CloudUploadIcon />}
       >
         {loading ? "Uploading..." : "Upload"}
       </Button>

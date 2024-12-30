@@ -34,6 +34,36 @@ const data: StatCardProps[] = [
     trend: 'neutral',
     data: [850, 870, 880, 860, 845, 830, 850, 840, 860, 890, 900, 910], // Number of students passing exams
   },
+  {
+    title: "Payments (Today)",
+    value : "₦0",
+    interval : "Today",
+    trend : "neutral",
+    data : [1200, 1220, 1180, 1215, 1190, 1250, 1300, 1280, 1295, 1310, 1350, 1370]
+  },
+  {
+    title: "Payments (Last 30 days)",
+    value : "₦0",
+    interval : "Last 30 days",
+    trend : "neutral",
+    data : [93, 94, 95, 96, 94, 95, 96, 97, 95, 96, 97, 95]
+  },
+ 
+  {
+    title : "Staff",
+    value : "4",
+    interval : "Total Staff",
+    trend : "neutral",
+    data : [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+  },
+  {
+    title : "Parents / Guardians",
+    value : "2",
+    interval : "Total Parents",
+    trend : "neutral",
+    data : [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  },
+  
 ];
 
 export default function MainGrid() {
