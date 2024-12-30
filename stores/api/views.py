@@ -126,6 +126,7 @@ class BulkEnrollStudentsAPIView(GenericAPIView):
                     "Town (of origin)": "town_of_origin",  # Corrected field name
                     "Permanent Address": "permanent_address",
                     "Residential Address": "residential_address",
+                    "Profile Picture" : "profile_pic"
                 }
 
 
