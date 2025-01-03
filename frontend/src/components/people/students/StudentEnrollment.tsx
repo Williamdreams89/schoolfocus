@@ -46,6 +46,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { styled } from '@mui/material/styles';
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import { APIContext } from "../../../utils/contexts/ReactContext";
+import { useNavigate } from "react-router-dom";
 
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -120,12 +122,22 @@ const steps = [
 
 const StudentEnrollment = () => {
   const [value, setValue] = React.useState("1");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
   const [activeStep, setActiveStep] = useState(0);
+  const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
+  const [formErrors, setFormErrors] = useState<{ [key: string]: boolean }>({});
+
+  // Handling form validation
+  const isStepValid = () => {
+    return !Object.values(formErrors).includes(true) && 
+           steps[activeStep] in formValues && 
+           formValues[steps[activeStep]].trim() !== '';
+  };
   const [formData, setFormData] = useState<StudentData>({
     student_email: "",
     surname: "",
@@ -148,37 +160,68 @@ const StudentEnrollment = () => {
   });
   const [parentsList, setParentsList] = useState<Parent[]>([]);
   const [openModal, setOpenModal] = useState(false);
+  const [fetchingParents, setFetchingParents] = React.useState<boolean>(false)
+
+  const [validationState, setValidationState] = useState<boolean[]>([
+    false, // Step 1 validation
+    false, // Step 2 validation
+    false, // Step 3 validation
+    false, // Step 4 validation
+  ]);
+  
+
+  
+  const handleNext = () => {
+    if (validateStep(activeStep)) {
+      const updatedValidation = [...validationState];
+      updatedValidation[activeStep] = true;
+      setValidationState(updatedValidation);
+      setActiveStep((prevStep) => prevStep + 1);
+    } else {
+      alert("Please complete the form before proceeding.");
+    }
+  };
+  
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
+  
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Use the context created already
+
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("There should be a context")
+  }
+
+  const {studentsManagementDetails, setStudentsManagementDetails} = context;
 
   // Mock function to fetch parents already enrolled
   useEffect(() => {
     const fetchParents = async () => {
       // Here you would call your API to get the list of parents (mocked here)
       try{
-        const {data}= await axios.get("http://127.0.0.1:8000/api/parentorguardian/")
+        setStudentsManagementDetails({isLoading: true})
+        const {data}= await axios.get("https://schoolfocusapi.onrender.com/api/parentorguardian/")
        setParentsList(data);
        console.log(`This is the parents set`, data)
+       setStudentsManagementDetails({isLoading: false})
       }catch(error){
         console.log(`This is the error = ${error}`)
+        setStudentsManagementDetails({isLoading: false})
       }
     };
     fetchParents();
   }, []);
 
-  const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
-  };
+  
 
-  const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData: any) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
   const isSmallScreen = useMediaQuery("(max-width:1045px)")
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("/images/avata.png");
@@ -189,7 +232,7 @@ const StudentEnrollment = () => {
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
-          setImagePreview(reader.result); // Only set if it's a string
+          setImagePreview(reader.result); 
         }
       };
       reader.readAsDataURL(file);
@@ -205,7 +248,10 @@ const StudentEnrollment = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const navigate = useNavigate()
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
     // Create a FormData object to send data with the photo file
     const submissionData = new FormData();
 
@@ -234,14 +280,22 @@ const StudentEnrollment = () => {
     }
 
     // Add your form submission logic here (e.g., API call)
+    setIsLoading(true)
+    setStudentsManagementDetails({isLoading: true})
     axios.post('https://schoolfocusapi.onrender.com/api/enroll-student/', submissionData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }).then(response => {
+      setIsLoading(false)
+      setStudentsManagementDetails({isLoading: false})
       console.log("Form submitted successfully", response.data);
+      alert("Student Saved!")
+      navigate("/people/students")
     }).catch(error => {
+      setIsLoading(false)
       console.error("Error submitting form", error);
+      setStudentsManagementDetails({isLoading: false})
     });
   };
 
@@ -262,12 +316,41 @@ const StudentEnrollment = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 0:
+        return formData.parents.length > 0;
+      case 1:
+        return (
+          formData.surname.trim() !== "" &&
+          formData.first_name.trim() !== "" &&
+          formData.registration_number.trim() !== "" &&
+          formData.date_of_birth.trim() !== ""
+        );
+      case 2:
+        return (
+          formData.student_email.trim() !== "" &&
+          formData.contact_phone.trim() !== ""
+        );
+      case 3:
+        return (
+          formData.permanent_address.trim() !== "" &&
+          formData.residential_address.trim() !== ""
+        );
+      default:
+        return false;
+    }
+  };
+  
+  
+
   const mobileSteps = [
     {
       label: "Parent/Guardian Information", 
       component: <Grid>
       <Grid.Col span={12}>
       <MultiSelect
+        required
         id="parents-autocomplete"
         label="Select Parents/Guardians"
         data={parentsList.map((parent) => ({
@@ -291,7 +374,7 @@ const StudentEnrollment = () => {
     </Typography>
     <Box sx={{display:'flex', gap: "3rem", width:'100%', flexDirection: !isSmallScreen? "row":'column'}}>
     <Box style={!isSmallScreen?{width:'300px', height:'300px'}:{}}>
-        <img src={imagePreview} style={{width:'200px', height:'200px'}} />
+        <img src={imagePreview} style={{width:'200px', height:'200px'}} alt="some-img" />  
         <button style={{width: "200px", position:'relative'}}>+ New Photo
         <input
       type="file"
@@ -420,7 +503,7 @@ const StudentEnrollment = () => {
             </Typography>
             <Box sx={{display:'flex', gap: "3rem", width:'100%'}}>
             <Box style={{width:'300px', height:'300px'}}>
-                <img src={imagePreview} style={{width:'200px', height:'200px', border: ".1px solid grey"}} />
+                <img src={imagePreview} style={{width:'200px', height:'200px', border: ".1px solid grey"}} alt="" />
                 <button style={{width: "200px", position:'relative'}}>+ New Photo
                 <input
               type="file"
@@ -583,7 +666,7 @@ const StudentEnrollment = () => {
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                variant="contained"
+                variant="text"
               >
                 Back
               </Button>
@@ -591,7 +674,7 @@ const StudentEnrollment = () => {
               {activeStep === steps.length - 1 ? (
                 <Button
                   onClick={handleSubmit}
-                  variant="contained"
+                  variant="text"
                   color="primary"
                 >
                   Submit
