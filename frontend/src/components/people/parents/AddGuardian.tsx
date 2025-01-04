@@ -4,6 +4,7 @@ import {
   Button,
   Group,
   Select,
+  NativeSelect,
   Box,
   PasswordInput,
   Textarea,
@@ -113,20 +114,19 @@ const AddGuardianForm: React.FC = () => {
                 )
               }
             />
-            <Select
-              label="Relationship (with ward(s))"
-              placeholder="Relationship"
-              required
-              value={guardian.relationship}
-              onChange={(value) =>
-                setGuardians(
-                  guardians.map((g, i) =>
-                    i === index ? { ...g, relationship: value || "" } : g
+             <NativeSelect
+                label="Relationship (with ward(s))"
+                data={["Father", "Mother", "Guardian"]}
+                value={guardian.relationship}
+                onChange={(e) =>
+                  setGuardians(
+                    guardians.map((g, i) =>
+                      i === index ? { ...g, relationship: e.target.value } : g
+                    )
                   )
-                )
-              }
-              data={["Father", "Mother", "Guardian"]}
-            />
+                }
+              />
+
             <TextInput
               label="Occupation"
               placeholder="Occupation"
@@ -153,20 +153,19 @@ const AddGuardianForm: React.FC = () => {
                 )
               }
             />
-            <Select
-              label="Relationship (with ward(s))"
-              placeholder="Relationship"
-              required
-              value={guardian.relationship}
-              onChange={(value) =>
-                setGuardians(
-                  guardians.map((g, i) =>
-                    i === index ? { ...g, relationship: value || "" } : g
+             <NativeSelect
+                label="Relationship (with ward(s))"
+                data={["Father", "Mother", "Guardian"]}
+                value={guardian.relationship}
+                onChange={(e) =>
+                  setGuardians(
+                    guardians.map((g, i) =>
+                      i === index ? { ...g, relationship: e.target.value } : g
+                    )
                   )
-                )
-              }
-              data={["Father", "Mother", "Guardian"]}
-            />
+                }
+              />
+
             <TextInput
               label="Occupation"
               placeholder="Occupation"
