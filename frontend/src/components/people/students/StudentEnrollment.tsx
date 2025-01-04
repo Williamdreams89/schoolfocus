@@ -32,7 +32,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { MultiSelect, TextInput, Grid } from "@mantine/core";
+import { MultiSelect, TextInput, Grid, Group, Textarea, NativeSelect, ActionIcon } from "@mantine/core";
 import { List, ListItem, ListItemText } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -49,8 +49,6 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { APIContext } from "../../../utils/contexts/ReactContext";
 import { useNavigate } from "react-router-dom";
 import { Transition } from "../../../transitions/DialogTransition";
-import { Button as MButton } from '@mantine/core';
-import AddGuardianForm from "../parents/AddGuardian";
 
 
 
@@ -627,6 +625,68 @@ const StudentEnrollment = () => {
     setExpanded(isExpanded ? panel : false);
   };
 
+
+  // Adding Parent or guardian
+
+interface Guardian {
+  fullName: string;
+  relationship: string;
+  occupation: string;
+  phone: string;
+  address: string;
+  email: string;
+  
+}
+  const [guardians, setGuardians] = useState<Guardian[]>([
+    {
+      fullName: "",
+      relationship: "Father",
+      occupation: "",
+      phone: "",
+      address: "",
+      email: "",
+    },
+  ]);
+
+
+
+  const isSmallDevice = useMediaQuery("(max-width:1045px)")
+  // Add a new guardian to the form
+  const addGuardian = () => {
+    setGuardians([
+      ...guardians,
+      {
+        fullName: "",
+        relationship: "Father",
+        occupation: "",
+        phone: "",
+        address: "",
+        email: "",
+      },
+    ]);
+  };
+
+  // Remove a guardian from the form
+  const removeGuardian = (index: number) => {
+    setGuardians(guardians.filter((_, i) => i !== index));
+  };
+
+  // Form submission
+  const handleParentorGuardianFormSubmit = async () => {
+    try {
+      setStudentsManagementDetails({isLoading:true})
+      const response = await axios.post("https://schoolfocusapi.onrender.com/api/add-guardian/", {
+        guardians,
+      });
+      alert("Guardians successfully added!");
+      console.log(response.data);
+      setStudentsManagementDetails({isLoading:false})
+    } catch (error) {
+      setStudentsManagementDetails({isLoading:false})
+      console.error("Error submitting guardians:", error);
+    }
+  };
+
   
 
   return (
@@ -714,7 +774,231 @@ const StudentEnrollment = () => {
               <DialogTitle>Add New Parent/Guardian</DialogTitle>
               <DialogContent>
                 {/* Your form for adding a new parent/guardian goes here */}
-                <AddGuardianForm />
+                <Card sx={{width:'100%'}}>
+                      {guardians.map((guardian, index) => (
+                        <Box
+                          key={index}
+                        >
+                          <Group>
+                            <h4>{guardian.relationship}</h4>
+                            {guardians.length > 1 && (
+                              <ActionIcon
+                                color="red"
+                                onClick={() => removeGuardian(index)}
+                                size="lg"
+                              >
+                                {/* <IconTrash /> */}
+                              </ActionIcon>
+                            )}
+                          </Group>
+                
+                          {!isSmallDevice?<Group  grow>
+                            <TextInput
+                              label="Full Name"
+                              placeholder="Full Name"
+                              required
+                              value={guardian.fullName}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, fullName: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                             <NativeSelect
+                                label="Relationship (with ward(s))"
+                                data={["Father", "Mother", "Guardian"]}
+                                value={guardian.relationship}
+                                onChange={(e) =>
+                                  setGuardians(
+                                    guardians.map((g, i) =>
+                                      i === index ? { ...g, relationship: e.target.value } : g
+                                    )
+                                  )
+                                }
+                              />
+                
+                            <TextInput
+                              label="Occupation"
+                              placeholder="Occupation"
+                              value={guardian.occupation}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, occupation: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group>:<Box style={{display:'flex', width:'100%', flexDirection:'column', gap:'3rem'}}>
+                          <TextInput
+                              label="Full Name"
+                              placeholder="Full Name"
+                              required
+                              value={guardian.fullName}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, fullName: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                             <NativeSelect
+                                label="Relationship (with ward(s))"
+                                data={["Father", "Mother", "Guardian"]}
+                                value={guardian.relationship}
+                                onChange={(e) =>
+                                  setGuardians(
+                                    guardians.map((g, i) =>
+                                      i === index ? { ...g, relationship: e.target.value } : g
+                                    )
+                                  )
+                                }
+                              />
+                
+                            <TextInput
+                              label="Occupation"
+                              placeholder="Occupation"
+                              value={guardian.occupation}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, occupation: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            </Box>}
+                
+                          {!isSmallDevice?<Group grow mt="md">
+                            <TextInput
+                              label="Phone"
+                              placeholder="Phone"
+                              required
+                              value={guardian.phone}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, phone: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            <Textarea
+                              label="Address"
+                              placeholder="Address"
+                              value={guardian.address}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, address: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group>:<Box style={{display:'flex', flexDirection:'column', gap:'3rem', marginTop:'3rem'}}>
+                          <TextInput
+                              label="Phone"
+                              placeholder="Phone"
+                              required
+                              value={guardian.phone}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, phone: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            <Textarea
+                              label="Address"
+                              placeholder="Address"
+                              value={guardian.address}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, address: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            </Box>}
+                
+                          {/* <Group grow mt="md">
+                            <TextInput
+                              label="Email"
+                              placeholder="Email"
+                              required
+                              value={guardian.email}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, email: e.target.value } : g
+                                  )
+                                )
+                              }
+                              disabled={guardian.temporaryEmail}
+                            />
+                            <PasswordInput
+                              label="Create Account Password"
+                              placeholder="Password"
+                              required
+                              value={guardian.password}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, password: e.target.value } : g
+                                  )
+                                )
+                              }
+                              disabled={guardian.autoGeneratePassword}
+                            />
+                          </Group> */}
+                
+                          {/* <Group mt="md">
+                            <Checkbox
+                              label="Use Temporary Email Address"
+                              checked={guardian.temporaryEmail}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index
+                                      ? { ...g, temporaryEmail: e.target.checked }
+                                      : g
+                                  )
+                                )
+                              }
+                            />
+                            <Checkbox
+                              label="Auto Generate Password"
+                              checked={guardian.autoGeneratePassword}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index
+                                      ? { ...g, autoGeneratePassword: e.target.checked }
+                                      : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group> */}
+                        </Box>
+                      ))}
+                
+                      <Group mt="md">
+                        <Button
+                        //   leftIcon={<IconPlus />}
+                        variant="outlined"
+                          
+                          onClick={addGuardian}
+                        >
+                          Add Guardian
+                        </Button>
+                      </Group>
+                    </Card>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
@@ -876,7 +1160,231 @@ const StudentEnrollment = () => {
               <DialogTitle>Add New Parent/Guardian</DialogTitle>
               <DialogContent>
                 {/* Your form for adding a new parent/guardian goes here */}
-                <AddGuardianForm />
+                <Card sx={{width:'100%'}}>
+                      {guardians.map((guardian, index) => (
+                        <Box
+                          key={index}
+                        >
+                          <Group>
+                            <h4>{guardian.relationship}</h4>
+                            {guardians.length > 1 && (
+                              <ActionIcon
+                                color="red"
+                                onClick={() => removeGuardian(index)}
+                                size="lg"
+                              >
+                                {/* <IconTrash /> */}
+                              </ActionIcon>
+                            )}
+                          </Group>
+                
+                          {!isSmallDevice?<Group  grow>
+                            <TextInput
+                              label="Full Name"
+                              placeholder="Full Name"
+                              required
+                              value={guardian.fullName}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, fullName: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                             <NativeSelect
+                                label="Relationship (with ward(s))"
+                                data={["Father", "Mother", "Guardian"]}
+                                value={guardian.relationship}
+                                onChange={(e) =>
+                                  setGuardians(
+                                    guardians.map((g, i) =>
+                                      i === index ? { ...g, relationship: e.target.value } : g
+                                    )
+                                  )
+                                }
+                              />
+                
+                            <TextInput
+                              label="Occupation"
+                              placeholder="Occupation"
+                              value={guardian.occupation}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, occupation: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group>:<Box style={{display:'flex', width:'100%', flexDirection:'column', gap:'3rem'}}>
+                          <TextInput
+                              label="Full Name"
+                              placeholder="Full Name"
+                              required
+                              value={guardian.fullName}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, fullName: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                             <NativeSelect
+                                label="Relationship (with ward(s))"
+                                data={["Father", "Mother", "Guardian"]}
+                                value={guardian.relationship}
+                                onChange={(e) =>
+                                  setGuardians(
+                                    guardians.map((g, i) =>
+                                      i === index ? { ...g, relationship: e.target.value } : g
+                                    )
+                                  )
+                                }
+                              />
+                
+                            <TextInput
+                              label="Occupation"
+                              placeholder="Occupation"
+                              value={guardian.occupation}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, occupation: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            </Box>}
+                
+                          {!isSmallDevice?<Group grow mt="md">
+                            <TextInput
+                              label="Phone"
+                              placeholder="Phone"
+                              required
+                              value={guardian.phone}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, phone: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            <Textarea
+                              label="Address"
+                              placeholder="Address"
+                              value={guardian.address}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, address: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group>:<Box style={{display:'flex', flexDirection:'column', gap:'3rem', marginTop:'3rem'}}>
+                          <TextInput
+                              label="Phone"
+                              placeholder="Phone"
+                              required
+                              value={guardian.phone}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, phone: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            <Textarea
+                              label="Address"
+                              placeholder="Address"
+                              value={guardian.address}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, address: e.target.value } : g
+                                  )
+                                )
+                              }
+                            />
+                            </Box>}
+                
+                          {/* <Group grow mt="md">
+                            <TextInput
+                              label="Email"
+                              placeholder="Email"
+                              required
+                              value={guardian.email}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, email: e.target.value } : g
+                                  )
+                                )
+                              }
+                              disabled={guardian.temporaryEmail}
+                            />
+                            <PasswordInput
+                              label="Create Account Password"
+                              placeholder="Password"
+                              required
+                              value={guardian.password}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index ? { ...g, password: e.target.value } : g
+                                  )
+                                )
+                              }
+                              disabled={guardian.autoGeneratePassword}
+                            />
+                          </Group> */}
+                
+                          {/* <Group mt="md">
+                            <Checkbox
+                              label="Use Temporary Email Address"
+                              checked={guardian.temporaryEmail}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index
+                                      ? { ...g, temporaryEmail: e.target.checked }
+                                      : g
+                                  )
+                                )
+                              }
+                            />
+                            <Checkbox
+                              label="Auto Generate Password"
+                              checked={guardian.autoGeneratePassword}
+                              onChange={(e) =>
+                                setGuardians(
+                                  guardians.map((g, i) =>
+                                    i === index
+                                      ? { ...g, autoGeneratePassword: e.target.checked }
+                                      : g
+                                  )
+                                )
+                              }
+                            />
+                          </Group> */}
+                        </Box>
+                      ))}
+                
+                      <Group mt="md">
+                        <Button
+                        //   leftIcon={<IconPlus />}
+                          variant="outlined"
+                          onClick={addGuardian}
+                        >
+                          Add Guardian
+                        </Button>
+                      </Group>
+                    </Card>
+
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">

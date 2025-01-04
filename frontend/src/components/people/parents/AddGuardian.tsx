@@ -16,6 +16,7 @@ import { useForm } from "@mantine/form";
 import axios from "axios";
 import { Card } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { APIContext } from "../../../utils/contexts/ReactContext";
 
 interface Guardian {
   fullName: string;
@@ -24,9 +25,7 @@ interface Guardian {
   phone: string;
   address: string;
   email: string;
-  password: string;
-  temporaryEmail: boolean;
-  autoGeneratePassword: boolean;
+  
 }
 
 const AddGuardianForm: React.FC = () => {
@@ -38,11 +37,9 @@ const AddGuardianForm: React.FC = () => {
       phone: "",
       address: "",
       email: "",
-      password: "",
-      temporaryEmail: false,
-      autoGeneratePassword: false,
     },
   ]);
+
 
   const isSmallDevice = useMediaQuery("(max-width:1045px)")
   // Add a new guardian to the form
@@ -56,9 +53,6 @@ const AddGuardianForm: React.FC = () => {
         phone: "",
         address: "",
         email: "",
-        password: "",
-        temporaryEmail: false,
-        autoGeneratePassword: false,
       },
     ]);
   };
@@ -71,7 +65,7 @@ const AddGuardianForm: React.FC = () => {
   // Form submission
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("https://api.example.com/guardians", {
+      const response = await axios.post("https://schoolfocusapi.onrender.com/api/add-guardian/", {
         guardians,
       });
       alert("Guardians successfully added!");
