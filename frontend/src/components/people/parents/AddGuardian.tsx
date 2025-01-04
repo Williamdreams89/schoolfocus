@@ -14,6 +14,7 @@ import { useForm } from "@mantine/form";
 // import { IconTrash, IconPlus } from "@tabler/icons-react";
 import axios from "axios";
 import { Card } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface Guardian {
   fullName: string;
@@ -42,6 +43,7 @@ const AddGuardianForm: React.FC = () => {
     },
   ]);
 
+  const isSmallDevice = useMediaQuery("(max-width:1045px)")
   // Add a new guardian to the form
   const addGuardian = () => {
     setGuardians([
@@ -97,7 +99,7 @@ const AddGuardianForm: React.FC = () => {
             )}
           </Group>
 
-          <Group grow>
+          {!isSmallDevice?<Group  grow>
             <TextInput
               label="Full Name"
               placeholder="Full Name"
@@ -137,9 +139,49 @@ const AddGuardianForm: React.FC = () => {
                 )
               }
             />
-          </Group>
+          </Group>:<Box style={{display:'flex', width:'100%', flexDirection:'column', gap:'3rem'}}>
+          <TextInput
+              label="Full Name"
+              placeholder="Full Name"
+              required
+              value={guardian.fullName}
+              onChange={(e) =>
+                setGuardians(
+                  guardians.map((g, i) =>
+                    i === index ? { ...g, fullName: e.target.value } : g
+                  )
+                )
+              }
+            />
+            <Select
+              label="Relationship (with ward(s))"
+              placeholder="Relationship"
+              required
+              value={guardian.relationship}
+              onChange={(value) =>
+                setGuardians(
+                  guardians.map((g, i) =>
+                    i === index ? { ...g, relationship: value || "" } : g
+                  )
+                )
+              }
+              data={["Father", "Mother", "Guardian"]}
+            />
+            <TextInput
+              label="Occupation"
+              placeholder="Occupation"
+              value={guardian.occupation}
+              onChange={(e) =>
+                setGuardians(
+                  guardians.map((g, i) =>
+                    i === index ? { ...g, occupation: e.target.value } : g
+                  )
+                )
+              }
+            />
+            </Box>}
 
-          <Group grow mt="md">
+          {!isSmallDevice?<Group grow mt="md">
             <TextInput
               label="Phone"
               placeholder="Phone"
@@ -165,9 +207,35 @@ const AddGuardianForm: React.FC = () => {
                 )
               }
             />
-          </Group>
+          </Group>:<Box style={{display:'flex', flexDirection:'column', gap:'3rem', marginTop:'3rem'}}>
+          <TextInput
+              label="Phone"
+              placeholder="Phone"
+              required
+              value={guardian.phone}
+              onChange={(e) =>
+                setGuardians(
+                  guardians.map((g, i) =>
+                    i === index ? { ...g, phone: e.target.value } : g
+                  )
+                )
+              }
+            />
+            <Textarea
+              label="Address"
+              placeholder="Address"
+              value={guardian.address}
+              onChange={(e) =>
+                setGuardians(
+                  guardians.map((g, i) =>
+                    i === index ? { ...g, address: e.target.value } : g
+                  )
+                )
+              }
+            />
+            </Box>}
 
-          <Group grow mt="md">
+          {/* <Group grow mt="md">
             <TextInput
               label="Email"
               placeholder="Email"
@@ -196,9 +264,9 @@ const AddGuardianForm: React.FC = () => {
               }
               disabled={guardian.autoGeneratePassword}
             />
-          </Group>
+          </Group> */}
 
-          <Group mt="md">
+          {/* <Group mt="md">
             <Checkbox
               label="Use Temporary Email Address"
               checked={guardian.temporaryEmail}
@@ -225,7 +293,7 @@ const AddGuardianForm: React.FC = () => {
                 )
               }
             />
-          </Group>
+          </Group> */}
         </Box>
       ))}
 
@@ -236,12 +304,6 @@ const AddGuardianForm: React.FC = () => {
           onClick={addGuardian}
         >
           Add Guardian
-        </Button>
-      </Group>
-
-      <Group mt="lg">
-        <Button onClick={handleSubmit} color="blue">
-          Save
         </Button>
       </Group>
     </Card>

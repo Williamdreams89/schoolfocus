@@ -48,6 +48,10 @@ import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { APIContext } from "../../../utils/contexts/ReactContext";
 import { useNavigate } from "react-router-dom";
+import { Transition } from "../../../transitions/DialogTransition";
+import { Button as MButton } from '@mantine/core';
+import AddGuardianForm from "../parents/AddGuardian";
+
 
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -121,9 +125,10 @@ const steps = [
 
 
 const StudentEnrollment = () => {
+  const theme = useTheme()
   const [value, setValue] = React.useState("1");
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
-
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -691,13 +696,25 @@ const StudentEnrollment = () => {
             </Box>
 
             {/* Modal to add a new parent */}
-            <Dialog open={openModal} onClose={handleCloseModal}>
+            <Dialog open={openModal} onClose={handleCloseModal}
+              TransitionComponent={Transition}
+              keepMounted
+              fullScreen = {fullScreen}
+              fullWidth
+              maxWidth="md" // Controls the maximum width
+  sx={{
+    '& .MuiDialog-paper': {
+      width: '80%', // Adjust width
+      height: '80%', // Adjust height
+      maxWidth: '750px', // Optional, for larger screens
+      maxHeight: '80vh', // Prevent overflow on smaller screens
+    },
+  }}
+            >
               <DialogTitle>Add New Parent/Guardian</DialogTitle>
               <DialogContent>
                 {/* Your form for adding a new parent/guardian goes here */}
-                <TextField label="Full Name" fullWidth sx={{ mb: 2 }} />
-                <TextField label="Email" fullWidth sx={{ mb: 2 }} />
-                <TextField label="Phone" fullWidth sx={{ mb: 2 }} />
+                <AddGuardianForm />
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
@@ -841,13 +858,25 @@ const StudentEnrollment = () => {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Dialog open={openModal} onClose={handleCloseModal}>
+      <Dialog open={openModal} onClose={handleCloseModal}
+              TransitionComponent={Transition}
+              keepMounted
+              fullScreen = {fullScreen}
+              fullWidth
+              maxWidth="md" // Controls the maximum width
+  sx={{
+    '& .MuiDialog-paper': {
+      width: '80%', // Adjust width
+      height: '80%', // Adjust height
+      maxWidth: '750px', // Optional, for larger screens
+      maxHeight: '80vh', // Prevent overflow on smaller screens
+    },
+  }}
+            >
               <DialogTitle>Add New Parent/Guardian</DialogTitle>
               <DialogContent>
                 {/* Your form for adding a new parent/guardian goes here */}
-                <TextField label="Full Name" fullWidth sx={{ mb: 2 }} />
-                <TextField label="Email" fullWidth sx={{ mb: 2 }} />
-                <TextField label="Phone" fullWidth sx={{ mb: 2 }} />
+                <AddGuardianForm />
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
