@@ -126,7 +126,20 @@ class ParentOrGuardianView(generics.ListCreateAPIView):
     serializer_class = GuadianOrParentSerializer
     queryset = GuadianOrParent.objects.all().order_by("-date_added")
 
+class MultipleGuardianCreateView(APIView):
+    def post(self, request):
+        # Extract the list of guardians from the request
+        guardians_data = request.data.get('guardians', [])
+
+        # Validate and save each guardian
+        serializer = GuadianOrParentSerializer(data=guardians_data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Guardians added successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class StudentEditDetailsView(generics.RetrieveUpdateAPIView):
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
     lookup_field = "pk"
+
