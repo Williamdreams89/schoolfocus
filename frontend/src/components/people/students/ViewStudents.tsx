@@ -29,6 +29,7 @@ import axios from 'axios';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import PrintIcon from '@mui/icons-material/Print';
 import { useNavigate } from "react-router-dom";
+import { APIContext } from "../../../utils/contexts/ReactContext";
 
 type StudentRow = {
   id: number;
@@ -44,28 +45,36 @@ type StudentRow = {
 interface Parent {
     guardian_name: string;
     guardian_phone: string;
-    email: string;
+    guardian_email: string;
   }
 
 const API_BASE_URL = 'https://schoolfocusapi.onrender.com'; // Replace with your actual API base URL
 
 const StudentDataGrid: React.FC = () => {
   const [rows, setRows] = useState<StudentRow[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 100,
   });
 
+
+  // Preparing context api for some actions
+  const context = React.useContext(APIContext);
+  if(!context){
+    throw new Error("There must be a context")
+  }
+
+  const {studentsManagementDetails, setStudentsManagementDetails} = context;
   // Fetch students data from API
   const fetchStudents = async () => {
     try {
+      setStudentsManagementDetails({isLoading: true})
       const response = await axios.get(`${API_BASE_URL}/api/studentsList/`);
       setRows(response.data);
-      setLoading(false);
+      setStudentsManagementDetails({isLoading: false})
     } catch (error) {
       console.error('Error fetching students:', error);
-      setLoading(false);
+      setStudentsManagementDetails({isLoading: false})
     }
   };
 
@@ -122,66 +131,82 @@ const StudentDataGrid: React.FC = () => {
       ),
     },
     {
-        field: 'guardian',
+        field: 'guardian_details',
         headerName: 'Parents / Guardian',
         width: 350,
         renderCell: (params: GridRenderCellParams) => {
-          const parents = params.value as Parent[];
+          const parents = (params.value as Parent[]) || []; // Default to an empty array if undefined
           return (
             <Box>
-              {parents.map((parent, index) => (
-                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', mb: 1, justifyContent:'center', alignItems:'center', height:'100px'}}>
-                  <Typography variant="subtitle2">{parent.guardian_name}</Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {/* {parent.guardian_phone} */}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                    {/* Call Icon */}
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
-                    >
-                      <PhoneIcon />
-                    </IconButton>
-                    {/* WhatsApp Icon */}
-                    <IconButton
-                      size="small"
-                      color="success"
-                      onClick={() =>
-                        window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
-                      }
-                    >
-                      <WhatsAppIcon />
-                    </IconButton>
-                    {/* Email Icon */}
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => window.open(`mailto:${parent.email}`, '_blank')}
-                    >
-                      <EmailIcon />
-                    </IconButton>
-                    {/* Chat Icon */}
-                    <IconButton
-                      size="small"
-                      color="secondary"
-                      onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
-                    >
-                      <ChatIcon />
-                    </IconButton>
+              {parents.length > 0 ? (
+                parents.map((parent, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      mb: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100px',
+                    }}
+                  >
+                    <Typography variant="subtitle2">{parent.guardian_name}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {/* Uncomment or remove if needed */}
+                      {/* {parent.guardian_phone} */}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                      {/* Call Icon */}
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
+                      >
+                        <PhoneIcon />
+                      </IconButton>
+                      {/* WhatsApp Icon */}
+                      <IconButton
+                        size="small"
+                        color="success"
+                        onClick={() =>
+                          window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
+                        }
+                      >
+                        <WhatsAppIcon />
+                      </IconButton>
+                      {/* Email Icon */}
+                      <IconButton
+                        size="small"
+                        color="info"
+                        onClick={() => window.open(`mailto:${parent.guardian_email}`, '_blank')}
+                      >
+                        <EmailIcon />
+                      </IconButton>
+                      {/* Chat Icon */}
+                      <IconButton
+                        size="small"
+                        color="secondary"
+                        onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
+                      >
+                        <ChatIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
+                ))
+              ) : (
+                <Box sx={{display:'flex', justifyContent: 'center', alignItems:'center'}}>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  No parents available
+                </Typography>
                 </Box>
-              ))}
+              )}
             </Box>
           );
-        },
+        }
+        
     }
   ];
-
-  if(loading){
-    return <Box>loading...</Box>
-  }
 
   return (
     <Box sx={{ height: 600, width: '100%', }}>
@@ -206,10 +231,11 @@ const StudentDataGrid: React.FC = () => {
         <Typography variant="h6">Students</Typography>
       </Box>
       <DataGrid
+        style={{height:'max-content'}}
         rowHeight={100}
         rows={rows}
         columns={columns}
-        loading={loading}
+        loading={studentsManagementDetails.isLoading}
         paginationModel={paginationModel}
         onPaginationModelChange={(model) => setPaginationModel(model)}
         // components={{

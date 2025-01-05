@@ -629,20 +629,20 @@ const StudentEnrollment = () => {
   // Adding Parent or guardian
 
 interface Guardian {
-  fullName: string;
+  full_name: string;
   relationship: string;
   occupation: string;
-  phone: string;
+  phone_number: string;
   address: string;
   email: string;
   
 }
   const [guardians, setGuardians] = useState<Guardian[]>([
     {
-      fullName: "",
-      relationship: "Father",
+      full_name: "",
+      relationship: "father",
       occupation: "",
-      phone: "",
+      phone_number: "",
       address: "",
       email: "",
     },
@@ -656,10 +656,10 @@ interface Guardian {
     setGuardians([
       ...guardians,
       {
-        fullName: "",
-        relationship: "Father",
+        full_name: "",
+        relationship: "father",
         occupation: "",
-        phone: "",
+        phone_number: "",
         address: "",
         email: "",
       },
@@ -672,17 +672,22 @@ interface Guardian {
   };
 
   // Form submission
+  const [isLoadin, setIsLoadin] = React.useState<boolean>(false)
   const handleParentorGuardianFormSubmit = async () => {
     try {
       setStudentsManagementDetails({isLoading:true})
-      const response = await axios.post("https://schoolfocusapi.onrender.com/api/add-guardian/", {
+      setIsLoadin(true)
+      const response = await axios.post("https://schoolfocusapi.onrender.com/api/api/guardians-multiple/", {
         guardians,
       });
       alert("Guardians successfully added!");
       console.log(response.data);
+      handleCloseModal()
+      setIsLoadin(false)
       setStudentsManagementDetails({isLoading:false})
     } catch (error) {
       setStudentsManagementDetails({isLoading:false})
+      setIsLoadin(false)
       console.error("Error submitting guardians:", error);
     }
   };
@@ -797,18 +802,18 @@ interface Guardian {
                               label="Full Name"
                               placeholder="Full Name"
                               required
-                              value={guardian.fullName}
+                              value={guardian.full_name}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, fullName: e.target.value } : g
+                                    i === index ? { ...g, full_name: e.target.value } : g
                                   )
                                 )
                               }
                             />
                              <NativeSelect
                                 label="Relationship (with ward(s))"
-                                data={["Father", "Mother", "Guardian"]}
+                                data={["father", "mother", "guardian"]}
                                 value={guardian.relationship}
                                 onChange={(e) =>
                                   setGuardians(
@@ -836,18 +841,18 @@ interface Guardian {
                               label="Full Name"
                               placeholder="Full Name"
                               required
-                              value={guardian.fullName}
+                              value={guardian.full_name}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, fullName: e.target.value } : g
+                                    i === index ? { ...g, full_name: e.target.value } : g
                                   )
                                 )
                               }
                             />
                              <NativeSelect
                                 label="Relationship (with ward(s))"
-                                data={["Father", "Mother", "Guardian"]}
+                                data={["father", "mother", "guardian"]}
                                 value={guardian.relationship}
                                 onChange={(e) =>
                                   setGuardians(
@@ -877,7 +882,7 @@ interface Guardian {
                               label="Phone"
                               placeholder="Phone"
                               required
-                              value={guardian.phone}
+                              value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
@@ -903,7 +908,7 @@ interface Guardian {
                               label="Phone"
                               placeholder="Phone"
                               required
-                              value={guardian.phone}
+                              value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
@@ -1004,8 +1009,8 @@ interface Guardian {
                 <Button onClick={handleCloseModal} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={handleCloseModal} color="primary">
-                  Save
+                <Button onClick={handleParentorGuardianFormSubmit} color="primary">
+                  {!isLoadin ?"Save":"...Saving"}
                 </Button>
               </DialogActions>
             </Dialog>
@@ -1183,18 +1188,18 @@ interface Guardian {
                               label="Full Name"
                               placeholder="Full Name"
                               required
-                              value={guardian.fullName}
+                              value={guardian.full_name}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, fullName: e.target.value } : g
+                                    i === index ? { ...g, full_name: e.target.value } : g
                                   )
                                 )
                               }
                             />
                              <NativeSelect
                                 label="Relationship (with ward(s))"
-                                data={["Father", "Mother", "Guardian"]}
+                                data={["father", "mother", "guardian"]}
                                 value={guardian.relationship}
                                 onChange={(e) =>
                                   setGuardians(
@@ -1222,18 +1227,18 @@ interface Guardian {
                               label="Full Name"
                               placeholder="Full Name"
                               required
-                              value={guardian.fullName}
+                              value={guardian.full_name}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, fullName: e.target.value } : g
+                                    i === index ? { ...g, full_name: e.target.value } : g
                                   )
                                 )
                               }
                             />
                              <NativeSelect
                                 label="Relationship (with ward(s))"
-                                data={["Father", "Mother", "Guardian"]}
+                                data={["father", "mother", "guardian"]}
                                 value={guardian.relationship}
                                 onChange={(e) =>
                                   setGuardians(
@@ -1263,11 +1268,11 @@ interface Guardian {
                               label="Phone"
                               placeholder="Phone"
                               required
-                              value={guardian.phone}
+                              value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, phone: e.target.value } : g
+                                    i === index ? { ...g, phone_number: e.target.value } : g
                                   )
                                 )
                               }
@@ -1289,11 +1294,11 @@ interface Guardian {
                               label="Phone"
                               placeholder="Phone"
                               required
-                              value={guardian.phone}
+                              value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, phone: e.target.value } : g
+                                    i === index ? { ...g, phone_number: e.target.value } : g
                                   )
                                 )
                               }
@@ -1312,65 +1317,7 @@ interface Guardian {
                             />
                             </Box>}
                 
-                          {/* <Group grow mt="md">
-                            <TextInput
-                              label="Email"
-                              placeholder="Email"
-                              required
-                              value={guardian.email}
-                              onChange={(e) =>
-                                setGuardians(
-                                  guardians.map((g, i) =>
-                                    i === index ? { ...g, email: e.target.value } : g
-                                  )
-                                )
-                              }
-                              disabled={guardian.temporaryEmail}
-                            />
-                            <PasswordInput
-                              label="Create Account Password"
-                              placeholder="Password"
-                              required
-                              value={guardian.password}
-                              onChange={(e) =>
-                                setGuardians(
-                                  guardians.map((g, i) =>
-                                    i === index ? { ...g, password: e.target.value } : g
-                                  )
-                                )
-                              }
-                              disabled={guardian.autoGeneratePassword}
-                            />
-                          </Group> */}
-                
-                          {/* <Group mt="md">
-                            <Checkbox
-                              label="Use Temporary Email Address"
-                              checked={guardian.temporaryEmail}
-                              onChange={(e) =>
-                                setGuardians(
-                                  guardians.map((g, i) =>
-                                    i === index
-                                      ? { ...g, temporaryEmail: e.target.checked }
-                                      : g
-                                  )
-                                )
-                              }
-                            />
-                            <Checkbox
-                              label="Auto Generate Password"
-                              checked={guardian.autoGeneratePassword}
-                              onChange={(e) =>
-                                setGuardians(
-                                  guardians.map((g, i) =>
-                                    i === index
-                                      ? { ...g, autoGeneratePassword: e.target.checked }
-                                      : g
-                                  )
-                                )
-                              }
-                            />
-                          </Group> */}
+                         
                         </Box>
                       ))}
                 
@@ -1390,8 +1337,8 @@ interface Guardian {
                 <Button onClick={handleCloseModal} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={handleCloseModal} color="primary">
-                  Save
+                <Button onClick={handleParentorGuardianFormSubmit} color="primary">
+                {!isLoadin ?"Save":"...Saving"}
                 </Button>
               </DialogActions>
             </Dialog>
