@@ -54,6 +54,7 @@ import StudentEnrollment from "./components/people/students/StudentEnrollment";
 import ViewStudents from "./components/people/students/ViewStudents";
 import { APIContext } from "./utils/contexts/ReactContext";
 import LoadingScreen from "./utils/component/LoadingScreen";
+import StudntEnroll from "./components/people/students/StudntEnroll";
 
 const xThemeComponents = {
   ...chartsCustomizations,

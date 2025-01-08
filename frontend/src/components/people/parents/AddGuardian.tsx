@@ -65,7 +65,7 @@ const AddGuardianForm: React.FC = () => {
   // Form submission
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("https://schoolfocusapi.onrender.com/api/add-guardian/", {
+      const response = await axios.post("http://127.0.0.1:8000/api/add-guardian/", {
         guardians,
       });
       alert("Guardians successfully added!");

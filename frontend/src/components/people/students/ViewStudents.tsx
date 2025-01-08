@@ -48,7 +48,7 @@ interface Parent {
     guardian_email: string;
   }
 
-const API_BASE_URL = 'https://schoolfocusapi.onrender.com'; // Replace with your actual API base URL
+const API_BASE_URL = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
 
 const StudentDataGrid: React.FC = () => {
   const [rows, setRows] = useState<StudentRow[]>([]);
@@ -210,7 +210,8 @@ const StudentDataGrid: React.FC = () => {
 
   return (
     <Box sx={{ height: 600, width: '100%', }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+      {rows.length !== 0 ? <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Box>
           <Button
             variant="contained"
@@ -243,6 +244,8 @@ const StudentDataGrid: React.FC = () => {
         // }}
         checkboxSelection
       />
+      </Box>: <Box sx={{width: '100%', height:"400px", display:'flex', justifyContent:'center', alignItems:'center'}}>No Student Found!</Box>}
+     
     </Box>
   );
 };

@@ -14,7 +14,6 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <StyledEngineProvider injectFirst>
       <MantineProvider>
         <MyContext>
           <Router>
@@ -22,6 +21,5 @@ root.render(
           </Router>
         </MyContext>
       </MantineProvider>
-    </StyledEngineProvider>
   </React.StrictMode>
 );

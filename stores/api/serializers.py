@@ -40,14 +40,13 @@ class StudentSerializer(serializers.ModelSerializer):
         return student
 
 
-class StudentRegisterSerializer(serializers.ModelSerializer):
+class NewStudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ["student_email", 'first_name', 'last_name', 'user_type', 'password']
-        extra_kwargs = {"password":{"write_only": True}}
+        fields = "__all__"
 
-    def create(self, validated_data):
-        return Student.objects.create_user(**validated_data)
+
+
 
 
 class FileUploadSerializer(serializers.Serializer):

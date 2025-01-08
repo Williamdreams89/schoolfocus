@@ -90,23 +90,23 @@ WSGI_APPLICATION = 'stores.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django_tenants.postgresql_backend',
-        'NAME': env("POSTGRESDB_NAME"),                     
-        'USER': env("POSTGRESDB_USER"),                         
-        'PASSWORD': env("POSTGRESDB_PASSWORD"),                 
-        'HOST': env("POSTGRESDB_HOST"),                 
-        'PORT': env("POSTGRESDB_PORT")
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django_tenants.postgresql_backend',
+#         'NAME': env("POSTGRESDB_NAME"),                     
+#         'USER': env("POSTGRESDB_USER"),                         
+#         'PASSWORD': env("POSTGRESDB_PASSWORD"),                 
+#         'HOST': env("POSTGRESDB_HOST"),                 
+#         'PORT': env("POSTGRESDB_PORT")
+#     }
+# }
 
 
 # Password validation

@@ -3,36 +3,12 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
 
 
-"""
-{
-    "guardians": [
-        {
-            "full_name": "Kofi Banku",
-            "relationship": "father",
-            "occupation": "Bankuta",
-            "phone_number": "0200458751",
-            "address": "Tuozaafi nkwan",
-            "email": "ksaf@parent.com"
-        },
-        {
-            "full_name": "Ama Banku",
-            "relationship": "mother",
-            "occupation": "Trader",
-            "phone_number": "0246789432",
-            "address": "Kenkey junction",
-            "email": "ama@example.com"
-        }
-    ]
-}
-
-"""
-
 class GuadianOrParent(models.Model):
     class RelationshipChoices(models.TextChoices):
         MOTHER = "mother", "Mother"
         FATHER = "father", "Father"
         GUARDIAN = 'guardian', 'Guardian'
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField( blank=True, null=True)
     first_name = models.CharField(max_length=100,blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     full_name = models.CharField(max_length=100)

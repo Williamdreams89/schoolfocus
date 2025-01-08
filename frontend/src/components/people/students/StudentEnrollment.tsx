@@ -49,6 +49,7 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { APIContext } from "../../../utils/contexts/ReactContext";
 import { useNavigate } from "react-router-dom";
 import { Transition } from "../../../transitions/DialogTransition";
+import { Parent, StudentData } from "./types";
 
 
 
@@ -64,7 +65,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   },
 }));
 
-function NavbarBreadcrumbs() {
+export function NavbarBreadcrumbs() {
   return (
     <StyledBreadcrumbs
       aria-label="breadcrumb"
@@ -81,38 +82,6 @@ function NavbarBreadcrumbs() {
 
 
 
-interface Parent {
-  id: string;
-  full_name: string;
-  email?: string;
-  phone?: string;
-}
-
-interface FormData {
-  parents: Parent[]; // Array of selected parents
-}
-
-// Student data type
-interface StudentData {
-  student_email: string;
-  surname: string;
-  first_name: string;
-  other_names: string;
-  gender: "M" | "F"; // Gender field can be 'M' or 'F'
-  registration_number: string;
-  nationality: string;
-  date_of_birth: string; // Format 'dd-mm-yyyy'
-  blood_group: string;
-  id_or_birth_cert_number: string;
-  religion: string;
-  contact_phone: string;
-  province_or_state: string;
-  zip_or_lga: string;
-  place_of_origin: string;
-  permanent_address: string;
-  residential_address: string;
-  parents: Parent[]; // This will hold an array of Parent objects
-}
 
 const steps = [
   "Parent/Guardian Information",
@@ -207,21 +176,21 @@ const StudentEnrollment = () => {
 
   // Mock function to fetch parents already enrolled
   useEffect(() => {
-    const fetchParents = async () => {
-      // Here you would call your API to get the list of parents (mocked here)
-      try{
-        setStudentsManagementDetails({isLoading: true})
-        const {data}= await axios.get("https://schoolfocusapi.onrender.com/api/parentorguardian/")
-       setParentsList(data);
-       console.log(`This is the parents set`, data)
-       setStudentsManagementDetails({isLoading: false})
-      }catch(error){
-        console.log(`This is the error = ${error}`)
-        setStudentsManagementDetails({isLoading: false})
-      }
-    };
-    fetchParents();
-  }, []);
+  const fetchParents = async () => {
+    try {
+      setStudentsManagementDetails({ isLoading: true });
+      const { data } = await axios.get("http://127.0.0.1:8000/api/parentorguardian/");
+      console.log("Fetched parents data:", data); // Debug log
+      setParentsList(data);
+      setStudentsManagementDetails({ isLoading: false });
+    } catch (error) {
+      console.error("Error fetching parents:", error);
+      setStudentsManagementDetails({ isLoading: false });
+    }
+  };
+  fetchParents();
+}, []);
+
 
   
 
@@ -245,9 +214,7 @@ const StudentEnrollment = () => {
   const handleParentSelect = (selectedValues: string[]) => {
     setFormData({
       ...formData,
-      parents: selectedValues
-        .map((value) => parentsList.find((parent) => parent.id.toString() === value))
-        .filter((parent): parent is Parent => parent !== undefined), // Type guard
+      parents: selectedValues.map((value) => parseInt(value, 10)), // Convert strings to numbers
     });
   };
 
@@ -277,15 +244,15 @@ const StudentEnrollment = () => {
       submissionData.append("profile_pic", uploadedPhoto);
     }
 
-    console.log("Submitting form data with photo:");
-    for (const [key, value] of submissionData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // console.log("Submitting form data with photo:");
+    // for (const [key, value] of submissionData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
 
     // Add your form submission logic here (e.g., API call)
     setIsLoading(true)
     setStudentsManagementDetails({isLoading: true})
-    axios.post('https://schoolfocusapi.onrender.com/api/enroll-student/', submissionData, {
+    axios.post('http://127.0.0.1:8000/api/enroll-student/', submissionData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -297,7 +264,8 @@ const StudentEnrollment = () => {
       navigate("/people/students")
     }).catch(error => {
       setIsLoading(false)
-      console.error("Error submitting form", error);
+      console.error("Error submitting form", error)
+      console.error(`Error: ${error}`)
       setStudentsManagementDetails({isLoading: false})
     });
   };
@@ -357,10 +325,10 @@ const StudentEnrollment = () => {
         id="parents-autocomplete"
         label="Select Parents/Guardians"
         data={parentsList.map((parent) => ({
-          value: parent.id.toString(), // Convert id to string
+          value: parent.id.toString(), // Convert ID to string for MultiSelect
           label: parent.full_name,
         }))}
-        value={formData.parents.map((parent) => parent.id.toString())} // Ensure this matches `value`
+        value={formData.parents.map((id) => id.toString())} // Convert IDs to strings
         onChange={handleParentSelect}
       />
       </Grid.Col>
@@ -483,15 +451,16 @@ const StudentEnrollment = () => {
           <Grid>
             <Grid.Col span={12}>
             <MultiSelect
-            id="parents-autocomplete"
-            label="Select Parents/Guardians"
-            data={parentsList.map((parent) => ({
-              value: parent.id.toString(), // Convert id to string
-              label: parent.full_name,
-            }))}
-            value={formData.parents.map((parent) => parent.id.toString())} // Ensure this matches `value`
-            onChange={handleParentSelect}
-          />
+              required
+              id="parents-autocomplete"
+              label="Select Parents/Guardians"
+              data={parentsList.map((parent) => ({
+                value: parent.id.toString(), // Convert ID to string for MultiSelect
+                label: parent.full_name,
+              }))}
+              value={formData.parents.map((id) => id.toString())} // Convert IDs to strings
+              onChange={handleParentSelect}
+            />
             </Grid.Col>
             <Grid.Col span={12}>
               <Button variant="contained" onClick={handleOpenModal}>Add New Parent/Guardian</Button>
@@ -677,7 +646,7 @@ interface Guardian {
     try {
       setStudentsManagementDetails({isLoading:true})
       setIsLoadin(true)
-      const response = await axios.post("https://schoolfocusapi.onrender.com/api/api/guardians-multiple/", {
+      const response = await axios.post("http://127.0.0.1:8000/api/api/guardians-multiple/", {
         guardians,
       });
       alert("Guardians successfully added!");
