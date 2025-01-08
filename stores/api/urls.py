@@ -7,6 +7,7 @@ urlpatterns = [
     path('add-guardian/', AddGuadianOrParentView.as_view(), name=''),
     path('parentorguardian/', ParentOrGuardianView.as_view(), name=''),
     path('bulk-enroll-students/', BulkEnrollStudentsAPIView.as_view(), name='bulk-enroll-students'),
+    path('bulky-enroll-students/', BulkyEnrollStudentsAPIView.as_view(), name='bulk-enroll-students'),
     path('student/<int:pk>/', StudentEditDetailsView.as_view()),
     path('api/guardians-multiple/', MultipleGuardianCreateView.as_view(), name='guardian-create'),
 ]

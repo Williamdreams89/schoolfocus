@@ -14,7 +14,7 @@ class GuadianOrParent(models.Model):
     full_name = models.CharField(max_length=100)
     relationship = models.CharField(max_length=100, choices = RelationshipChoices.choices)
     occupation = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=13)
+    phone_number = models.CharField(max_length=13, unique=True)
     address = models.TextField()
     date_added = models.DateTimeField(auto_now_add = True, blank=True, null=True)
 
