@@ -1,7 +1,7 @@
-import { Box, Card, Typography } from "@mui/material";
+import { Backdrop, Box, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { Input, InputBase, Combobox, useCombobox } from "@mantine/core";
+import { Input, InputBase, Combobox, useCombobox, Modal, Text } from "@mantine/core";
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { styled } from "@mui/material/styles";
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -10,6 +10,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
 import Breadcrumbs, { breadcrumbsClasses } from "@mui/material/Breadcrumbs";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import {
   DataGrid,
@@ -99,6 +101,40 @@ const StudentDataGrid: React.FC = () => {
     fetchStudents();
   }, []);
 
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+const [loading, setLoading] = useState(false);
+
+// Function to handle delete action
+const handleDelete = (id: number) => {
+  setSelectedRowId(id); // Set the ID of the row to be deleted
+  setDeleteModalOpen(true); // Open the modal
+};
+
+// Function to confirm deletion
+const confirmDelete = async () => {
+  if (!selectedRowId) return;
+  setLoading(true);
+  try {
+    // Replace with your API endpoint
+    await axios.delete(`/api/students/${selectedRowId}`);
+    console.log(`Student with id ${selectedRowId} deleted successfully`);
+    setDeleteModalOpen(false); // Close the modal
+    setSelectedRowId(null); // Reset the selected row ID
+    // Optionally refresh the data grid here
+  } catch (error) {
+    console.error('Error deleting student:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const cancelDelete = () => {
+  setDeleteModalOpen(false); // Close the modal
+  setSelectedRowId(null); // Reset the selected row ID
+};
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: '#', width: 50 },
     {
@@ -107,17 +143,86 @@ const StudentDataGrid: React.FC = () => {
       width: 80,
       renderCell: (params: GridRenderCellParams) => (
         <img
-          src={params.value}
+          src={params.value || 'https://via.placeholder.com/40?text=A'} // Default avatar if profile_pic is missing
           alt="student"
           style={{ width: 40, height: 40, borderRadius: '50%' }}
         />
       ),
     },
-    { field: 'first_name', headerName: 'Name', width: 200 },
+    { field: 'full_name', headerName: 'Name', width: 200 },
     { field: 'gender', headerName: 'Gender', width: 100 },
     { field: 'index_number', headerName: 'Reg. No.', width: 150 },
-    // { field: 'classArm', headerName: 'Class / Class Arm', width: 150 },
-    { field: 'email', headerName: 'Email', width: 200 },
+    {
+      field: 'guardian_details',
+      headerName: 'Parents / Guardian',
+      width: 350,
+      headerAlign: 'center',
+      renderCell: (params: GridRenderCellParams) => {
+        const parents = (params.value as Parent[]) || [];
+        return (
+          <Box>
+            {parents.length > 0 ? (
+              parents.map((parent, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    mb: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100px',
+                  }}
+                >
+                  <Typography variant="subtitle2">{parent.guardian_name}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {/* {parent.guardian_phone} */}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
+                    >
+                      <PhoneIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="success"
+                      onClick={() =>
+                        window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
+                      }
+                    >
+                      <WhatsAppIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="info"
+                      onClick={() => window.open(`mailto:${parent.guardian_email}`, '_blank')}
+                    >
+                      <EmailIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
+                    >
+                      <ChatIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ))
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  No parents available
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        );
+      },
+    },
     {
       field: 'is_active',
       headerName: 'Account Status',
@@ -131,82 +236,30 @@ const StudentDataGrid: React.FC = () => {
       ),
     },
     {
-        field: 'guardian_details',
-        headerName: 'Parents / Guardian',
-        width: 350,
-        renderCell: (params: GridRenderCellParams) => {
-          const parents = (params.value as Parent[]) || []; // Default to an empty array if undefined
-          return (
-            <Box>
-              {parents.length > 0 ? (
-                parents.map((parent, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      mb: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100px',
-                    }}
-                  >
-                    <Typography variant="subtitle2">{parent.guardian_name}</Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {/* Uncomment or remove if needed */}
-                      {/* {parent.guardian_phone} */}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                      {/* Call Icon */}
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
-                      >
-                        <PhoneIcon />
-                      </IconButton>
-                      {/* WhatsApp Icon */}
-                      <IconButton
-                        size="small"
-                        color="success"
-                        onClick={() =>
-                          window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
-                        }
-                      >
-                        <WhatsAppIcon />
-                      </IconButton>
-                      {/* Email Icon */}
-                      <IconButton
-                        size="small"
-                        color="info"
-                        onClick={() => window.open(`mailto:${parent.guardian_email}`, '_blank')}
-                      >
-                        <EmailIcon />
-                      </IconButton>
-                      {/* Chat Icon */}
-                      <IconButton
-                        size="small"
-                        color="secondary"
-                        onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
-                      >
-                        <ChatIcon />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                ))
-              ) : (
-                <Box sx={{display:'flex', justifyContent: 'center', alignItems:'center'}}>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  No parents available
-                </Typography>
-                </Box>
-              )}
-            </Box>
-          );
-        }
-        
-    }
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (params: GridRenderCellParams) => (
+        <Box>
+          <IconButton
+            size="small"
+            color="primary"
+            // onClick={() => handleEdit(params.row.id)}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+        size="small"
+        color="secondary"
+        onClick={() => handleDelete(params.row.id)}
+      >
+        <DeleteIcon />
+      </IconButton>
+        </Box>
+      ),
+    },
   ];
+  
 
   return (
     <Box sx={{ height: 600, width: '100%', }}>
@@ -242,10 +295,35 @@ const StudentDataGrid: React.FC = () => {
         // components={{
         //   Toolbar: GridToolbar,
         // }}
-        checkboxSelection
+        // checkboxSelection
       />
       </Box>: <Box sx={{width: '100%', height:"400px", display:'flex', justifyContent:'center', alignItems:'center'}}>No Student Found!</Box>}
-     
+      
+      {deleteModalOpen &&<Backdrop
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'relative' })}
+open
+>
+<Modal
+  opened={deleteModalOpen}
+  onClose={cancelDelete}
+  title="Confirm Deletion"
+  centered
+  size="sm"
+  style = {{position:'absolute', zIndex:9999}}
+  // transition="fade" // Optional, use Mantine's supported transitions like "fade"
+  // transitionDuration={300} // Adjust duration of the transition
+>
+  <Text>Are you sure you want to delete this student? This action cannot be undone.</Text>
+  <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+    <Button onClick={cancelDelete}>
+      Cancel
+    </Button>
+    <Button  onClick={confirmDelete}>
+      Yes, Delete
+    </Button>
+  </div>
+</Modal>
+</Backdrop>}
     </Box>
   );
 };
@@ -517,6 +595,7 @@ const ViewStudents = () => {
       <Card>
         <StudentDataGrid />
       </Card>
+
     </Box>
   );
 };

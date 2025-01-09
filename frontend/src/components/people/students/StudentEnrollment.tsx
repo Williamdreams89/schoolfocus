@@ -581,7 +581,7 @@ const StudentEnrollment = () => {
 
   const handleDownload = () => {
     // This URL assumes the file is placed in the `public` directory
-    const fileUrl = "/template.xlsx";
+    const fileUrl = "/BulkStudentsEnrollmentTemplate.xlsx";
     window.open(fileUrl, "_blank");
   };
 
@@ -848,14 +848,14 @@ interface Guardian {
                 
                           {!isSmallDevice?<Group grow mt="md">
                             <TextInput
-                              label="Phone"
-                              placeholder="Phone"
+                              label="Phone Number"
+                              placeholder="Phone Number"
                               required
                               value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, phone: e.target.value } : g
+                                    i === index ? { ...g, phone_number: e.target.value } : g
                                   )
                                 )
                               }
@@ -874,14 +874,14 @@ interface Guardian {
                             />
                           </Group>:<Box style={{display:'flex', flexDirection:'column', gap:'3rem', marginTop:'3rem'}}>
                           <TextInput
-                              label="Phone"
-                              placeholder="Phone"
+                              label="Phone Number"
+                              placeholder="Phone Number"
                               required
                               value={guardian.phone_number}
                               onChange={(e) =>
                                 setGuardians(
                                   guardians.map((g, i) =>
-                                    i === index ? { ...g, phone: e.target.value } : g
+                                    i === index ? { ...g, phone_number: e.target.value } : g
                                   )
                                 )
                               }
