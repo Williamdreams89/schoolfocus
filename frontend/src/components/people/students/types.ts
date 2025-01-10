@@ -36,5 +36,6 @@ export interface StudentData {
   permanent_address: string;
   residential_address: string;
   parents: number[]; // This will hold an array of Parent objects
+  profile_pic ?: File | null
 }
   

@@ -11,7 +11,7 @@ class GuadianOrParent(models.Model):
     email = models.EmailField( blank=True, null=True)
     first_name = models.CharField(max_length=100,blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    full_name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100, unique=True)
     relationship = models.CharField(max_length=100, choices = RelationshipChoices.choices)
     occupation = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=13, unique=True)
@@ -23,13 +23,13 @@ class GuadianOrParent(models.Model):
     
 class Student(models.Model):
     # Guardian's Information
-    guardian = models.ManyToManyField(GuadianOrParent, blank=True, null=True, related_name="parents")
+    guardian = models.ManyToManyField(GuadianOrParent, related_name="parents")
 
     # Student Information 
     email = models.EmailField(unique=True, blank=True, null=True)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    student_email = models.EmailField(max_length=255, blank=True, null=True)
+    student_email = models.EmailField(max_length=255, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female')])
     nationality = models.CharField(max_length=100, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
@@ -53,6 +53,10 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.first_name}"
+
+    @property
+    def full_name(self):
+        return "{} {}".format(self.first_name, self.last_name)
     
     def index_number(self):
         if self.date_added:

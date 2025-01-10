@@ -200,7 +200,97 @@ class BulkyEnrollStudentsAPIView(GenericAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class BulkEnrollStudentsAPIViewThree(GenericAPIView):
+    """
+    API endpoint to upload an Excel file and enroll students in bulk.
+    """
+    serializer_class = FileUploadSerializer
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            file = serializer.validated_data['file']
+            try:
+                # Read the Excel file
+                df = pd.read_excel(file)
+
+                # Map the Excel columns to model fields
+                field_mapping = {
+                    "First Name": "first_name",
+                    "Last Name": "last_name",
+                    "Gender": "gender",
+                    "Nationality": "nationality",
+                    "Date of Birth (dd-mm-YYYY)": "date_of_birth",
+                    "Blood Group": "blood_group",
+                    "N.ID or Birth Cert. No": "id_or_birth_cert_number",
+                    "Religion": "religion",
+                    "Contact Phone": "contact_phone",
+                    "Province or State (of origin)": "province_or_state",
+                    "ZIP or LGA (of origin)": "zip_or_lga",
+                    "Permanent Address": "permanent_address",
+                    "Residential Address": "residential_address",
+                    "Guardian First Name": "guardian_first_name",
+                    "Guardian Last Name": "guardian_last_name",
+                    "Guardian Full Name": "guardian_full_name",
+                    "Guardian Relationship": "guardian_relationship",
+                    "Guardian Occupation": "guardian_occupation",
+                    "Guardian Phone": "guardian_phone",
+                    "Guardian Address": "guardian_address",
+                }
+
+                # Rename columns in the DataFrame to match the model fields
+                df.rename(columns=field_mapping, inplace=True)
+
+                # Get the current number of students in the database
+                current_student_count = Student.objects.count()
+
+                # Iterate through each row in the DataFrame
+                for index, row in df.iterrows():
+                    # Extract student data
+                    student_data = row.dropna().to_dict()
+
+                    # Extract guardian data
+                    guardian_data = {
+                        "first_name": row.get("guardian_first_name"),
+                        "last_name": row.get("guardian_last_name"),
+                        "full_name": row.get("guardian_full_name"),
+                        "relationship": row.get("guardian_relationship"),
+                        "occupation": row.get("guardian_occupation"),
+                        "phone_number": row.get("guardian_phone"),
+                        "address": row.get("guardian_address"),
+                    }
+
+                    # Remove NaN values from guardian_data
+                    guardian_data = {k: v for k, v in guardian_data.items() if pd.notna(v)}
+
+                    # Create or retrieve the guardian
+                    guardian, created = GuadianOrParent.objects.get_or_create(
+                        phone_number=guardian_data.get("phone_number"), defaults=guardian_data
+                    )
+
+                    # Generate a unique registration number
+                    new_id = current_student_count + index + 1
+                    registration_number = f"2024/{str(new_id).zfill(4)}"
+                    student_data["registration_number"] = registration_number
+
+                    # Create a Student object with valid fields
+                    valid_fields = [field.name for field in Student._meta.get_fields()]
+                    student = Student(**{k: v for k, v in student_data.items() if k in valid_fields})
+                    student.save()
+
+                    # Assign the guardian to the student
+                    student.guardian.add(guardian)
+
+                return Response(
+                    {"message": "Students and their guardians were enrolled successfully!"},
+                    status=status.HTTP_201_CREATED,
+                )
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
 class StudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer

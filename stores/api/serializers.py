@@ -16,7 +16,7 @@ class StudentSerializer(serializers.ModelSerializer):
                 "guardian_name": guardian.full_name,
                 "guardian_phone": guardian.phone_number,
                 "guardian_email": guardian.email,
-                "guardian_relationship": guardian.relationship
+                "guardian_relationship": guardian.relationship,
             }
             for guardian in obj.guardian.all()
         ]
@@ -24,7 +24,7 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = [
-            "id", "email", "first_name", "last_name", "student_email", "registration_number",
+            "id", "email", "first_name", "last_name","full_name", "student_email", "registration_number",
             "index_number", "gender", "nationality", "date_of_birth", "blood_group",
             "id_or_birth_cert_number", "religion", "profile_pic", "contact_phone",
             "province_or_state", "zip_or_lga", "place_of_origin", "permanent_address",

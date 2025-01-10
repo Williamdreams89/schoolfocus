@@ -1028,7 +1028,7 @@ interface Guardian {
         </TabPanel>
         <TabPanel value="3">Coming soon</TabPanel>
       </TabContext>
-    </Card>:<Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+    </Card>:<Card sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px", display:'flex', flexDirection:'column', gap:'1.2rem' } }}>
     <Accordion>
         <AccordionSummary
           expandIcon={<ArrowDownwardIcon />}
