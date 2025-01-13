@@ -100,6 +100,7 @@ const StudentEnrollment = () => {
     setValue(newValue);
   };
 
+
   const [activeStep, setActiveStep] = useState(0);
   const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
   const [formErrors, setFormErrors] = useState<{ [key: string]: boolean }>({});
@@ -128,7 +129,7 @@ const StudentEnrollment = () => {
     place_of_origin: "",
     permanent_address: "",
     residential_address: "",
-    guardians: [], // for storing selected parents
+    guardian: [], // for storing selected parents
   });
   const [parentsList, setParentsList] = useState<Parent[]>([]);
   const [openModal, setOpenModal] = useState(false);
@@ -188,7 +189,7 @@ const StudentEnrollment = () => {
       setStudentsManagementDetails({ isLoading: false });
     }
   };
-  fetchParents();
+  fetchParents()
 }, []);
 
 
@@ -214,61 +215,78 @@ const StudentEnrollment = () => {
   const handleParentSelect = (selectedValues: string[]) => {
     setFormData({
       ...formData,
-      guardians: selectedValues.map((value) => parseInt(value, 10)), // Convert strings to numbers
+      guardian: selectedValues.map(Number), // Convert to numbers when storing in formData
     });
   };
 
   const navigate = useNavigate()
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    // Create a FormData object to send data with the photo file
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+  
     const submissionData = new FormData();
-
-    // Format the date of birth
-    const formattedDOB = format(new Date(formData.date_of_birth), 'yyyy-MM-dd');
-    submissionData.append("dateOfBirth", formattedDOB);
-
-    // Append all form data
-    Object.keys(formData).forEach((key) => {
-      if (key === "guardians") {
-        // For parents, stringify the array
-        submissionData.append(key, JSON.stringify(formData[key]));
-      } else {
-        submissionData.append(key, (formData as any)[key]);
+  
+    try {
+      if (formData.date_of_birth) {
+        const formattedDOB = format(new Date(formData.date_of_birth), "yyyy-MM-dd");
+        submissionData.append("date_of_birth", formattedDOB);
       }
-    });
-
-    // Append the uploaded photo file
-    if (uploadedPhoto) {
-      submissionData.append("profile_pic", uploadedPhoto);
+  
+      // Validate guardian before appending
+      if (formData.guardian.length === 0) {
+        alert("Please select at least one guardian.");
+        return;
+      }
+  
+      Object.keys(formData).forEach((key) => {
+        if (key === "guardian") {
+          formData.guardian.forEach((guardianId) =>
+            submissionData.append("guardian", parseInt(guardianId, 10).toString()) // Ensure integer PK values
+          );
+        } else {
+          submissionData.append(key, (formData as any)[key]);
+        }
+      });
+  
+      if (uploadedPhoto) {
+        submissionData.append("profile_pic", uploadedPhoto);
+      }
+  
+      setIsLoading(true);
+      setStudentsManagementDetails({ isLoading: true });
+  
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/enroll-student/",
+        submissionData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+  
+      console.log("Form submitted successfully:", response.data);
+      alert("Student enrollment successful!");
+      setIsLoading(false);
+      setStudentsManagementDetails({ isLoading: false });
+  
+      navigate("/people/students");
+    } catch (err) {
+      setIsLoading(false);
+      setStudentsManagementDetails({ isLoading: false });
+  
+      if (axios.isAxiosError(err)) {
+        console.error("Error response data:", err.response?.data);
+        alert("An error occurred: " + (err.response?.data?.message || "Unknown error"));
+      } else {
+        console.error("Unexpected error:", err);
+        alert("An unexpected error occurred. Please try again.");
+      }
     }
-
-    // console.log("Submitting form data with photo:");
-    // for (const [key, value] of submissionData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
-
-    // Add your form submission logic here (e.g., API call)
-    setIsLoading(true)
-    setStudentsManagementDetails({isLoading: true})
-    axios.post('http://127.0.0.1:8000/api/enroll-student/', submissionData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then(response => {
-      setIsLoading(false)
-      setStudentsManagementDetails({isLoading: false})
-      console.log("Form submitted successfully", response.data);
-      alert("Student Saved!")
-      navigate("/people/students")
-    }).catch(error => {
-      setIsLoading(false)
-      console.error("Error submitting form", error)
-      console.error(`Error: ${error}`)
-      setStudentsManagementDetails({isLoading: false})
-    });
   };
+  
+  
+  
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -290,7 +308,7 @@ const StudentEnrollment = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 0:
-        return formData.guardians.length > 0;
+        return formData.guardian.length > 0;
       case 1:
         return (
           formData.surname.trim() !== "" &&
@@ -328,7 +346,7 @@ const StudentEnrollment = () => {
           value: parent.id.toString(), // Convert ID to string for MultiSelect
           label: parent.full_name,
         }))}
-        value={formData.guardians.map((id) => id.toString())} // Convert IDs to strings
+        value={formData.guardian.map((id) => id.toString())} // Convert IDs to strings
         onChange={handleParentSelect}
       />
       </Grid.Col>
@@ -458,7 +476,7 @@ const StudentEnrollment = () => {
                 value: parent.id.toString(), // Convert ID to string for MultiSelect
                 label: parent.full_name,
               }))}
-              value={formData.guardians.map((id) => id.toString())} // Convert IDs to strings
+              value={formData.guardian.map((id) => id.toString())} // Convert IDs to strings
               onChange={handleParentSelect}
             />
             </Grid.Col>
@@ -645,6 +663,7 @@ interface Guardian {
   const handleParentorGuardianFormSubmit = async () => {
     try {
       setStudentsManagementDetails({isLoading:true})
+      setStudentsManagementDetails({reload:true})
       setIsLoadin(true)
       const response = await axios.post("http://127.0.0.1:8000/api/api/guardians-multiple/", {
         guardians,
