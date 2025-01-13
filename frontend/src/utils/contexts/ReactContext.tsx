@@ -4,6 +4,7 @@ export const APIContext = React.createContext<APIContextTypes | undefined>(undef
 
 interface StudentsManagementDetails{
     isLoading?: boolean;
+    getIDForStudentDetailPage?: number | null;
 }
 
 interface APIContextTypes{
@@ -16,7 +17,8 @@ interface APIContextTypes{
 
 const MyContext = ({children}:{children: React.ReactNode}) =>{
     const [studentsManagementDetails, setStudentsManagementDetails] = React.useState<StudentsManagementDetails>({
-        isLoading: false
+        isLoading: false,
+        getIDForStudentDetailPage: null
     })
     return <APIContext.Provider value={{studentsManagementDetails, setStudentsManagementDetails}}>
         {children}

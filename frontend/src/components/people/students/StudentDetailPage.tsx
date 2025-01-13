@@ -1,6 +1,6 @@
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList';
-import { Box, Card, CardMedia, IconButton, Tab, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Divider, Grid, IconButton, Tab, Typography } from '@mui/material';
 import React from 'react'
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import { styled } from '@mui/material/styles';
@@ -13,6 +13,11 @@ import {
   } from "@mui/material";
   import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
   import useMediaQuery from '@mui/material/useMediaQuery';
+import TabPanel from '@mui/lab/TabPanel';
+import { APIContext } from '../../../utils/contexts/ReactContext';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -45,6 +50,30 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
 
 const StudentDetailPage = () => {
     const [value, setValue] = React.useState("1");
+    const { id } = useParams<{ id: string }>()
+    const [studentDetailData, setStudentDetailData] = React.useState<any>()
+    const navigate = useNavigate()
+    const context = React.useContext(APIContext)
+    if(!context){
+      throw new Error("There should be a context")
+    }
+    
+    const {setStudentsManagementDetails, studentsManagementDetails} = context;
+    const studentID = studentsManagementDetails.getIDForStudentDetailPage
+    React.useEffect(() =>{
+      const fetchStudentDetailData = async () =>{
+        try{
+          setStudentsManagementDetails({isLoading: true})
+          const {data} = await axios.get(`http://127.0.0.1:8000/api/student/${id}/`)
+          setStudentDetailData(data)
+          setStudentsManagementDetails({isLoading: false})
+        }catch(error){
+          setStudentsManagementDetails({isLoading: false})
+        }
+      }
+
+      fetchStudentDetailData()
+    }, [])
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
@@ -56,7 +85,7 @@ const StudentDetailPage = () => {
         <Box display="flex" flexDirection="column" alignItems="center">
           <CardMedia
             component="img"
-            image={"https://via.placeholder.com/150"} // Replace with actual student image URL
+            image={studentDetailData?.profile_pic === null?"https://via.placeholder.com/150": `${studentDetailData?.profile_pic}`} // Replace with actual student image URL
             alt="Student Profile"
             sx={{ width: 190, height: 190, margin: 2, borderRadius: 1 }}
           />
@@ -131,6 +160,164 @@ const StudentDetailPage = () => {
               sx={{ width: "20%", color: "blue" }}
             />
           </TabList>
+          <TabPanel value={"1"}>
+          <Card>
+        <Box display="flex" flexDirection="row" alignItems="center">
+          <CardMedia
+            component="img"
+            image={studentDetailData?.profile_pic === null ? "https://via.placeholder.com/150": studentDetailData?.profile_pic} // Replace with actual student image URL
+            alt="Student Profile"
+            sx={{ width: 150, height: 150, margin: 2, borderRadius: 1 }}
+          />
+          <Typography variant="h3" sx={{ fontWeight: 'bold', marginLeft: 2, textTransform:'uppercase' }}>
+            {studentDetailData?.full_name}
+          </Typography>
+        </Box>
+        <Divider />
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Registration No:</strong> {studentDetailData?.registration_number}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Gender:</strong> {studentDetailData?.gender === "M" ? "Male":"Female"}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Class Category:</strong> PRIMARY
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Class:</strong> P3
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Admission Date:</strong> 01-01-2023
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Assigned Tag:</strong> Subscriber
+              </Typography>
+              <Typography>
+                <strong>Registered Online:</strong> Subscriber
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Phone:</strong> +233123456789
+              </Typography>
+              <Typography>
+                <strong>Nationality:</strong> +233123456789
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Town of Residence:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Area of Residence:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Permanent Address:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Residential Address:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Date of Birth:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>NID/Birth Certificate Number:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Blood Group:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Blood Group:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Religion:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Bio/Remark:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Fees:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Current Hostel Allocation:</strong> example@school.edu
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Current Transport Allocation:</strong> example@school.edu
+              </Typography>
+            </Grid>
+          </Grid>
+          <Divider sx={{ my: 2 }} />
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Parent/Guardian:</strong> example@school.edu
+              </Typography>
+            </Grid>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box display="flex" gap={1}>
+              <IconButton color="primary">
+                <Phone />
+              </IconButton>
+              <IconButton color="primary">
+                <WhatsApp />
+              </IconButton>
+              <IconButton color="primary">
+                <Email />
+              </IconButton>
+              <IconButton color="primary">
+                <Facebook />
+              </IconButton>
+              <IconButton color="primary">
+                <Twitter />
+              </IconButton>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+          </TabPanel>
+          <TabPanel value={"2"}></TabPanel>
+          <TabPanel value={"3"}></TabPanel>
+          <TabPanel value={"4"}></TabPanel>
+          <TabPanel value={"5"}></TabPanel>
+          <TabPanel value={"6"}></TabPanel>
+          <TabPanel value={"7"}></TabPanel>
+          <TabPanel value={"8"}></TabPanel>
         </TabContext>
         </Card>
         

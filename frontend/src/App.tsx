@@ -204,7 +204,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/' element = {<MainGrid />} />
                       <Route path='/people' element={<People />} />
                       <Route path='/people/students' element={<ViewStudents />} />
-                      <Route path='/people/student/id' element={<StudentDetailPage />} />
+                      <Route path='/people/student/:id' element={<StudentDetailPage />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
                       <Route path='/people/students/enrollment' element={<StudentEnrollment />} />
                       <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />

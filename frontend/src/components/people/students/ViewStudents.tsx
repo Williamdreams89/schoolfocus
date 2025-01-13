@@ -121,6 +121,8 @@ const StudentDataGrid: React.FC = () => {
     fetchStudents();
   }, []);
 
+
+
   
   // Student Detail Page confs
   const [studentDetailData, setStudentDetailData] = React.useState<any>()
@@ -130,7 +132,7 @@ const StudentDataGrid: React.FC = () => {
       const {data} = await axios.get(`http://127.0.0.1:8000/api/student/${id}/`)
       setStudentDetailData(data)
       console.log(`student detail data = ${data.full_name}`)
-      setStudentsManagementDetails({isLoading: false})
+      setStudentsManagementDetails({isLoading: false, getIDForStudentDetailPage: id})
       setOpen(true);
     }catch(error){
       setStudentsManagementDetails({isLoading: false})
@@ -359,7 +361,7 @@ const cancelDelete = () => {
     setOpen(false);
   };
 
-  
+  const navigate = useNavigate()
 
   return (
     <Box sx={{ height: 600, width: '100%', }}>
@@ -576,7 +578,7 @@ open={open}
                 <Twitter />
               </IconButton>
             </Box>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={()=>{setStudentsManagementDetails({getIDForStudentDetailPage: studentDetailData.id}); navigate(`/people/student/${studentDetailData.id}`)}}>
               Go to Profile Page
             </Button>
           </Box>
