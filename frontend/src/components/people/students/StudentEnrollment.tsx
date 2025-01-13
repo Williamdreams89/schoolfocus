@@ -113,7 +113,7 @@ const StudentEnrollment = () => {
   };
   const [formData, setFormData] = useState<StudentData>({
     student_email: "",
-    surname: "",
+    last_name: "",
     first_name: "",
     other_names: "",
     gender: "M", // default gender
@@ -311,7 +311,7 @@ const StudentEnrollment = () => {
         return formData.guardian.length > 0;
       case 1:
         return (
-          formData.surname.trim() !== "" &&
+          formData.last_name.trim() !== "" &&
           formData.first_name.trim() !== "" &&
           formData.registration_number.trim() !== "" &&
           formData.date_of_birth.trim() !== ""
@@ -385,8 +385,8 @@ const StudentEnrollment = () => {
     <Box sx={{display:'grid', gridTemplateColumns: !isSmallScreen?"repeat(2, minmax(200px, 1fr))":"repeat(1, minmax(200px, 1fr))", gap:'2rem', width:'100%'}}>
       <TextInput
         label="Student's Surname"
-        name="surname"
-        value={formData.surname}
+        name="last_name"
+        value={formData.last_name}
         onChange={handleChange}
       />
       <TextInput
@@ -478,6 +478,7 @@ const StudentEnrollment = () => {
               }))}
               value={formData.guardian.map((id) => id.toString())} // Convert IDs to strings
               onChange={handleParentSelect}
+              searchable
             />
             </Grid.Col>
             <Grid.Col span={12}>
@@ -515,8 +516,8 @@ const StudentEnrollment = () => {
             <Box sx={{display:'grid', gridTemplateColumns:"repeat(2, minmax(200px, 1fr))", gap:'2rem', width:'100%'}}>
               <TextInput
                 label="Student's Surname"
-                name="surname"
-                value={formData.surname}
+                name="last_name"
+                value={formData.last_name}
                 onChange={handleChange}
               />
               <TextInput

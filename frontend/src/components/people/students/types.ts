@@ -19,7 +19,7 @@ export interface Parent {
 // Student data type
 export interface StudentData {
   student_email: string;
-  surname: string;
+  last_name: string;
   first_name: string;
   other_names: string;
   gender: "M" | "F"; // Gender field can be 'M' or 'F'
