@@ -128,7 +128,7 @@ const StudentEnrollment = () => {
     place_of_origin: "",
     permanent_address: "",
     residential_address: "",
-    parents: [], // for storing selected parents
+    guardians: [], // for storing selected parents
   });
   const [parentsList, setParentsList] = useState<Parent[]>([]);
   const [openModal, setOpenModal] = useState(false);
@@ -214,7 +214,7 @@ const StudentEnrollment = () => {
   const handleParentSelect = (selectedValues: string[]) => {
     setFormData({
       ...formData,
-      parents: selectedValues.map((value) => parseInt(value, 10)), // Convert strings to numbers
+      guardians: selectedValues.map((value) => parseInt(value, 10)), // Convert strings to numbers
     });
   };
 
@@ -231,7 +231,7 @@ const StudentEnrollment = () => {
 
     // Append all form data
     Object.keys(formData).forEach((key) => {
-      if (key === "parents") {
+      if (key === "guardians") {
         // For parents, stringify the array
         submissionData.append(key, JSON.stringify(formData[key]));
       } else {
@@ -290,7 +290,7 @@ const StudentEnrollment = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 0:
-        return formData.parents.length > 0;
+        return formData.guardians.length > 0;
       case 1:
         return (
           formData.surname.trim() !== "" &&
@@ -328,7 +328,7 @@ const StudentEnrollment = () => {
           value: parent.id.toString(), // Convert ID to string for MultiSelect
           label: parent.full_name,
         }))}
-        value={formData.parents.map((id) => id.toString())} // Convert IDs to strings
+        value={formData.guardians.map((id) => id.toString())} // Convert IDs to strings
         onChange={handleParentSelect}
       />
       </Grid.Col>
@@ -458,7 +458,7 @@ const StudentEnrollment = () => {
                 value: parent.id.toString(), // Convert ID to string for MultiSelect
                 label: parent.full_name,
               }))}
-              value={formData.parents.map((id) => id.toString())} // Convert IDs to strings
+              value={formData.guardians.map((id) => id.toString())} // Convert IDs to strings
               onChange={handleParentSelect}
             />
             </Grid.Col>

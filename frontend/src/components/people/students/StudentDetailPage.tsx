@@ -90,7 +90,7 @@ const StudentDetailPage = () => {
             sx={{ width: 190, height: 190, margin: 2, borderRadius: 1 }}
           />
           <Typography variant="h6" sx={{ fontWeight: 'bold', marginLeft: 2, textTransform:'uppercase' }}>
-            Danquah Kwafo William
+            {studentDetailData?.full_name}
           </Typography>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box display="flex" gap={1}>
