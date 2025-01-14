@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, GuadianOrParent
+from .models import Student, GuadianOrParent, Subject, StudentClass as Class
 
 class StudentsAdmin(admin.ModelAdmin):
     list_display = [
@@ -26,6 +26,16 @@ class ParentAdmin(admin.ModelAdmin):
                      'occupation',
                      'phone_number',
                     ]
+    
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'code']
+
+admin.site.register(Subject, SubjectAdmin)
+
+class ClassAdmin(admin.ModelAdmin):
+    list_display = ['name', 'academic_year']
+
+admin.site.register(Class, ClassAdmin)
 
 admin.site.register(Student, StudentsAdmin)
 admin.site.register(GuadianOrParent, ParentAdmin)

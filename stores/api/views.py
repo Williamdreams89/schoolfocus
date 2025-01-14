@@ -319,3 +319,44 @@ class StudentEditDetailsView(generics.RetrieveUpdateAPIView):
     queryset = Student.objects.all()
     lookup_field = "pk"
 
+class StudentResultsAPIView(APIView):
+    def get(self, request):
+        """
+        Get students for a class, academic year, exam session, and subject.
+        """
+        student_class = request.query_params.get('student_class')
+        academic_year = request.query_params.get('academic_year')
+        exam_session = request.query_params.get('exam_session')
+        subject = request.query_params.get('subject')
+
+        if not all([student_class, academic_year, exam_session, subject]):
+            return Response({"error": "All parameters are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        students = Student.objects.filter(student_class__name=student_class, student_class__academic_year__year=academic_year)
+        results = Results.objects.filter(
+            student__in=students, academic_year__year=academic_year, 
+            exam_session=exam_session, subject__id=subject
+        )
+
+        serializer = ResultsSerializer(results, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """
+        Save or update results for students.
+        """
+        serializer = ResultsSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            for result_data in serializer.validated_data:
+                Results.objects.update_or_create(
+                    student=result_data['student'],
+                    subject=result_data['subject'],
+                    academic_year=result_data['academic_year'],
+                    exam_session=result_data['exam_session'],
+                    defaults={
+                        'continuous_assessment': result_data['continuous_assessment'],
+                        'exams_score': result_data['exams_score']
+                    }
+                )
+            return Response({"message": "Results successfully saved."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

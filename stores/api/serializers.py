@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent
+from .models import Student, GuadianOrParent, Results
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,8 +45,19 @@ class NewStudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = "__all__"
 
+class ResultsSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.full_name', read_only=True)
+    student_roll = serializers.CharField(source='student.roll_number', read_only=True)
+    student_class = serializers.CharField(source='student.student_class.name', read_only=True)  # Add this field
+    score = serializers.ReadOnlyField()
 
-
+    class Meta:
+        model = Results
+        fields = [
+            'id', 'student', 'student_name', 'student_roll', 'student_class',
+            'subject', 'academic_year', 'exam_session', 'continuous_assessment',
+            'exams_score', 'score', 'grade', 'remarks'
+        ]
 
 
 class FileUploadSerializer(serializers.Serializer):

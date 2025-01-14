@@ -21,6 +21,23 @@ class GuadianOrParent(models.Model):
     def __str__(self) -> str:
         return self.full_name
     
+class AcademicYear(models.Model):
+    year = models.CharField(max_length=9, unique=True)  # Example: "2024-2025"
+
+    def __str__(self):
+        return self.year
+    
+class StudentClass(models.Model):
+    name = models.CharField(max_length=50)  # Example: "JS1"
+    academic_year = models.CharField(max_length=100, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.academic_year = tz.now().year
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} - {self.academic_year}"
+    
 class Student(models.Model):
     # Guardian's Information
     guardian = models.ManyToManyField(GuadianOrParent, related_name="parents")
@@ -50,6 +67,9 @@ class Student(models.Model):
 
     date_added = models.DateTimeField(auto_now_add = True, null= True, blank=True)
 
+    # Academic Information
+    student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return f"{self.first_name}"
@@ -62,6 +82,65 @@ class Student(models.Model):
         if self.date_added:
             date = self.date_added.date().year
             return f"{date}/0000{self.id}"
+        
+class Subject(models.Model):
+    title = models.CharField(max_length=100)
+    code = models.CharField(max_length=6)
+
+    unique_together = ["title", "code"]
+
+
+class Results(models.Model):
+    class ExamSession(models.TextChoices):
+        FIRST_TERM = 'First Term'
+        SECOND_TERM = 'Second Term'
+        THIRD_TERM = 'Third Term'
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, blank=True)
+    exam_session = models.CharField(
+        max_length=20, choices=ExamSession.choices,
+        blank=True
+    )
+    subject = models.ForeignKey(Subject, on_delete=models.PROTECT)
+    continuous_assessment = models.FloatField(default=0.0)
+    exams_score = models.FloatField(default=0.0)
+    grade = models.CharField(max_length=2, blank=True)
+    remarks = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'subject', 'academic_year', 'exam_session')
+
+    @property
+    def score(self):
+        return self.continuous_assessment + self.exams_score
+    
+    def __str__(self):
+        return f"{self.student.full_name} - {self.subject.title}: {self.score}"
+    
+
+    def save(self, *args, **kwargs):
+        # Auto-generate grade and remarks based on score
+        if self.score >= 90:
+            self.grade = 'A+'
+            self.remarks = 'Outstanding'
+        elif self.score >= 80:
+            self.grade = 'A'
+            self.remarks = 'Excellent'
+        elif self.score >= 70:
+            self.grade = 'B'
+            self.remarks = 'Very Good'
+        elif self.score >= 60:
+            self.grade = 'C'
+            self.remarks = 'Good'
+        elif self.score >= 50:
+            self.grade = 'D'
+            self.remarks = 'Satisfactory'
+        else:
+            self.grade = 'F'
+            self.remarks = 'Needs Improvement'
+
+        super().save(*args, **kwargs)
+    
 
 
 
