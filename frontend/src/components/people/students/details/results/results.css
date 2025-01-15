@@ -1,0 +1,38 @@
+.results-container {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .header-section {
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .school-logo {
+    width: 100%;
+    max-width: 80px;
+    margin: 0 auto;
+  }
+  
+  .student-photo {
+    width: 100%;
+    max-width: 80px;
+    border-radius: 50%;
+  }
+  
+  .results-table-section {
+    margin-top: 20px;
+  }
+  
+  .footer-section {
+    border-top: 2px solid #ddd;
+    margin-top: 20px;
+  }
+  
+  .action-buttons-section {
+    border-top: 2px solid #ddd;
+    margin-top: 20px;
+  }
+  

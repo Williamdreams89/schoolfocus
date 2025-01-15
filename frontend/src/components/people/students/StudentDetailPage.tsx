@@ -18,6 +18,8 @@ import { APIContext } from '../../../utils/contexts/ReactContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import FeesTab from './details/Fees';
+import ResultsTab from './details/results/Results';
 
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -311,9 +313,14 @@ const StudentDetailPage = () => {
         </CardContent>
       </Card>
           </TabPanel>
-          <TabPanel value={"2"}></TabPanel>
-          <TabPanel value={"3"}></TabPanel>
-          <TabPanel value={"4"}></TabPanel>
+          <TabPanel value={"2"}>
+          </TabPanel>
+          <TabPanel value={"3"}>
+            <FeesTab />
+          </TabPanel>
+          <TabPanel value={"4"}>
+            <ResultsTab />
+          </TabPanel>
           <TabPanel value={"5"}></TabPanel>
           <TabPanel value={"6"}></TabPanel>
           <TabPanel value={"7"}></TabPanel>

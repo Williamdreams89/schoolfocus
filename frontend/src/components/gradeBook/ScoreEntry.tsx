@@ -4,9 +4,22 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { MantineProvider, NativeSelect, SimpleGrid } from '@mantine/core'
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import { useNavigate } from 'react-router-dom';
+import { APIContext } from '../../utils/contexts/ReactContext';
+import axios from 'axios';
 
 const ScoreEntry = () => {
   const isSmallDevice = useMediaQuery("(max-width:1045px)")
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("A context is required!")
+  }
+  const {studentsManagementDetails, setStudentsManagementDetails} = context;
+  const [fetchedStudents, setFetchStudents] = React.useState<any>()
+  React.useEffect(()=>{
+    const fetchStudentsForResultsEntry = async () => {
+      const {data} = await axios.get("http://127.0.0.1:8000/api/results/?class=JS1&subject=English&exam_session=First+Term")
+    }
+  },[])
   const navigate = useNavigate()
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
@@ -14,11 +27,7 @@ const ScoreEntry = () => {
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             Exam Score Entry
           </Typography>
-          <Box>
-            <Typography component="p" variant="body1" > Academic Session: <span>2024 - 2025</span></Typography>
-            <Divider />
-            <Typography component="p" variant="body1" > Academic Session: <span>2024 - 2025</span></Typography>
-          </Box>
+          
         </Box>
       <Card sx={{mt:'2rem', pb:'5rem'}}>
           <MantineProvider>
