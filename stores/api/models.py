@@ -96,7 +96,7 @@ class Results(models.Model):
         SECOND_TERM = 'Second Term'
         THIRD_TERM = 'Third Term'
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, blank=True)
+    academic_year = models.CharField(max_length=100, blank=True)
     exam_session = models.CharField(
         max_length=20, choices=ExamSession.choices,
         blank=True
@@ -106,6 +106,7 @@ class Results(models.Model):
     exams_score = models.FloatField(default=0.0)
     grade = models.CharField(max_length=2, blank=True)
     remarks = models.CharField(max_length=255, blank=True)
+    absent = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('student', 'subject', 'academic_year', 'exam_session')
@@ -119,6 +120,7 @@ class Results(models.Model):
     
 
     def save(self, *args, **kwargs):
+        self.academic_year = tz.now().year
         # Auto-generate grade and remarks based on score
         if self.score >= 90:
             self.grade = 'A+'

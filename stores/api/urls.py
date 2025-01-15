@@ -12,5 +12,9 @@ urlpatterns = [
     path('bulkyy-enroll-students/', BulkEnrollStudentsAPIViewThree.as_view(), name='bulk-enroll-students'),
     path('student/<int:pk>/', StudentEditDetailsView.as_view()),
     path('api/guardians-multiple/', MultipleGuardianCreateView.as_view(), name='guardian-create'),
-    path('results/entry/', StudentResultsAPIView.as_view())
+    path(
+        'results/<str:student_class_name>/',
+        StudentResultsAPIView.as_view(),
+        name='student-results',
+    ),
 ]

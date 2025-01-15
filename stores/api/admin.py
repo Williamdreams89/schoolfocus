@@ -9,6 +9,7 @@ class StudentsAdmin(admin.ModelAdmin):
                      'email',
                      'first_name',
                      'last_name',
+                     'student_class',
                      'gender',
                      'display_guardian',
                      'registration_number'

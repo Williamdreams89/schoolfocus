@@ -320,43 +320,52 @@ class StudentEditDetailsView(generics.RetrieveUpdateAPIView):
     lookup_field = "pk"
 
 class StudentResultsAPIView(APIView):
-    def get(self, request):
+    def get(self, request, student_class_name, *args, **kwargs):
         """
-        Get students for a class, academic year, exam session, and subject.
+        Fetch all students belonging to the inputted student class.
         """
-        student_class = request.query_params.get('student_class')
-        academic_year = request.query_params.get('academic_year')
-        exam_session = request.query_params.get('exam_session')
-        subject = request.query_params.get('subject')
-
-        if not all([student_class, academic_year, exam_session, subject]):
-            return Response({"error": "All parameters are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        students = Student.objects.filter(student_class__name=student_class, student_class__academic_year__year=academic_year)
-        results = Results.objects.filter(
-            student__in=students, academic_year__year=academic_year, 
-            exam_session=exam_session, subject__id=subject
-        )
-
-        serializer = ResultsSerializer(results, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        """
-        Save or update results for students.
-        """
-        serializer = ResultsSerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            for result_data in serializer.validated_data:
-                Results.objects.update_or_create(
-                    student=result_data['student'],
-                    subject=result_data['subject'],
-                    academic_year=result_data['academic_year'],
-                    exam_session=result_data['exam_session'],
-                    defaults={
-                        'continuous_assessment': result_data['continuous_assessment'],
-                        'exams_score': result_data['exams_score']
-                    }
+        try:
+            # Filter students by class
+            students = Student.objects.filter(student_class__name=student_class_name)
+            
+            if not students.exists():
+                return Response(
+                    {"detail": "No students found in the specified class."},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
-            return Response({"message": "Results successfully saved."}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Serialize and return student data
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"detail": "An error occurred.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def post(self, request, *args, **kwargs):
+        """
+        Save results for multiple students.
+        """
+        try:
+            data = request.data
+            if not isinstance(data, list):
+                return Response(
+                    {"detail": "Expected a list of results."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            # Validate each item in the list
+            serializer = ResultsSerializer(data=data, many=True)
+            if serializer.is_valid():
+                serializer.save()  # Save all results in bulk
+                return Response(
+                    {"detail": "Results saved successfully.", "data": serializer.data},
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(
+                {"detail": "An error occurred.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

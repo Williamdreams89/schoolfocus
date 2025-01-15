@@ -9,6 +9,10 @@ class GuadianOrParentSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     guardians = GuadianOrParentSerializer(many=True, write_only=True)  # Accept a list of guardians during creation
     guardian_details = serializers.SerializerMethodField(read_only=True)  # Provide read-only details of guardians
+    student_class_name = serializers.SerializerMethodField()
+
+    def get_student_class_name(self, obj):
+        return obj.student_class.name
 
     def get_guardian_details(self, obj):
         return [
@@ -25,7 +29,7 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = [
             "id", "email", "first_name", "last_name","full_name", "student_email", "registration_number",
-            "index_number", "gender", "nationality", "date_of_birth", "blood_group",
+            "index_number", "student_class", "student_class_name","gender", "nationality", "date_of_birth", "blood_group",
             "id_or_birth_cert_number", "religion", "profile_pic", "contact_phone",
             "province_or_state", "zip_or_lga", "place_of_origin", "permanent_address",
             "residential_address", "date_added", "guardians", "guardian_details"
@@ -53,11 +57,7 @@ class ResultsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Results
-        fields = [
-            'id', 'student', 'student_name', 'student_roll', 'student_class',
-            'subject', 'academic_year', 'exam_session', 'continuous_assessment',
-            'exams_score', 'score', 'grade', 'remarks'
-        ]
+        fields = "__all__"
 
 
 class FileUploadSerializer(serializers.Serializer):
