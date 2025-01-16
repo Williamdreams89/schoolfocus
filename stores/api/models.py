@@ -89,6 +89,10 @@ class Subject(models.Model):
 
     unique_together = ["title", "code"]
 
+    def __str__(self):
+        return self.title
+    
+
 
 class Results(models.Model):
     class ExamSession(models.TextChoices):
@@ -110,6 +114,8 @@ class Results(models.Model):
 
     class Meta:
         unique_together = ('student', 'subject', 'academic_year', 'exam_session')
+        verbose_name_plural = "Results"
+        
 
     @property
     def score(self):

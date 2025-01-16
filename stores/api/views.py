@@ -14,6 +14,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import pandas as pd
 from .serializers import FileUploadSerializer
+from django.shortcuts import get_object_or_404
 
 def send_email(subject, body, to):
     email_msg = EmailMessage()
@@ -331,7 +332,7 @@ class StudentResultsAPIView(APIView):
             if not students.exists():
                 return Response(
                     {"detail": "No students found in the specified class."},
-                    status=status.HTTP_404_NOT_FOUND,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             
             # Serialize and return student data
@@ -369,3 +370,60 @@ class StudentResultsAPIView(APIView):
                 {"detail": "An error occurred.", "error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class StudentResultsAPIView(APIView):
+    def get(self, request, student_class_name, *args, **kwargs):
+        """
+        Fetch all students belonging to the inputted student class.
+        """
+        try:
+            # Filter students by class
+            students = Student.objects.filter(student_class__name=student_class_name)
+            
+            if not students.exists():
+                return Response(
+                    {"detail": "No students found in the specified class."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            # Serialize and return student data
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"detail": "An error occurred.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    
+    def post(self, request, student_class_name, *args, **kwargs):
+        """
+        Save results for multiple students in the specified class.
+        """
+        try:
+            data = request.data
+            if not isinstance(data, list):
+                return Response(
+                    {"detail": "Expected a list of results."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            # Validate and save results for students
+            serializer = ResultsSerializer(data=data, many=True)
+            if serializer.is_valid():
+                serializer.save()  # Save results in bulk
+                return Response(
+                    {"detail": "Scores successfully saved!", "data": serializer.data},
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(
+                {"detail": "An error occurred.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class SubjectListAPIView(generics.ListCreateAPIView):
+    serializer_class = SubjectSerializer
+    queryset = Subject.objects.all().order_by("title")

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, GuadianOrParent, Subject, StudentClass as Class
+from .models import Student, GuadianOrParent, Subject, StudentClass as Class, Results
 
 class StudentsAdmin(admin.ModelAdmin):
     list_display = [
@@ -36,7 +36,11 @@ admin.site.register(Subject, SubjectAdmin)
 class ClassAdmin(admin.ModelAdmin):
     list_display = ['name', 'academic_year']
 
+class ResultAdmin(admin.ModelAdmin):
+    list_display = ["student", "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks"]
+
 admin.site.register(Class, ClassAdmin)
+admin.site.register(Results, ResultAdmin)
 
 admin.site.register(Student, StudentsAdmin)
 admin.site.register(GuadianOrParent, ParentAdmin)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent, Results
+from .models import Student, GuadianOrParent, Results, Subject
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,3 +67,8 @@ class FileUploadSerializer(serializers.Serializer):
         if not value.name.endswith('.xlsx'):
             raise serializers.ValidationError("Only Excel files are allowed.")
         return value
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = "__all__"

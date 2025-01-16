@@ -227,7 +227,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/Review&PublishResultsOptions' element={<ReviewAndPublishOptions />} />
                       <Route path='/Review&PublishResults' element={<ReviewAndPublishResults />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
-                      <Route path='/scoreEntryOptions' element={<ScoreEntry />} />
+                      <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
                   </Route>
                 </Routes>
