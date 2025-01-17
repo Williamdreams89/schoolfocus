@@ -111,6 +111,7 @@ class Results(models.Model):
     grade = models.CharField(max_length=2, blank=True)
     remarks = models.CharField(max_length=255, blank=True)
     absent = models.BooleanField(default=False)
+    published = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('student', 'subject', 'academic_year', 'exam_session')

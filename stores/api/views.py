@@ -427,3 +427,29 @@ class StudentResultsAPIView(APIView):
 class SubjectListAPIView(generics.ListCreateAPIView):
     serializer_class = SubjectSerializer
     queryset = Subject.objects.all().order_by("title")
+
+class ResultsReviewAPIView(generics.ListAPIView):
+    serializer_class = ResultsSerializer
+    queryset = Results.objects.all()
+
+    def get_queryset(self):
+        # Extract params from url
+        student_class = self.kwargs.get("student_class")
+        academic_year = self.kwargs.get("academic_year")
+        exam_session = self.kwargs.get("exam_session")
+
+        # filter queryset based on the parameters
+        qs = self.queryset.filter(
+            student__student_class__name = student_class,
+            academic_year = academic_year,
+            exam_session = exam_session
+        )
+
+        if not qs.exists():
+            return Response("No results found for the the given parameters")
+        return qs
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

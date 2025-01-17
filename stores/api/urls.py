@@ -16,4 +16,9 @@ urlpatterns = [
 
     path("a_student_results/", StudentResultsAPIView.as_view(), name="student-results"),
     path("subject/", SubjectListAPIView.as_view()),
+    path(
+        'results/review/<str:student_class>/<str:academic_year>/<str:exam_session>/',
+        ResultsReviewAPIView.as_view(),
+        name='results-review'
+    ),
 ]
