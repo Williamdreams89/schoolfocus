@@ -130,10 +130,12 @@ totalScore:
   };
 
   // Handle Absent Toggle
-  const handleAbsentToggle = (id: number) => {
-    setFetchedStudents((prevStudents) =>
-      prevStudents.map((student) =>
-        student.id === id ? { ...student, absent: !student.absent } : student
+  const handleAbsentChange = (id: number) => {
+    setFetchedStudents((prev) =>
+      prev.map((student) =>
+        student.id === id
+          ? { ...student, absent: !student.absent, continuousAssessment: 0, examination: 0 }
+          : student
       )
     );
   };
@@ -293,6 +295,7 @@ totalScore:
                     <TableCell>
                       <TextInput
                         type="number"
+                        disabled={student.absent}
                         value={student.continuousAssessment || ""}
                         onChange={(e) =>
                           handleInputChange(
@@ -306,6 +309,7 @@ totalScore:
                     <TableCell>
                       <TextInput
                         type="number"
+                        disabled={student.absent}
                         value={student.examination || ""}
                         onChange={(e) =>
                           handleInputChange(
@@ -320,7 +324,7 @@ totalScore:
                     <TableCell>
                       <Checkbox
                         checked={student.absent}
-                        onChange={() => handleAbsentToggle(student.id)}
+                        onChange={() => handleAbsentChange(student.id)}
                       />
                     </TableCell>
                   </TableRow>
