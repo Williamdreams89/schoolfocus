@@ -112,6 +112,7 @@ class Results(models.Model):
     remarks = models.CharField(max_length=255, blank=True)
     absent = models.BooleanField(default=False)
     published = models.BooleanField(default=False)
+    total_score = models.IntegerField(blank=True, default=0, null=True)
 
     class Meta:
         unique_together = ('student', 'subject', 'academic_year', 'exam_session')
@@ -128,6 +129,7 @@ class Results(models.Model):
 
     def save(self, *args, **kwargs):
         self.academic_year = tz.now().year
+        self.total_score = self.score
         # Auto-generate grade and remarks based on score
         if self.score >= 90:
             self.grade = 'A+'

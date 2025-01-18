@@ -37,7 +37,10 @@ class ClassAdmin(admin.ModelAdmin):
     list_display = ['name', 'academic_year']
 
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ["student", "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks"]
+    list_display = ["student",'Class', "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks"]
+
+    def Class(self, obj):
+        return obj.student.student_class.name
 
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Results, ResultAdmin)

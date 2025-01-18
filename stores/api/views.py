@@ -438,18 +438,31 @@ class ResultsReviewAPIView(generics.ListAPIView):
         academic_year = self.kwargs.get("academic_year")
         exam_session = self.kwargs.get("exam_session")
 
-        # filter queryset based on the parameters
+        # Filter queryset based on the parameters
         qs = self.queryset.filter(
-            student__student_class__name = student_class,
-            academic_year = academic_year,
-            exam_session = exam_session
+            student__student_class__name=student_class,
+            academic_year=academic_year,
+            exam_session=exam_session,
         )
 
         if not qs.exists():
-            return Response("No results found for the the given parameters")
+            return None
         return qs
-    
+
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        queryset = self.get_queryset().order_by("subject__title")
+
+        if queryset is None:
+            return Response({"detail": "No results found for the given parameters."}, status=404)
+
+        # Compute total scores and rank
+        sorted_queryset = sorted(queryset, key=lambda x: x.total_score, reverse=True)
+
+        # Assign ranks and include in response
+        for rank, result in enumerate(sorted_queryset, start=1):
+            result.rank = rank
+            result.save()
+
+        serializer = self.get_serializer(sorted_queryset, many=True)
+
         return Response(serializer.data)
