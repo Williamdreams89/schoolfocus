@@ -19,6 +19,11 @@ urlpatterns = [
     path(
         'results/review/<str:student_class>/<str:academic_year>/<str:exam_session>/',
         ResultsReviewAPIView.as_view(),
-        name='results-review'
+        name='results-review',
+    ),
+    path(
+        'results/review_new/<str:student_class_name>/<int:academic_year>/<str:exam_session>/',
+        ResultsSummaryView.as_view(),
+        name='results-summary',
     ),
 ]

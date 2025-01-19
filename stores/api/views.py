@@ -15,6 +15,7 @@ from django.urls import reverse
 import pandas as pd
 from .serializers import FileUploadSerializer
 from django.shortcuts import get_object_or_404
+from collections import defaultdict
 
 def send_email(subject, body, to):
     email_msg = EmailMessage()
@@ -466,3 +467,89 @@ class ResultsReviewAPIView(generics.ListAPIView):
         serializer = self.get_serializer(sorted_queryset, many=True)
 
         return Response(serializer.data)
+
+
+
+
+GRADE_POINTS = {
+    'A': 4.0,
+    'B': 3.0,
+    'C': 2.0,
+    'D': 1.0,
+    'E': 0.0,
+}
+
+from collections import defaultdict
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class ResultsSummaryView(APIView):
+    def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
+        # Helper function to determine ordinal suffix
+        def get_ordinal_suffix(rank):
+            if 10 <= rank % 100 <= 20:  # Handles 11th, 12th, 13th, etc.
+                return "th"
+            elif rank % 10 == 1:
+                return "st"
+            elif rank % 10 == 2:
+                return "nd"
+            elif rank % 10 == 3:
+                return "rd"
+            else:
+                return "th"
+
+        # Step 1: Fetch results for the specified filters
+        results = Results.objects.filter(
+            student__student_class__name=student_class_name,
+            academic_year=academic_year,
+            exam_session=exam_session,
+            published=False,
+        ).select_related('student', 'subject')
+
+        if not results.exists():
+            return Response({"detail": "No students found in the specified class."})
+
+        # Step 2: Group results by student and prepare data
+        student_data = defaultdict(lambda: {
+            "id": None,
+            "name": "",
+            "scores": {},
+            "gpa": 0.0,
+            "rank_title": "",
+            "attendance": 0,  # Placeholder for attendance
+            "principalRemark": "",  # Placeholder for principal's remark
+        })
+        for result in results:
+            student = result.student
+            full_name = f"{student.last_name.upper()} {student.first_name.upper()}"
+            student_data[student.id]["id"] = student.id
+            student_data[student.id]["name"] = full_name
+            student_data[student.id]["scores"][result.subject.title] = {
+                "continuous": result.continuous_assessment,
+                "exams": result.exams_score,
+                "total": result.total_score or (result.continuous_assessment + result.exams_score),
+            }
+
+            # GPA Calculation (sum grade points for each subject)
+            grade_point = GRADE_POINTS.get(result.grade, 0.0)
+            student_data[student.id]["gpa"] += grade_point
+
+        # Step 3: Calculate GPA and rank students
+        student_list = []
+        for student_id, data in student_data.items():
+            total_subjects = len(data["scores"])
+            if total_subjects > 0:
+                data["gpa"] = round(data["gpa"] / total_subjects, 2)  # Average GPA
+            student_list.append(data)
+
+        # Sort by GPA in descending order and assign ranks
+        student_list.sort(key=lambda x: x["gpa"], reverse=True)
+        for rank, student in enumerate(student_list, start=1):
+            ordinal_suffix = get_ordinal_suffix(rank)
+            student["rank_title"] = f"{rank}{ordinal_suffix}"
+
+            # Example attendance and principal's remark (replace with real logic)
+            student["attendance"] = 95  # Example value
+            student["principalRemark"] = "Excellent" if student["gpa"] > 3.5 else "Good"
+
+        return Response(student_list)

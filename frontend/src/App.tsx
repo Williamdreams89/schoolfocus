@@ -57,6 +57,7 @@ import { APIContext } from "./utils/contexts/ReactContext";
 import LoadingScreen from "./utils/component/LoadingScreen";
 import StudntEnroll from "./components/people/students/StudntEnroll";
 import StudentDetailPage from "./components/people/students/StudentDetailPage";
+import ReviewPublish from "./components/gradeBook/ReviewPublish";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -225,7 +226,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
                       <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
                       <Route path='/printResults' element={<PrintResults />} />
-                      <Route path='/Review&PublishResultsOptions' element={<ReviewAndPublishOptions />} />
+                      <Route path='/Review&PublishResultsOptions' element={<ReviewPublish />} />
                       <Route path='/Review&PublishResults' element={<ResultsTable />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />

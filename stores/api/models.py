@@ -20,6 +20,15 @@ class GuadianOrParent(models.Model):
 
     def __str__(self) -> str:
         return self.full_name
+
+class Subject(models.Model):
+    title = models.CharField(max_length=100)
+    code = models.CharField(max_length=6)
+
+    unique_together = ["title", "code"]
+
+    def __str__(self):
+        return self.title
     
 class AcademicYear(models.Model):
     year = models.CharField(max_length=9, unique=True)  # Example: "2024-2025"
@@ -30,6 +39,7 @@ class AcademicYear(models.Model):
 class StudentClass(models.Model):
     name = models.CharField(max_length=50)  # Example: "JS1"
     academic_year = models.CharField(max_length=100, blank=True)
+    subjects = models.ManyToManyField(Subject, related_name='student_classes', blank=True)
 
     def save(self, *args, **kwargs):
         self.academic_year = tz.now().year
@@ -83,14 +93,7 @@ class Student(models.Model):
             date = self.date_added.date().year
             return f"{date}/0000{self.id}"
         
-class Subject(models.Model):
-    title = models.CharField(max_length=100)
-    code = models.CharField(max_length=6)
 
-    unique_together = ["title", "code"]
-
-    def __str__(self):
-        return self.title
     
 
 
