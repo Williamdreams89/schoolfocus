@@ -1,0 +1,15 @@
+.custom-table {
+    border-collapse: collapse;
+    width: fit-content;
+    border: 1px solid #eaeaea;
+    table-layout: fixed;
+  }
+  
+  .custom-table td,
+  .custom-table th {
+    border: 1px solid #eaeaea;
+    padding: 8px;
+  }
+
+
+  

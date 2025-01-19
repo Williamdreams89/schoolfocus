@@ -34,6 +34,7 @@ import ScoreEntryMain from './components/gradeBook/ScoreEntryMain';
 import UpdateCognitiveSkills from './components/gradeBook/UpdateStudentCognitiveSkills';
 import ClassCognitiveAssessment from './components/gradeBook/ClassCognitiveAssessment';
 import ReviewAndPublishOptions from './components/gradeBook/ReviewAndPublishOptions';
+import ResultsTable from './components/gradeBook/ReviewPublish';
 import PublishResultForm from './components/gradeBook/PublishResults';
 import People from './components/people/People';
 import BulEnrollStudent from "./components/people/students/BulkEnrollStudents"
@@ -225,7 +226,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
                       <Route path='/printResults' element={<PrintResults />} />
                       <Route path='/Review&PublishResultsOptions' element={<ReviewAndPublishOptions />} />
-                      <Route path='/Review&PublishResults' element={<ReviewAndPublishResults />} />
+                      <Route path='/Review&PublishResults' element={<ResultsTable />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
