@@ -21,15 +21,8 @@ class GuadianOrParent(models.Model):
     def __str__(self) -> str:
         return self.full_name
 
-class Subject(models.Model):
-    title = models.CharField(max_length=100)
-    code = models.CharField(max_length=6)
-
-    unique_together = ["title", "code"]
-
-    def __str__(self):
-        return self.title
     
+
 class AcademicYear(models.Model):
     year = models.CharField(max_length=9, unique=True)  # Example: "2024-2025"
 
@@ -39,7 +32,6 @@ class AcademicYear(models.Model):
 class StudentClass(models.Model):
     name = models.CharField(max_length=50)  # Example: "JS1"
     academic_year = models.CharField(max_length=100, blank=True)
-    subjects = models.ManyToManyField(Subject, related_name='student_classes', blank=True)
 
     def save(self, *args, **kwargs):
         self.academic_year = tz.now().year
@@ -47,6 +39,19 @@ class StudentClass(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.academic_year}"
+
+class Subject(models.Model):
+    title = models.CharField(max_length=100)
+    code = models.CharField(max_length=6)
+    active_classes = models.ManyToManyField(StudentClass, related_name='subjects', blank=True)
+
+    def get_active_classes_count(self):
+        return self.active_classes.count()
+
+    unique_together = ["title", "code"]
+
+    def __str__(self):
+        return self.title
     
 class Student(models.Model):
     # Guardian's Information

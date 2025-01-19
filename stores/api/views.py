@@ -469,19 +469,14 @@ class ResultsReviewAPIView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-
-
 GRADE_POINTS = {
     'A': 4.0,
     'B': 3.0,
     'C': 2.0,
     'D': 1.0,
-    'E': 0.0,
+    'E': 0.5,
+    'F': 0.0,
 }
-
-from collections import defaultdict
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 class ResultsSummaryView(APIView):
     def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
@@ -518,7 +513,11 @@ class ResultsSummaryView(APIView):
             "rank_title": "",
             "attendance": 0,  # Placeholder for attendance
             "principalRemark": "",  # Placeholder for principal's remark
+            "grand_total": 0,  # Placeholder for grand total
+            "total_score": 0,  # Total of all subjects' scores
+            "subject_count": 0,  # To count the subjects
         })
+        
         for result in results:
             student = result.student
             full_name = f"{student.last_name.upper()} {student.first_name.upper()}"
@@ -534,12 +533,21 @@ class ResultsSummaryView(APIView):
             grade_point = GRADE_POINTS.get(result.grade, 0.0)
             student_data[student.id]["gpa"] += grade_point
 
-        # Step 3: Calculate GPA and rank students
+            # Add to the grand total for the student
+            student_data[student.id]["grand_total"] += result.total_score or (result.continuous_assessment + result.exams_score)
+
+            # Increment the subject count for average calculation
+            student_data[student.id]["subject_count"] += 1
+
+        # Step 3: Calculate GPA, average score, and rank students
         student_list = []
         for student_id, data in student_data.items():
-            total_subjects = len(data["scores"])
+            total_subjects = data["subject_count"]
             if total_subjects > 0:
-                data["gpa"] = round(data["gpa"] / total_subjects, 2)  # Average GPA
+                # Calculate average GPA
+                data["gpa"] = round(data["gpa"] / total_subjects, 2)
+                # Calculate average score
+                data["average_score"] = round(data["grand_total"] / total_subjects, 2)
             student_list.append(data)
 
         # Sort by GPA in descending order and assign ranks
@@ -553,3 +561,25 @@ class ResultsSummaryView(APIView):
             student["principalRemark"] = "Excellent" if student["gpa"] > 3.5 else "Good"
 
         return Response(student_list)
+
+
+class SubjectListView(APIView):
+    def get(self, request):
+        subjects = Subject.objects.all()
+        serializer = SubjectSerializer(subjects, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        # Bulk create subjects
+        subjects_data = request.data.get('subjects', [])
+        created_subjects = []
+        for subject in subjects_data:
+            subject_name = subject.get('subject_name')
+            subject_code = subject.get('subject_code')
+
+            subject_instance, created = Subject.objects.get_or_create(
+                subject_name=subject_name,
+                subject_code=subject_code
+            )
+            created_subjects.append(subject_instance)
+        return Response({'created_subjects': len(created_subjects)}, status=status.HTTP_201_CREATED)
