@@ -502,7 +502,7 @@ class ResultsSummaryView(APIView):
         ).select_related('student', 'subject')
 
         if not results.exists():
-            return Response({"detail": "No students found in the specified class."})
+            return Response({"detail": "No Results found for this specific class specified class."})
 
         # Step 2: Group results by student and prepare data
         student_data = defaultdict(lambda: {
