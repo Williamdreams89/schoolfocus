@@ -24,10 +24,14 @@ class GuadianOrParent(models.Model):
     
 
 class AcademicYear(models.Model):
-    year = models.CharField(max_length=9, unique=True)  # Example: "2024-2025"
+    year = models.CharField(max_length=9, unique=True, blank=True, null=True)  # Example: "2024-2025"
 
     def __str__(self):
         return self.year
+
+    def save(self, *args, **kwargs):
+        self.year = tz.now().year
+        super().save(*args, **kwargs)
     
 class StudentClass(models.Model):
     name = models.CharField(max_length=50)  # Example: "JS1"

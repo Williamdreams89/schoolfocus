@@ -57,30 +57,6 @@ const remarks = [
   { value: "Needs Improvement", label: "Needs improvement" },
 ];
 
-const initialStudents: Student[] = [
-  {
-    id: 1,
-    name: "DANQUAH WILLIAM NAFO",
-    scores: {
-      "English Language": { continuous: 40, exams: 40 },
-      "Agricultural Science": { continuous: 30, exams: 55 },
-      "Fine Art": { continuous: 40, exams: 45 },
-    },
-    attendance: 95,
-    principalRemark: "Excellent",
-  },
-  {
-    id: 2,
-    name: "DANQUAH JULIET OFFEIBEAH",
-    scores: {
-      "English Language": { continuous: 35, exams: 50 },
-      "Agricultural Science": { continuous: 35, exams: 45 },
-      "Fine Art": { continuous: 30, exams: 50 },
-    },
-    attendance: 89,
-    principalRemark: "Good",
-  },
-];
 
 export default function ReviewPublish() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -150,6 +126,10 @@ export default function ReviewPublish() {
     fetchSubjects()
   }, [])
 
+  const [className, setClassName] = React.useState<string>("")
+  const [examSession, setExamSession] = React.useState<string>("")
+  const [academicYear, setAcademicYear] = React.useState<string>("")
+
   return (
     <Box sx={{ width: "100%", overflowX: "auto", maxWidth: { sm: "100%", md: "1700px" } }}>
       <Accordion sx={{ width: "100%" }} defaultExpanded>
@@ -163,12 +143,16 @@ export default function ReviewPublish() {
                 <NativeSelect
                   label="Exam Session"
                   data={["Select Exam Session", "First Term", "Second Term", "Third Term"]}
+                  value={examSession}
+                  onChange={(event: any)=>{setExamSession(event.target.value)}}
                 />
                 <NativeSelect
-                  label="Exam Type"
-                  data={["Select Exam", "Mid-Term Exams", "End of Term Exams", "Resit Exams"]}
+                  label="Academic Year"
+                  data={["2021", "2022", "2023", "2024", "2025"]}
+                  value={academicYear}
+                  onChange={(event: any)=>{setAcademicYear(event.target.value)}}
                 />
-                <NativeSelect label="Class" data={["Select Class", "BS1", "BS2", "JHS 3"]} />
+                <NativeSelect label="Class" data={["Select Class", "BS1", "BS2", "JHS 3"]}  />
               </SimpleGrid>
             </MantineProvider>
             <Box sx={{ textAlign: "center", marginTop: "1rem" }}>
