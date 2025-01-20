@@ -562,6 +562,32 @@ class ResultsSummaryView(APIView):
 
         return Response(student_list)
 
+class SubjectsInResultsView(APIView):
+    def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
+        # Fetch unique subjects from the Results model for the specified filters
+        subjects = Results.objects.filter(
+            student__student_class__name=student_class_name,
+            academic_year=academic_year,
+            exam_session=exam_session,
+            published=False,
+        ).select_related('subject').values('subject__id', 'subject__title').distinct()
+
+        if not subjects:
+            return Response({"detail": "No subjects found for the specified filters."}, status=404)
+
+        # Format the subjects for the response
+        subject_list = [
+            {
+                "id": subject["subject__id"],
+                "name": subject["subject__title"],
+                # "subject_code": subject["subject__code"],
+            }
+            for subject in subjects
+        ]
+
+        return Response(subject_list, status=200)
+
+
 
 class SubjectListView(APIView):
     def get(self, request):

@@ -26,4 +26,9 @@ urlpatterns = [
         ResultsSummaryView.as_view(),
         name='results-summary',
     ),
+    path(
+        'results/subjects/<str:student_class_name>/<str:academic_year>/<str:exam_session>/',
+        SubjectsInResultsView.as_view(),
+        name='subjects-in-results',
+    ),
 ]

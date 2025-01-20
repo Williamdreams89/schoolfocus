@@ -44,6 +44,7 @@ class Subject(models.Model):
     title = models.CharField(max_length=100)
     code = models.CharField(max_length=6)
     active_classes = models.ManyToManyField(StudentClass, related_name='subjects', blank=True)
+    is_active = models.BooleanField(default=True, blank=True, null=True)
 
     def get_active_classes_count(self):
         return self.active_classes.count()

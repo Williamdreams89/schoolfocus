@@ -28,6 +28,11 @@ interface Score {
   exams: number;
 }
 
+interface Subject{
+  id: number;
+  name: string
+}
+
 interface Student {
   id: number;
   name: string;
@@ -36,13 +41,15 @@ interface Student {
   };
   attendance: number; // Percentage of attendance
   principalRemark: string; // Principal's remark
+  average_score?: number;
+  rank_title?: string
 }
 
-const subjects = [
-  { name: "English Language", maxContinuous: 40, maxExams: 60 },
-  { name: "Agricultural Science", maxContinuous: 40, maxExams: 60 },
-  { name: "Fine Art", maxContinuous: 40, maxExams: 60 },
-];
+// const subjects = [
+//   { name: "English Language", maxContinuous: 40, maxExams: 60 },
+//   { name: "Agricultural Science", maxContinuous: 40, maxExams: 60 },
+//   { name: "Fine Art", maxContinuous: 40, maxExams: 60 },
+// ];
 
 const remarks = [
   { value: "Excellent", label: "Excellent performance" },
@@ -77,7 +84,7 @@ const initialStudents: Student[] = [
 
 export default function ReviewPublish() {
   const [students, setStudents] = useState<Student[]>([]);
-
+  const [subjects, setSubjects] = React.useState<Subject []>([])
   const calculateGrandTotal = (student: Student) => {
     return Object.values(student.scores).reduce(
       (sum, score) => sum + (score.continuous || 0) + (score.exams || 0),
@@ -128,6 +135,21 @@ export default function ReviewPublish() {
     fetchResults();
   }, []);
 
+  React.useEffect(()=>{
+    const fetchSubjects = async () => {
+      try{
+        setStudentsManagementDetails({ isLoading: true });
+        const {data} = await axios.get(`http://127.0.0.1:8000/api/results/subjects/JHS%203/2025/First%20Term/`)
+        setSubjects(data)
+        setStudentsManagementDetails({ isLoading: false });
+      }catch(error){
+        setStudentsManagementDetails({ isLoading: false });
+        alert(`error: ${error}`)
+      }
+    }
+    fetchSubjects()
+  }, [])
+
   return (
     <Box sx={{ width: "100%", overflowX: "auto", maxWidth: { sm: "100%", md: "1700px" } }}>
       <Accordion sx={{ width: "100%" }} defaultExpanded>
@@ -155,29 +177,30 @@ export default function ReviewPublish() {
           </Card>
         </AccordionDetails>
       </Accordion>
-      <TableContainer sx={{ mt: "3rem" }}>
+      <TableContainer sx={{ mt: "1rem" }}>
         <Table className="custom-table" withColumnBorders>
           <thead>
             <tr>
-              <th rowSpan={2} style={{ width: "50px" }}>#</th>
-              <th style={{ width: "250px" }} rowSpan={2}>Students</th>
+              <th rowSpan={2} align="center" style={{ width: "50px" }}>#</th>
+              <th style={{ width: "250px" }} align="center" rowSpan={2}>Students</th>
               {subjects.map((subject) => (
-                <th style={{ width: "250px" }} colSpan={3} key={subject.name}>
+                <th align="center" style={{ width: "250px" }} colSpan={3} key={subject.name}>
                   {subject.name}
                 </th>
               ))}
-              <th style={{ width: "100px" }} rowSpan={2}>Grand Total</th>
-              <th style={{ width: "100px" }} rowSpan={2}>GPA</th>
-              <th style={{ width: "120px" }} rowSpan={2}>Attendance (%)</th>
-              <th style={{ width: "200px" }} rowSpan={2}>Principal's Remark</th>
-              <th style={{ width: "100px" }} rowSpan={2}>Actions</th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>Grand Total</th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>Average Score</th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>Position</th>
+              <th align="center" style={{ width: "120px" }} rowSpan={2}>Attendance (%)</th>
+              <th align="center" style={{ width: "200px" }} rowSpan={2}>Principal's Remark</th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>Actions</th>
             </tr>
             <tr>
               {subjects.map((subject) => (
                 <React.Fragment key={subject.name}>
-                  <th>Continuous ({subject.maxContinuous})</th>
-                  <th>Exams ({subject.maxExams})</th>
-                  <th>Total (100)</th>
+                  <th align="center">Continuous (40)</th>
+                  <th align="center">Exams ({60})</th>
+                  <th align="center">Total (100)</th>
                 </React.Fragment>
               ))}
             </tr>
@@ -185,15 +208,15 @@ export default function ReviewPublish() {
           <tbody>
             {students.map((student, index) => (
               <tr key={student.id}>
-                <td>{index + 1}</td>
-                <td style={{ width: "250px" }}>{student.name}</td>
+                <td align="center">{index + 1}</td>
+                <td align="center" style={{ width: "250px" }}>{student.name}</td>
                 {subjects.map((subject) => {
                   const score = student.scores[subject.name];
                   const total = score ? score.continuous + score.exams : 0; // Safeguard for undefined score
                   return (
                     <React.Fragment key={subject.name}>
-                      <td>{score ? score.continuous : 0}</td>
-                      <td>{score ? score.exams : 0}</td>
+                      <td align="center">{score ? score.continuous : 0}</td>
+                      <td align="center">{score ? score.exams : 0}</td>
                       <td>
                         <Center>
                           <Text>{total}</Text>
@@ -203,7 +226,8 @@ export default function ReviewPublish() {
                   );
                 })}
                 <td>{calculateGrandTotal(student)}</td>
-                <td>{calculateGPA(student).toFixed(2)}</td>
+                <td>{student.average_score}</td>
+                <td>{student.rank_title}</td>
                 <td>{student.attendance}%</td>
                 <td style={{ width: "250px" }}>
                   <Select

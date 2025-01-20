@@ -49,7 +49,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import LoginPage from "./components/auth/LoginPage";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import AddClass from "./components/academics/classes/AddClass";
-import AllSubjects from "./components/academics/subjects/AllSubjects";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StudentEnrollment from "./components/people/students/StudentEnrollment";
 import ViewStudents from "./components/people/students/ViewStudents";
@@ -58,6 +57,7 @@ import LoadingScreen from "./utils/component/LoadingScreen";
 import StudntEnroll from "./components/people/students/StudntEnroll";
 import StudentDetailPage from "./components/people/students/StudentDetailPage";
 import ReviewPublish from "./components/gradeBook/ReviewPublish";
+import Subjects from "./components/academics/subjects/Subjects";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -218,7 +218,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/academics' element={<Academics />} />
                       <Route path='/academics/classes' element={<ClassDataGrid />} />
                       <Route path='/academics/classes/addClass' element={<AddClass />} />
-                      <Route path='/academics/subject-list' element={<AllSubjects />} />
+                      <Route path='/academics/subject-list' element={<Subjects />} />
                       <Route path='/studentPromotion' element={<StudentPromotion />} />
                       <Route path='/exams-report' element={<GradeBook />} />
                       <Route path='/annualPromotionalReport' element={<AnnualPromotion />} />
