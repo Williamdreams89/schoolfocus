@@ -51,7 +51,7 @@ const ScoreEntryMain: React.FC = () => {
   const [fetchedStudents, setFetchedStudents] = useState<Student[]>([]);
   const [studentClassName, setStudentClassName] = useState<string>("");
   const [subject, setSubject] = useState<string | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<number | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
   const isSmallDevice = useMediaQuery("(max-width:1045px)");
   const context = useContext(APIContext);
 
@@ -77,10 +77,8 @@ const ScoreEntryMain: React.FC = () => {
   }, [setStudentsManagementDetails]);
 
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const subjectId = parseInt(event.target.value, 10); // Convert the selected value to an integer
-    setSelectedSubject(subjectId);
-    const selected = fetchedSubjects.find((subject) => Number(subject.value) === subjectId); // Find the selected subject
-    setSubject(selected ? selected.label : null)
+    // alert(`subject change: ${event.target.value}`)
+    setSelectedSubject(event.target.value)
   };
 
   // Fetch Students for Results Entry
@@ -268,7 +266,7 @@ totalScore:
           marginRight: "15px",
         }}
       >
-        Scores Entry for Subject: <b>{subject}</b>
+        Scores Entry for Subject: <b>{selectedSubject}</b>
       </Typography>
       <Divider orientation="vertical" flexItem />
       <Typography sx={{ marginLeft: "15px" }}>
