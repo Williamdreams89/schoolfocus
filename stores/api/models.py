@@ -98,10 +98,13 @@ class Student(models.Model):
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)
     
+    @property
     def index_number(self):
         if self.date_added:
-            date = self.date_added.date().year
-            return f"{date}/0000{self.id}"
+            year = self.date_added.year  # Extract the year from the date_added field
+            # Dynamically pad the id to 4 digits
+            return f"{year}/{str(self.id).zfill(4)}"
+        return None
         
 
     

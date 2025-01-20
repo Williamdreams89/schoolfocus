@@ -32,4 +32,5 @@ urlpatterns = [
         name='subjects-in-results',
     ),
     path("class/", StudentClassAPIView.as_view()),
+    path('indexer/', GenerateIndexNumberAPIView.as_view())
 ]

@@ -106,3 +106,13 @@ class ClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentClass 
         fields = "__all__"
+
+class IndexNumberGeneratorSerializer(serializers.ModelSerializer):
+    index_num = serializers.SerializerMethodField()
+
+    def get_index_num(self, obj):
+        return obj.index_number
+    
+    class Meta:
+        model = Student
+        fields = ['index_num']

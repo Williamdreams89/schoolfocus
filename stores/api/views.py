@@ -16,6 +16,7 @@ import pandas as pd
 from .serializers import FileUploadSerializer
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
+from django.utils import timezone
 
 def send_email(subject, body, to):
     email_msg = EmailMessage()
@@ -615,4 +616,10 @@ class SubjectListView(APIView):
 class StudentClassAPIView(generics.ListCreateAPIView):
     serializer_class = ClassSerializer
     queryset = StudentClass.objects.all().order_by("name")
-    
+
+class GenerateIndexNumberAPIView(APIView):
+    def get(self, request):
+        last_student_id = Student.objects.last().id
+        current_year = timezone.now().year
+        new_id  = f"{current_year}/{str(last_student_id+1).zfill(4)}"
+        return Response({"generated_id": new_id})
