@@ -22,15 +22,17 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
 import { APIContext } from "../../utils/contexts/ReactContext";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useParams } from "react-router-dom";
 
 interface Score {
   continuous: number;
   exams: number;
 }
 
-interface Subject{
+interface Subject {
   id: number;
-  name: string
+  name: string;
 }
 
 interface Student {
@@ -42,7 +44,7 @@ interface Student {
   attendance: number; // Percentage of attendance
   principalRemark: string; // Principal's remark
   average_score?: number;
-  rank_title?: string
+  rank_title?: string;
 }
 
 // const subjects = [
@@ -57,10 +59,20 @@ const remarks = [
   { value: "Needs Improvement", label: "Needs improvement" },
 ];
 
+interface Class {
+  value: string;
+  label: string;
+}
 
 export default function ReviewPublish() {
+  const isSmallerDevice = useMediaQuery("(max-width:1045px)")
   const [students, setStudents] = useState<Student[]>([]);
-  const [subjects, setSubjects] = React.useState<Subject []>([])
+  const [subjects, setSubjects] = React.useState<Subject[]>([]);
+  const [className, setClassName] = useState<string>("");
+  const [selectedClassName, setSelectedClassName] = useState<string>("");
+  const [examSession, setExamSession] = useState<string>("");
+  const [academicYear, setAcademicYear] = useState<string>("");
+  const [classList, setClassList] = useState<Class[]>([]);
   const calculateGrandTotal = (student: Student) => {
     return Object.values(student.scores).reduce(
       (sum, score) => sum + (score.continuous || 0) + (score.exams || 0),
@@ -77,10 +89,10 @@ export default function ReviewPublish() {
   const handlePreview = (student: Student) => {
     alert(
       `Previewing details for ${student.name}:\n` +
-      `Grand Total: ${calculateGrandTotal(student)}\n` +
-      `GPA: ${calculateGPA(student).toFixed(2)}\n` +
-      `Attendance: ${student.attendance}%\n` +
-      `Principal's Remark: ${student.principalRemark}`
+        `Grand Total: ${calculateGrandTotal(student)}\n` +
+        `GPA: ${calculateGPA(student).toFixed(2)}\n` +
+        `Attendance: ${student.attendance}%\n` +
+        `Principal's Remark: ${student.principalRemark}`
     );
   };
 
@@ -91,47 +103,78 @@ export default function ReviewPublish() {
 
   const { studentsManagementDetails, setStudentsManagementDetails } = context;
 
-  const [results, setResults] = React.useState<any[]>([]);
   React.useEffect(() => {
-    const fetchResults = async () => {
+    const fetchClasses = async () => {
+      try {
+        const { data } = await axios.get("http://127.0.0.1:8000/api/class/");
+        const storedClassList = data.map((classItem: any) => ({
+          value: classItem.id.toString(), // Convert ID to a string
+          label: classItem.name, // Use the name directly
+        }));
+        setClassList(storedClassList);
+      } catch (error) {
+        alert(`Error fetching classes: ${error}`);
+      }
+    };
+    fetchClasses();
+  }, []);
+  
+  const fetchResults = async () => {
+    try {
+      setStudentsManagementDetails({ isLoading: true });
+      const { data } = await axios.get(
+        `http://127.0.0.1:8000/api/results/review_new/${selectedClassName}/${academicYear}/${examSession}/`
+      );
+      console.log("results =", data);
+      setStudents(data);
+      setStudentsManagementDetails({ isLoading: false });
+    } catch (error) {
+      setStudentsManagementDetails({ isLoading: false });
+      // alert(`${error}`);
+      console.log(`${error}`);
+    }
+  };
+
+    const fetchSubjects = async () => {
       try {
         setStudentsManagementDetails({ isLoading: true });
         const { data } = await axios.get(
-          `http://127.0.0.1:8000/api/results/review_new/JHS%203/2025/First%20Term/`
+          `http://127.0.0.1:8000/api/results/subjects/${selectedClassName}/${academicYear}/${examSession}/`
         );
-        console.log("results =", data);
-        setStudents(data);
+        setSubjects(data);
         setStudentsManagementDetails({ isLoading: false });
       } catch (error) {
         setStudentsManagementDetails({ isLoading: false });
-        alert(`${error}`);
-        console.log(`${error}`);
+        // alert(`error: ${error}`);
       }
     };
-    fetchResults();
-  }, []);
 
-  React.useEffect(()=>{
-    const fetchSubjects = async () => {
-      try{
-        setStudentsManagementDetails({ isLoading: true });
-        const {data} = await axios.get(`http://127.0.0.1:8000/api/results/subjects/JHS%203/2025/First%20Term/`)
-        setSubjects(data)
-        setStudentsManagementDetails({ isLoading: false });
-      }catch(error){
-        setStudentsManagementDetails({ isLoading: false });
-        alert(`error: ${error}`)
-      }
+
+  const handleFormSubmit = () =>{
+    if(selectedClassName.length ===0 && examSession.length===0 && academicYear.length===0){
+      alert("All fields must be filled")
     }
-    fetchSubjects()
-  }, [])
-
-  const [className, setClassName] = React.useState<string>("")
-  const [examSession, setExamSession] = React.useState<string>("")
-  const [academicYear, setAcademicYear] = React.useState<string>("")
+    try{
+      setStudentsManagementDetails({isLoading: true})
+      fetchSubjects()
+      fetchResults()
+      setStudentsManagementDetails({isLoading: false})
+    }catch(error){
+      setStudentsManagementDetails({isLoading: false})
+      setStudents([])
+      setSubjects([])
+      alert('error fetching results')
+    }
+  }
 
   return (
-    <Box sx={{ width: "100%", overflowX: "auto", maxWidth: { sm: "100%", md: "1700px" } }}>
+    <Box
+      sx={{
+        width: "100%",
+        overflowX: "auto",
+        maxWidth: { sm: "100%", md: "1700px" },
+      }}
+    >
       <Accordion sx={{ width: "100%" }} defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Select Class List to View Results</Typography>
@@ -139,45 +182,86 @@ export default function ReviewPublish() {
         <AccordionDetails>
           <Card>
             <MantineProvider>
-              <SimpleGrid cols={4}>
+              <SimpleGrid cols={!isSmallerDevice?4:1}>
                 <NativeSelect
                   label="Exam Session"
-                  data={["Select Exam Session", "First Term", "Second Term", "Third Term"]}
+                  data={[
+                    "Select Exam Session",
+                    "First Term",
+                    "Second Term",
+                    "Third Term",
+                  ]}
                   value={examSession}
-                  onChange={(event: any)=>{setExamSession(event.target.value)}}
-                />
+                  onChange={(e) => setExamSession(e.target.value)}
+                  />
                 <NativeSelect
+                  aria-placeholder="Select Academic year"
                   label="Academic Year"
                   data={["2021", "2022", "2023", "2024", "2025"]}
                   value={academicYear}
-                  onChange={(event: any)=>{setAcademicYear(event.target.value)}}
+                  onChange={(e) => setAcademicYear(e.target.value)}
                 />
-                <NativeSelect label="Class" data={["Select Class", "BS1", "BS2", "JHS 3"]}  />
+                <NativeSelect
+                  label="Class"
+                  data={classList}
+                  value={className}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                    const selectedValue = event.target.value;
+                    setClassName(selectedValue);
+
+                    // Find the selected class item to get the name
+                    const selectedClass = classList.find(
+                      (classItem) => classItem.value === selectedValue
+                    );
+                    setSelectedClassName(selectedClass?.label || ""); // Update the class name state
+                  }}
+                />
+            <Box sx={{ textAlign: "center", marginTop: "1.4rem" }}>
+              <Button variant="contained" onClick={handleFormSubmit} style={{width:'100%'}}>View Results</Button>
+            </Box>
               </SimpleGrid>
             </MantineProvider>
-            <Box sx={{ textAlign: "center", marginTop: "1rem" }}>
-              <Button variant="contained">View Results</Button>
-            </Box>
           </Card>
         </AccordionDetails>
       </Accordion>
-      <TableContainer sx={{ mt: "1rem" }}>
+      {students.length !==0 ?<TableContainer sx={{ mt: "1rem" }}>
         <Table className="custom-table" withColumnBorders>
           <thead>
             <tr>
-              <th rowSpan={2} align="center" style={{ width: "50px" }}>#</th>
-              <th style={{ width: "250px" }} align="center" rowSpan={2}>Students</th>
+              <th rowSpan={2} align="center" style={{ width: "50px" }}>
+                #
+              </th>
+              <th style={{ width: "250px" }} align="center" rowSpan={2}>
+                Students
+              </th>
               {subjects.map((subject) => (
-                <th align="center" style={{ width: "250px" }} colSpan={3} key={subject.name}>
+                <th
+                  align="center"
+                  style={{ width: "250px" }}
+                  colSpan={3}
+                  key={subject.name}
+                >
                   {subject.name}
                 </th>
               ))}
-              <th align="center" style={{ width: "100px" }} rowSpan={2}>Grand Total</th>
-              <th align="center" style={{ width: "100px" }} rowSpan={2}>Average Score</th>
-              <th align="center" style={{ width: "100px" }} rowSpan={2}>Position</th>
-              <th align="center" style={{ width: "120px" }} rowSpan={2}>Attendance (%)</th>
-              <th align="center" style={{ width: "200px" }} rowSpan={2}>Principal's Remark</th>
-              <th align="center" style={{ width: "100px" }} rowSpan={2}>Actions</th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>
+                Grand Total
+              </th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>
+                Average Score
+              </th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>
+                Position
+              </th>
+              <th align="center" style={{ width: "120px" }} rowSpan={2}>
+                Attendance (%)
+              </th>
+              <th align="center" style={{ width: "200px" }} rowSpan={2}>
+                Principal's Remark
+              </th>
+              <th align="center" style={{ width: "100px" }} rowSpan={2}>
+                Actions
+              </th>
             </tr>
             <tr>
               {subjects.map((subject) => (
@@ -193,7 +277,9 @@ export default function ReviewPublish() {
             {students.map((student, index) => (
               <tr key={student.id}>
                 <td align="center">{index + 1}</td>
-                <td align="center" style={{ width: "250px" }}>{student.name}</td>
+                <td align="center" style={{ width: "250px" }}>
+                  {student.name}
+                </td>
                 {subjects.map((subject) => {
                   const score = student.scores[subject.name];
                   const total = score ? score.continuous + score.exams : 0; // Safeguard for undefined score
@@ -220,7 +306,9 @@ export default function ReviewPublish() {
                     onChange={(value) =>
                       setStudents((prevStudents) =>
                         prevStudents.map((s) =>
-                          s.id === student.id ? { ...s, principalRemark: value! } : s
+                          s.id === student.id
+                            ? { ...s, principalRemark: value! }
+                            : s
                         )
                       )
                     }
@@ -228,7 +316,10 @@ export default function ReviewPublish() {
                   />
                 </td>
                 <td>
-                  <Button onClick={() => handlePreview(student)} variant="outline">
+                  <Button
+                    onClick={() => handlePreview(student)}
+                    variant="outline"
+                  >
                     Preview
                   </Button>
                 </td>
@@ -236,7 +327,7 @@ export default function ReviewPublish() {
             ))}
           </tbody>
         </Table>
-      </TableContainer>
+      </TableContainer>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
     </Box>
   );
 }

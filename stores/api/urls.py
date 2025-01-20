@@ -31,4 +31,5 @@ urlpatterns = [
         SubjectsInResultsView.as_view(),
         name='subjects-in-results',
     ),
+    path("class/", StudentClassAPIView.as_view()),
 ]

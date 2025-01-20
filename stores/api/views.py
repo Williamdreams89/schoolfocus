@@ -609,3 +609,10 @@ class SubjectListView(APIView):
             )
             created_subjects.append(subject_instance)
         return Response({'created_subjects': len(created_subjects)}, status=status.HTTP_201_CREATED)
+    
+
+
+class StudentClassAPIView(generics.ListCreateAPIView):
+    serializer_class = ClassSerializer
+    queryset = StudentClass.objects.all().order_by("name")
+    

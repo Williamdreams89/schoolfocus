@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent, Results, Subject
+from .models import Student, GuadianOrParent, Results, Subject, StudentClass
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -101,3 +101,8 @@ class SubjectSerializer(serializers.ModelSerializer):
 
     def get_active_for(self, obj):
         return obj.get_active_classes_count()
+
+class ClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentClass 
+        fields = "__all__"

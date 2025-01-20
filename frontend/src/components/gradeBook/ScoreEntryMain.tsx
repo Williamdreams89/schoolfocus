@@ -40,8 +40,8 @@ interface Student {
 }
 
 interface Subject{
-  id: number;
-  title: string;
+  value: string;
+  label: string;
 }
 
 const ScoreEntryMain: React.FC = () => {
@@ -65,7 +65,8 @@ const ScoreEntryMain: React.FC = () => {
       try {
         setStudentsManagementDetails({ isLoading: true });
         const { data } = await axios.get(`http://127.0.0.1:8000/api/subject/`);
-        setFetchedSubjects(data);
+        const subjectList = data.map((subjectItem: any)=>({value: subjectItem.id, label: subjectItem.title}))
+        setFetchedSubjects(subjectList);
         setStudentsManagementDetails({ isLoading: false });
       } catch (error) {
         setStudentsManagementDetails({ isLoading: false });
@@ -78,8 +79,8 @@ const ScoreEntryMain: React.FC = () => {
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const subjectId = parseInt(event.target.value, 10); // Convert the selected value to an integer
     setSelectedSubject(subjectId);
-    const selected = fetchedSubjects.find((subject) => subject.id === subjectId); // Find the selected subject
-    setSubject(selected ? selected.title : null)
+    const selected = fetchedSubjects.find((subject) => Number(subject.value) === subjectId); // Find the selected subject
+    setSubject(selected ? selected.label : null)
   };
 
   // Fetch Students for Results Entry
@@ -222,8 +223,8 @@ totalScore:
                 <NativeSelect
                   label="Subject"
                   data={fetchedSubjects.map((subject) => ({
-                    value: subject.id.toString(), // Store subject ID as value
-                    label: subject.title, // Display subject name as label
+                    value: subject.value, // Store subject ID as value
+                    label: subject.label, // Display subject name as label
                   }))}
                   onChange={handleSubjectChange}
                 />
