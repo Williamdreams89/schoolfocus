@@ -36,6 +36,18 @@ export interface StudentData {
   permanent_address: string;
   residential_address: string;
   guardian: any[]; // This will hold an array of Parent objects
-  profile_pic ?: File | null
+  profile_pic ?: File | null,
+
+  // Academic session
+  student_class?: string;
+  academic_session?: string;
+  admission_date?: string;
+  index_number: string;
+  class_division?: string;
+  tags : number []
 }
   
+export interface Class{
+  value: string;
+  label: string
+}
