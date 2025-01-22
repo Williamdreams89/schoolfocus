@@ -214,7 +214,11 @@ totalScore:
                 />
                 <NativeSelect
                   label="Class"
-                  data={["Select Class", "BS1", "BS2", "JHS 3"]}
+                  data={[
+                    "- Select Class -","KG 1", "KG 2", "KG 3",
+                    "BS 1", "BS 2", "BS 3", "BS 4", "BS 5", "BS 6",
+                    "JHS 1", "JHS 2", "JHS 3"
+                  ]}
                   value={studentClassName}
                   onChange={(e) => setStudentClassName(e.target.value)}
                 />

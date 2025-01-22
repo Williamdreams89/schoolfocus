@@ -1,7 +1,7 @@
 import { Backdrop, Box, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { Input, InputBase, Combobox, useCombobox, Modal, Text, TextInput } from "@mantine/core";
+import { Input, InputBase, Combobox, useCombobox, Modal, Text, TextInput, NativeSelect, SimpleGrid, Pill } from "@mantine/core";
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { styled } from "@mui/material/styles";
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -55,7 +55,38 @@ interface Parent {
 
 const API_BASE_URL = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
 
-const StudentDataGrid: React.FC = () => {
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+  width: "100%",
+  margin: theme.spacing(1, 0),
+  [`& .${breadcrumbsClasses.separator}`]: {
+    color: theme.palette.action.disabled,
+    margin: 1,
+  },
+  [`& .${breadcrumbsClasses.ol}`]: {
+    alignItems: "left",
+  },
+}));
+
+function NavbarBreadcrumbs() {
+  return (
+    <StyledBreadcrumbs
+      aria-label="breadcrumb"
+      separator={<NavigateNextRoundedIcon fontSize="small" />}
+    >
+      <Typography variant="body1">Dashboard</Typography>
+      <Typography variant="body1">Students</Typography>
+      <Typography
+        variant="body1"
+        sx={{ color: "text.primary", fontWeight: 600 }}
+      >
+        View Students
+      </Typography>
+    </StyledBreadcrumbs>
+  );
+}
+
+
+const ViewStudents = () => {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -69,61 +100,31 @@ const StudentDataGrid: React.FC = () => {
     throw new Error("There must be a context")
   }
 
+  // Preparing data from the filter
+  const [filterData, setFilterData] = React.useState<FilterForm>(
+    {student_class_name: "",
+      academic_year : ""}
+  )
+
+
   const {studentsManagementDetails, setStudentsManagementDetails} = context;
   // Fetch students data from API
   const fetchStudents = async () => {
     try {
       setStudentsManagementDetails({isLoading: true})
-      const response = await axios.get(`${API_BASE_URL}/api/studentsList/`);
+      const response = await axios.get(`${API_BASE_URL}/api/studentsList/${filterData.student_class_name}/${filterData.academic_year}/`);
       setRows(response.data);
       setStudentsManagementDetails({isLoading: false})
     } catch (error) {
+      setRows([])
       console.error('Error fetching students:', error);
       setStudentsManagementDetails({isLoading: false})
+      
     }
   };
 
-  // Handle account status toggle
-  const handleToggleAccountStatus = async (id: number, isActive: boolean) => {
-    try {
-      await axios.patch(`${API_BASE_URL}/students/${id}/`, { is_active: !isActive });
-      // Update the local state
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === id ? { ...row, is_active: !isActive } : row
-        )
-      );
-      alert(`Account status updated to ${!isActive ? 'active' : 'inactive'}.`);
-    } catch (error) {
-      console.error('Error updating account status:', error);
-      alert('Failed to update account status. Please try again.');
-    }
-  };
-  
-  const handleEditClick = (params:any) => {
-    setFormData({
-      id: params.row.id,
-      surname: params.row.surname || "",
-      first_name: params.row.first_name || "",
-      other_names: params.row.other_names || "",
-      registration_number: params.row.registration_number || "",
-      date_of_birth: params.row.date_of_birth || "",
-      student_email: params.row.student_email || "",
-      contact_phone: params.row.contact_phone || "",
-      permanent_address: params.row.permanent_address || "",
-      residential_address: params.row.residential_address || "",
-      parents: params.row.parents || [],
-    });
-    setOpen(true);
-  };
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
 
 
-
-  
   // Student Detail Page confs
   const [studentDetailData, setStudentDetailData] = React.useState<any>()
   const handleViewStudentDetail = async (id:number) =>{
@@ -181,12 +182,12 @@ const cancelDelete = () => {
       headerName: 'Photo',
       width: 80,
       renderCell: (params: GridRenderCellParams) => (
-        <Box>
+        <Box sx={{display:'flex', alignItems:'center'}}>
           <Tooltip title="View profile">
           <img
             src={params.value || 'https://via.placeholder.com/40?text=A'} // Default avatar if profile_pic is missing
             alt="student"
-            style={{ width: 40, height: 40, borderRadius: '50%', cursor:'pointer' }}
+            style={{ width: 40, height: 40, borderRadius: '50%', cursor:'pointer', marginTop:'30px' }}
             onClick={() => handleViewStudentDetail(params.row.id)}
           />
           </Tooltip>
@@ -210,57 +211,14 @@ const cancelDelete = () => {
       renderCell: (params: GridRenderCellParams) => {
         const parents = (params.value as Parent[]) || [];
         return (
-          <Box>
+          <SimpleGrid
+                  cols={2}
+                  style={{marginTop:'30px'}}
+                >
             {parents.length > 0 ? (
               parents.map((parent, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    mb: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100px',
-                  }}
-                >
-                  <Typography variant="subtitle2">{parent.guardian_name}</Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {/* {parent.guardian_phone} */}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => window.open(`tel:${parent.guardian_phone}`, '_blank')}
-                    >
-                      <PhoneIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="success"
-                      onClick={() =>
-                        window.open(`https://wa.me/${parent.guardian_phone.replace(/\D/g, '')}`, '_blank')
-                      }
-                    >
-                      <WhatsAppIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => window.open(`mailto:${parent.guardian_email}`, '_blank')}
-                    >
-                      <EmailIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="secondary"
-                      onClick={() => alert(`Initiate chat with ${parent.guardian_name}`)}
-                    >
-                      <ChatIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
+                  <Pill key={index} size="xs" style={{backgroundColor:'white', border:'1px solid rgba(0,0,0,.5)', display:'flex', justifyContent:'center', alignItems:'center'}}>{parent.guardian_name}</Pill>
+                
               ))
             ) : (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -269,7 +227,7 @@ const cancelDelete = () => {
                 </Typography>
               </Box>
             )}
-          </Box>
+          </SimpleGrid>
         );
       },
     },
@@ -363,8 +321,43 @@ const cancelDelete = () => {
 
   const navigate = useNavigate()
 
+  interface FilterForm{
+    student_class_name: string;
+    academic_year : string;
+  }
+  const isSmallScreen = useMediaQuery("(max-width:1045px)")
+  
   return (
-    <Box sx={{ height: 600, width: '100%', }}>
+    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      <NavbarBreadcrumbs />
+      <Card
+        sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem", justifyContent:'space-between' }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem" }}>
+            <FilterAltIcon />
+            <Typography component="h4">Select Class to View</Typography>
+        </Box>
+        <Button variant="outlined" onClick={()=>navigate("/people/students/enrollment")}> + New Student</Button>
+      </Card>
+      <Card sx={{ width:'100%',mb:'.5rem'}}>
+        <Box sx={{display:'grid', gridTemplateColumns: !isSmallScreen?"repeat(4, minmax(200px, 1fr))":"repeat(1, minmax(200px, 1fr))", gap:'2rem', width:'100%', mb:'2rem'}}>
+          <NativeSelect label="Class" data={[
+            "- Select Class -","KG 1", "KG 2", "KG 3",
+            "BS 1", "BS 2", "BS 3", "BS 4", "BS 5", "BS 6",
+            "JHS 1", "JHS 2", "JHS 3"
+          ]}
+          value={filterData.student_class_name}
+          onChange={(e)=>setFilterData({...filterData, student_class_name: e.target.value})} 
+          required />
+          <NativeSelect label="Class Division" data={["- Select class division -", "All"]} required />
+          <NativeSelect label="Academic Year" data={["- Select Academic Year -", `${new Date().getFullYear()}`]} value={filterData.academic_year} onChange={(e)=>setFilterData({...filterData, academic_year: e.target.value})} required />
+        </Box>
+        <Box sx={{width:'100%', display:'flex', justifyContent:'center'}}>
+            <Button variant="contained" color="primary" onClick={fetchStudents}>View Students</Button>
+        </Box>
+      </Card>
+      <Card>
+      <Box sx={{ height: 600, width: '100%', }}>
       {rows.length !== 0 ? <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Box>
@@ -587,275 +580,6 @@ open={open}
       </Modal>
 </Backdrop>}
     </Box>
-  );
-};
-
-
-
-
-const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-  width: "100%",
-  margin: theme.spacing(1, 0),
-  [`& .${breadcrumbsClasses.separator}`]: {
-    color: theme.palette.action.disabled,
-    margin: 1,
-  },
-  [`& .${breadcrumbsClasses.ol}`]: {
-    alignItems: "left",
-  },
-}));
-
-function NavbarBreadcrumbs() {
-  return (
-    <StyledBreadcrumbs
-      aria-label="breadcrumb"
-      separator={<NavigateNextRoundedIcon fontSize="small" />}
-    >
-      <Typography variant="body1">Dashboard</Typography>
-      <Typography variant="body1">Students</Typography>
-      <Typography
-        variant="body1"
-        sx={{ color: "text.primary", fontWeight: 600 }}
-      >
-        View Students
-      </Typography>
-    </StyledBreadcrumbs>
-  );
-}
-
-const classNames = [
-  "KG1",
-  "KG2",
-  "KG3",
-  "BS1",
-  "BS2",
-  "BS3",
-  "BS4",
-  "BS5",
-  "BS6",
-  "JHS1",
-  "JHS2",
-  "JHS3",
-  "JHS3",
-  "SHS3",
-  "SHS3",
-  "SHS3",
-];
-
-const classDivision = ["A"]
-
-const academicSession = [
-    "2024-2025",
-    "2025 -2026"
-]
-
-const accountStatus = [
-    "All",
-    "Active",
-    "Deactivated",
-]
-
-const ViewStudents = () => {
-
-    // Class Names
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const [valueClassName, setValueClassName] = useState<string | null>(null);
-
-  const options = classNames.map((item) => (
-    <Combobox.Option value={item} key={item}>
-      {item}
-    </Combobox.Option>
-  ));
-
-    // Class Names
-  const classDivisionCombobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const [valueClassDivision, setValueClassDivision] = useState<string | null>(null);
-
-  const classDivisionOptions = classDivision.map((item) => (
-    <Combobox.Option value={item} key={item}>
-      {item}
-    </Combobox.Option>
-  ));
-    // Academic Session
-  const academicSessionCombobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const [valueacademicSession, setValueacademicSession] = useState<string | null>(null);
-
-  const academicSessionOptions = academicSession.map((itemiee) => (
-    <Combobox.Option value={itemiee} key={itemiee}>
-      {itemiee}
-    </Combobox.Option>
-  ));
-
-    // Academic Session
-  const accountStatusCombobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const [valueaccountStatus, setValueaccountStatus] = useState<string | null>(null);
-
-  const accountStatusOptions = accountStatus.map((itemi) => (
-    <Combobox.Option value={itemi} key={itemi}>
-      {itemi}
-    </Combobox.Option>
-  ));
-
-  const isSmallScreen = useMediaQuery("(max-width:1045px)")
-  const navigate = useNavigate()
-  return (
-    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-      <NavbarBreadcrumbs />
-      <Card
-        sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem", justifyContent:'space-between' }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem" }}>
-            <FilterAltIcon />
-            <Typography component="h4">Select Class to View</Typography>
-        </Box>
-        <Button variant="outlined" onClick={()=>navigate("/people/students/enrollment")}> + New Student</Button>
-      </Card>
-      <Card sx={{ width:'100%',mb:'.5rem'}}>
-        <Box sx={{display:'grid', gridTemplateColumns: !isSmallScreen?"repeat(4, minmax(200px, 1fr))":"repeat(1, minmax(200px, 1fr))", gap:'2rem', width:'100%', mb:'2rem'}}>
-        <Box>
-          <label htmlFor="">Class *</label>
-          <Combobox
-            store={combobox}
-            onOptionSubmit={(val) => {
-              setValueClassName(val);
-              combobox.closeDropdown();
-            }}
-          >
-            <Combobox.Target>
-              <InputBase
-                component="button"
-                type="button"
-                pointer
-                rightSection={<Combobox.Chevron />}
-                rightSectionPointerEvents="none"
-                onClick={() => combobox.toggleDropdown()}
-              >
-                {valueClassName || (
-                  <Input.Placeholder>Pick value</Input.Placeholder>
-                )}
-              </InputBase>
-            </Combobox.Target>
-
-            <Combobox.Dropdown>
-              <Combobox.Options mah={200} style={{ overflowY: "auto" }}>
-                {options}
-              </Combobox.Options>
-            </Combobox.Dropdown>
-          </Combobox>
-        </Box>
-        <Box>
-          <label htmlFor="">Class Division *</label>
-          <Combobox
-            store={classDivisionCombobox}
-            onOptionSubmit={(val) => {
-              setValueClassDivision(val);
-              classDivisionCombobox.closeDropdown();
-            }}
-          >
-            <Combobox.Target>
-              <InputBase
-                component="button"
-                type="button"
-                pointer
-                rightSection={<Combobox.Chevron />}
-                rightSectionPointerEvents="none"
-                onClick={() => classDivisionCombobox.toggleDropdown()}
-              >
-                {valueClassDivision || (
-                  <Input.Placeholder>Select Class First</Input.Placeholder>
-                )}
-              </InputBase>
-            </Combobox.Target>
-
-            <Combobox.Dropdown>
-              <Combobox.Options mah={200} style={{ overflowY: "auto" }}>
-                {classDivisionOptions}
-              </Combobox.Options>
-            </Combobox.Dropdown>
-          </Combobox>
-        </Box>
-        <Box>
-          <label htmlFor="">Academic Session *</label>
-          <Combobox
-            store={academicSessionCombobox}
-            onOptionSubmit={(val) => {
-              setValueacademicSession(val);
-              academicSessionCombobox.closeDropdown();
-            }}
-          >
-            <Combobox.Target>
-              <InputBase
-                component="button"
-                type="button"
-                pointer
-                rightSection={<Combobox.Chevron />}
-                rightSectionPointerEvents="none"
-                onClick={() => academicSessionCombobox.toggleDropdown()}
-              >
-                {valueacademicSession || (
-                  <Input.Placeholder>Select Academic session</Input.Placeholder>
-                )}
-              </InputBase>
-            </Combobox.Target>
-
-            <Combobox.Dropdown>
-              <Combobox.Options mah={200} style={{ overflowY: "auto" }}>
-                {academicSessionOptions}
-              </Combobox.Options>
-            </Combobox.Dropdown>
-          </Combobox>
-        </Box>
-        <Box>
-          <label htmlFor="">Account Status *</label>
-          <Combobox
-            store={accountStatusCombobox}
-            onOptionSubmit={(val) => {
-              setValueaccountStatus(val);
-              accountStatusCombobox.closeDropdown();
-            }}
-          >
-            <Combobox.Target>
-              <InputBase
-                component="button"
-                type="button"
-                pointer
-                rightSection={<Combobox.Chevron />}
-                rightSectionPointerEvents="none"
-                onClick={() => accountStatusCombobox.toggleDropdown()}
-              >
-                {valueaccountStatus || (
-                  <Input.Placeholder>Select Account Status</Input.Placeholder>
-                )}
-              </InputBase>
-            </Combobox.Target>
-
-            <Combobox.Dropdown>
-              <Combobox.Options mah={200} style={{ overflowY: "auto" }}>
-                {accountStatusOptions}
-              </Combobox.Options>
-            </Combobox.Dropdown>
-          </Combobox>
-        </Box>
-
-        </Box>
-        <Box sx={{width:'100%', display:'flex', justifyContent:'center'}}>
-            <Button variant="contained" color="primary">View Students</Button>
-        </Box>
-      </Card>
-      <Card>
-        <StudentDataGrid />
       </Card>
 
     </Box>

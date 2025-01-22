@@ -32,17 +32,28 @@ class AcademicYear(models.Model):
     def save(self, *args, **kwargs):
         self.year = tz.now().year
         super().save(*args, **kwargs)
-    
-class StudentClass(models.Model):
-    name = models.CharField(max_length=50)  # Example: "JS1"
-    academic_year = models.CharField(max_length=100, blank=True)
+
+class Tag(models.Model):
+    title = models.CharField(max_length=100, blank=True, null=True)
+
+class AcademicSession(models.Model):
+    year_one = models.CharField(max_length=100, blank=True, null=True)
+    session = models.CharField(max_length=100, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.academic_year = tz.now().year
+        self.name = f"{tz.now().year} - {tz.now().year}"
         super().save(*args, **kwargs)
+    
+class StudentClass(models.Model):
+    name = models.CharField(max_length=50) 
+    class_division = models.CharField(max_length=100, blank=True, null=True, default="A")
+    academic_year = models.CharField(blank=True, default="2025", null=True, max_length=100)
 
+    def save(self, *args, **kwargs):
+        self.academic_year = tz.now().year    
+    
     def __str__(self):
-        return f"{self.name} - {self.academic_year}"
+        return f"{self.name}"
 
 class Subject(models.Model):
     title = models.CharField(max_length=100)
@@ -86,9 +97,11 @@ class Student(models.Model):
     residential_address = models.TextField(blank=True, null=True)
 
     date_added = models.DateTimeField(auto_now_add = True, null= True, blank=True)
+    admission_date = models.DateField(auto_now_add=True, blank=True, null=True)
 
     # Academic Information
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
+    tag = models.ManyToManyField(Tag, blank=True, null=True)
 
 
     def __str__(self):

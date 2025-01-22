@@ -180,7 +180,7 @@ const StudentDetailPage = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Typography>
-                <strong>Registration No:</strong> {studentDetailData?.registration_number}
+                <strong>Registration No:</strong> {studentDetailData?.index_number}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -190,12 +190,12 @@ const StudentDetailPage = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography>
-                <strong>Class Category:</strong> PRIMARY
+                <strong>Class Category:</strong> Null
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography>
-                <strong>Class:</strong> P3
+                <strong>Class:</strong> {studentDetailData?.student_class_name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>

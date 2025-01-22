@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent, Results, Subject, StudentClass
+from .models import Student, GuadianOrParent, Results, Subject, StudentClass, Tag
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,9 +45,37 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class NewStudentSerializer(serializers.ModelSerializer):
+    student_class = serializers.CharField()  # Accept class name as input
+    guardian = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(queryset=GuadianOrParent.objects.all()),
+        write_only=True,
+    )  # Accept a list of guardian IDs
+
     class Meta:
         model = Student
-        fields = "__all__"
+        fields = [
+            'email', 'first_name', 'last_name', 'gender', 'contact_phone',
+            'student_class', 'registration_number', 'date_of_birth',
+            'profile_pic', 'admission_date', 'nationality', 'id_or_birth_cert_number',
+            'religion', 'blood_group', 'permanent_address', 'residential_address',
+            'guardian',
+        ]
+
+    def create(self, validated_data):
+        # Extract the guardians and student_class from validated data
+        guardians = validated_data.pop('guardian', [])
+        class_name = validated_data.pop('student_class')
+
+        # Get or create the StudentClass instance
+        student_class, created = StudentClass.objects.get_or_create(name=class_name)
+
+        # Create the student instance
+        student = Student.objects.create(student_class=student_class, **validated_data)
+
+        # Set the guardians for the student
+        student.guardian.set(guardians)  # Assign many-to-many relationships
+
+        return student
 
 class ResultsSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.full_name', read_only=True)
@@ -116,3 +144,8 @@ class IndexNumberGeneratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['index_num']
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"

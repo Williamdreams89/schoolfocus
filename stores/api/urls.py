@@ -3,7 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('student/<int:pk>/', StudentEditDetailsView.as_view(), name='student-list'),
-    path('studentsList/', StudentListView.as_view(), name='student-list'),
+    path('studentsList/<str:student_class_name>/<str:academic_year>/', StudentListView.as_view(), name='student-list'),
     path('enroll-student/', EnrollStudentView.as_view(), name='enroll-student'),
     path('add-guardian/', AddGuadianOrParentView.as_view(), name=''),
     path('parentorguardian/', ParentOrGuardianView.as_view(), name=''),
@@ -32,5 +32,6 @@ urlpatterns = [
         name='subjects-in-results',
     ),
     path("class/", StudentClassAPIView.as_view()),
-    path('indexer/', GenerateIndexNumberAPIView.as_view())
+    path('indexer/', GenerateIndexNumberAPIView.as_view()),
+    path('tags/', TagListCreateAPIView.as_view())
 ]

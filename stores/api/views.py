@@ -37,13 +37,24 @@ import openpyxl
 
 class EnrollStudentView(generics.GenericAPIView):
     serializer_class = NewStudentSerializer
-    def post(self, request):
+
+    def post(self, request, *args, **kwargs):
+        # Validate and serialize the input data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data
-        serializer.save()
 
-        return Response({"message":"Student enrolled successfully", "data":serializer.data})
+        # Save the validated data and create the student
+        student = serializer.save()
+
+        # Response data including the student details
+        return Response(
+            {
+                "message": "Student enrolled successfully",
+                "data": serializer.data,  # Serialized data of the student
+            },
+            status=status.HTTP_201_CREATED,
+        )
+    
 
 class AddGuadianOrParentView(generics.GenericAPIView):
     serializer_class = GuadianOrParentSerializer
@@ -299,7 +310,20 @@ class StudentListView(generics.ListAPIView):
     serializer_class = StudentSerializer
 
     def get_queryset(self):
-        return self.queryset.order_by("-date_added")
+        # Extract path parameters from self.kwargs
+        student_class_name = self.kwargs.get('student_class_name')
+        student_class_division = self.kwargs.get('student_class_division')
+        academic_year = self.kwargs.get('academic_year')
+
+        # Filter queryset based on path parameters
+        queryset = self.queryset.filter(
+            student_class__name=student_class_name,
+            # student_class__class_division=student_class_division,
+            student_class__academic_year=academic_year
+        )
+
+        return queryset.order_by("-date_added")
+
 
 class ParentOrGuardianView(generics.ListCreateAPIView):
     serializer_class = GuadianOrParentSerializer
@@ -623,3 +647,7 @@ class GenerateIndexNumberAPIView(APIView):
         current_year = timezone.now().year
         new_id  = f"{current_year}/{str(last_student_id+1).zfill(4)}"
         return Response({"generated_id": new_id})
+
+class TagListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all().order_by("title")

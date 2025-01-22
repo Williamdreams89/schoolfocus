@@ -34,7 +34,7 @@ class SubjectAdmin(admin.ModelAdmin):
 admin.site.register(Subject, SubjectAdmin)
 
 class ClassAdmin(admin.ModelAdmin):
-    list_display = ['name', 'academic_year']
+    list_display = ['name',]
 
 class ResultAdmin(admin.ModelAdmin):
     list_display = ["student",'Class', "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks"]
