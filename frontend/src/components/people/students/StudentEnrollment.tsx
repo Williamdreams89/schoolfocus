@@ -89,7 +89,7 @@ export function NavbarBreadcrumbs() {
 }
 
 const steps = [
-  "Parent/Guardian Information",
+  "Parent Information",
   "Student Information",
   "Academic Information",
   "Contact Information",
@@ -218,21 +218,21 @@ const StudentEnrollment = () => {
   const { studentsManagementDetails, setStudentsManagementDetails } = context;
 
   // Mock function to fetch parents already enrolled
+  const fetchParents = async () => {
+    try {
+      setStudentsManagementDetails({ isLoading: true });
+      const { data } = await axios.get(
+        "http://127.0.0.1:8000/api/parentorguardian/"
+      );
+      console.log("Fetched parents data:", data); // Debug log
+      setParentsList(data);
+      setStudentsManagementDetails({ isLoading: false });
+    } catch (error) {
+      console.error("Error fetching parents:", error);
+      setStudentsManagementDetails({ isLoading: false });
+    }
+  };
   useEffect(() => {
-    const fetchParents = async () => {
-      try {
-        setStudentsManagementDetails({ isLoading: true });
-        const { data } = await axios.get(
-          "http://127.0.0.1:8000/api/parentorguardian/"
-        );
-        console.log("Fetched parents data:", data); // Debug log
-        setParentsList(data);
-        setStudentsManagementDetails({ isLoading: false });
-      } catch (error) {
-        console.error("Error fetching parents:", error);
-        setStudentsManagementDetails({ isLoading: false });
-      }
-    };
     fetchParents();
   }, []);
 
@@ -541,7 +541,6 @@ const StudentEnrollment = () => {
               // value={formData.class_name}
               onChange={(event: any)=>{
                 setFormData({...formData, student_class: event.target.value})
-                alert(`class = ${event.target.value}`)
               }}
               required
             />
@@ -551,7 +550,6 @@ const StudentEnrollment = () => {
               value={formData.class_division}
               onChange={(event: any)=>{
                 setFormData({...formData, class_division: event.target.value})
-                alert(`class div = ${event.target.value}`)
               }}
               required
             />
@@ -561,7 +559,6 @@ const StudentEnrollment = () => {
               value={formData.academic_session}
               onChange={(event: any)=>{
                 setFormData({...formData, academic_session: event.target.value})
-                alert(`session = ${event.target.value}`)
               }}
               required
             />
@@ -1017,6 +1014,7 @@ const StudentEnrollment = () => {
         }
       );
       alert("Guardians successfully added!");
+      await fetchParents()
       console.log(response.data);
       handleCloseModal();
       setIsLoadin(false);
@@ -1128,7 +1126,7 @@ const StudentEnrollment = () => {
                       {guardians.map((guardian, index) => (
                         <Box key={index}>
                           <Group>
-                            <h4>{guardian.relationship}</h4>
+                            <h4>{new String(guardian.relationship).toUpperCase()}</h4>
                             {guardians.length > 1 && (
                               <ActionIcon
                                 color="red"

@@ -285,8 +285,8 @@ const ScoreEntryMain: React.FC = () => {
               </SimpleGrid>
             </MantineProvider>
             <Box sx={{ textAlign: "center", marginTop: "1rem" }}>
-              <Button variant="contained" onClick={fetchStudentsForResultsEntry}>
-                <BookmarkAddedIcon /> Fetch Students
+              <Button variant="contained" color="primary" size="small" onClick={fetchStudentsForResultsEntry}>
+                <BookmarkAddedIcon /> Manage Students Score
               </Button>
             </Box>
           </Card>
