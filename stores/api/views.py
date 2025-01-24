@@ -250,6 +250,7 @@ class BulkEnrollStudentsAPIViewThree(GenericAPIView):
                     "Guardian Occupation": "guardian_occupation",
                     "Guardian Phone": "guardian_phone",
                     "Guardian Address": "guardian_address",
+                    "Student Class": "student_class",  # Added mapping for student class
                 }
 
                 # Rename columns in the DataFrame to match the model fields
@@ -277,6 +278,15 @@ class BulkEnrollStudentsAPIViewThree(GenericAPIView):
                     # Remove NaN values from guardian_data
                     guardian_data = {k: v for k, v in guardian_data.items() if pd.notna(v)}
 
+                    # Fetch or create the student class
+                    student_class_name = row.get("student_class")
+                    if not student_class_name:
+                        return Response(
+                            {"error": f"Missing Student Class in row {index + 1}."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    student_class, created = StudentClass.objects.get_or_create(name=student_class_name)
+
                     # Create or retrieve the guardian
                     guardian, created = GuadianOrParent.objects.get_or_create(
                         phone_number=guardian_data.get("phone_number"), defaults=guardian_data
@@ -287,9 +297,14 @@ class BulkEnrollStudentsAPIViewThree(GenericAPIView):
                     registration_number = f"2024/{str(new_id).zfill(4)}"
                     student_data["registration_number"] = registration_number
 
+                    # Assign the StudentClass instance to student_class field
+                    student_data["student_class"] = student_class  # Correctly assign the actual instance
+
                     # Create a Student object with valid fields
                     valid_fields = [field.name for field in Student._meta.get_fields()]
-                    student = Student(**{k: v for k, v in student_data.items() if k in valid_fields})
+                    student = Student(
+                        **{k: v for k, v in student_data.items() if k in valid_fields}
+                    )
                     student.save()
 
                     # Assign the guardian to the student
@@ -303,7 +318,8 @@ class BulkEnrollStudentsAPIViewThree(GenericAPIView):
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
     
 class StudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
