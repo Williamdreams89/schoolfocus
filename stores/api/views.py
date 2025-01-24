@@ -651,3 +651,61 @@ class GenerateIndexNumberAPIView(APIView):
 class TagListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = TagSerializer
     queryset = Tag.objects.all().order_by("title")
+
+class ResultDetailAPIView(APIView):
+    def get(self, request, academic_year, exam_session, class_name, subject_title):
+        # Query the Results model
+        results = Results.objects.filter(
+            academic_year=academic_year,
+            exam_session=exam_session,
+            student__student_class__name=class_name,
+            subject__title=subject_title
+        ).select_related('student', 'subject')  # Optimize query
+
+        # Format the response data
+        response_data = []
+        for result in results:
+            response_data.append({
+                "index_number": result.student.index_number,
+                "name": f"{result.student.first_name} {result.student.last_name}",
+                "scores": {
+                    result.subject.title: {
+                        "continuous": result.continuous_assessment,
+                        "exams": result.exams_score,
+                        "total": result.total_score,
+                    }
+                }
+            })
+
+        # Return the response
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+
+class ResultDetailAPIView(APIView):
+    def get(self, request, academic_year, exam_session, class_name, subject_title):
+        # Query the Results model
+        results = Results.objects.filter(
+            academic_year=academic_year,
+            exam_session=exam_session,
+            student__student_class__name=class_name,
+            subject__title=subject_title
+        ).select_related('student', 'subject')  # Optimize query
+
+        # Format the response data
+        response_data = []
+        for result in results:
+            response_data.append({
+                "index_number": result.student.index_number,
+                "id": result.student.id,
+                "full_name": f"{result.student.first_name} {result.student.last_name}",
+                "scores": {
+                    result.subject.title: {
+                        "continuous": result.continuous_assessment,
+                        "exams": result.exams_score,
+                        "total": result.total_score,
+                    }
+                }
+            })
+
+        # Return the response
+        return Response(response_data, status=status.HTTP_200_OK)

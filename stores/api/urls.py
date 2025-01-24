@@ -33,5 +33,10 @@ urlpatterns = [
     ),
     path("class/", StudentClassAPIView.as_view()),
     path('indexer/', GenerateIndexNumberAPIView.as_view()),
-    path('tags/', TagListCreateAPIView.as_view())
+    path('tags/', TagListCreateAPIView.as_view()),
+    path(
+        'results/per_subject/review/<str:academic_year>/<str:exam_session>/<str:class_name>/<str:subject_title>/',
+        ResultDetailAPIView.as_view(),
+        name='result-detail'
+    ),
 ]

@@ -33,9 +33,13 @@ interface Student {
   id: number;
   index_number: string;
   full_name: string;
-  continuousAssessment: number | "";
-  examination: number | "";
-  totalScore: number;
+  scores?: {
+    [subject: string]: {
+      continuous?: number;
+      exams?: number;
+      total?: number;
+    };
+  } | null;
   absent: boolean;
 }
 
@@ -81,16 +85,43 @@ const ScoreEntryMain: React.FC = () => {
     setSelectedSubject(event.target.value)
   };
 
+  const [forDataOne, setForDataOne] = React.useState<any []>([])
+  const [forDataTwo, setForDataTwo] = React.useState<any []>([])
+
   // Fetch Students for Results Entry
   const fetchStudentsForResultsEntry = async () => {
-    alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${selectedSubject}`)
+    alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${selectedSubject}`);
+    
     if (examSession && examType && studentClassName && selectedSubject) {
       try {
         setStudentsManagementDetails({ isLoading: true });
-        const { data } = await axios.get(
-          `http://127.0.0.1:8000/api/results/${studentClassName}/`
-        );
-        setFetchedStudents(data);
+  
+        // Fetch results for the selected subject and exam session
+        const response = await axios.get(`http://127.0.0.1:8000/api/results/per_subject/review/${new Date().getFullYear()}/${examSession}/${studentClassName}/${selectedSubject}/`);
+        const { data: studentData } = await axios.get(`http://127.0.0.1:8000/api/results/${studentClassName}/`);
+        
+        // Combine students and results based on matching full_name
+        const combineStudents = studentData.map((student: any) => {
+          // Find the matching result for the current student based on `index_number`
+          const matchingResult = response.data.find(
+              (result: any) => result.index_number === student.index_number
+          );
+      
+          // Return the student object with scores if a match is found, or just the student object
+          return {
+              ...student,
+              scores: matchingResult ? matchingResult.scores : null, // Attach scores or null if no match
+          };
+      });
+      
+      // Log to confirm the output
+      console.log(combineStudents);
+      
+        
+
+        console.log("matched=", combineStudents)
+  
+        setFetchedStudents(combineStudents);
         setStudentsManagementDetails({ isLoading: false });
       } catch (error) {
         setFetchedStudents([]);
@@ -102,31 +133,31 @@ const ScoreEntryMain: React.FC = () => {
       alert("All fields must be filled.");
     }
   };
+  
+
+  
 
   // Handle Input Change
-  const handleInputChange = (
-    id: number,
-    field: keyof Pick<Student, "continuousAssessment" | "examination">,
-    value: number | ""
-  ) => {
+  const handleInputChange = (studentId: number, field: string, subject: string, value: number) => {
     setFetchedStudents((prevStudents) =>
       prevStudents.map((student) =>
-        student.id === id
+        student.id === studentId
           ? {
               ...student,
-              [field]: value,
-totalScore:
-  (field === "continuousAssessment"
-    ? Number(value)
-    : Number(student.continuousAssessment) || 0) +
-  (field === "examination"
-    ? Number(value)
-    : Number(student.examination) || 0),
+              scores: {
+                ...student.scores,
+                [subject]: {
+                  ...student.scores?.[subject],
+                  [field]: value,
+                  total: (student.scores?.[subject]?.continuous || 0) + (student.scores?.[subject]?.exams || 0),
+                },
+              },
             }
           : student
       )
     );
   };
+  
 
   // Handle Absent Toggle
   const handleAbsentChange = (id: number) => {
@@ -142,29 +173,45 @@ totalScore:
   // Handle Submit
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+  
     try {
+      // Create the payload
       const payload = fetchedStudents.map((student) => ({
         student: Number(student.id),
         subject: selectedSubject,
-        continuous_assessment: student.continuousAssessment,
-        exams_score: student.examination,
+        continuous_assessment: student.scores?.[selectedSubject]?.continuous || 0,
+        exams_score: student.scores?.[selectedSubject]?.exams || 0,
         absent: student.absent,
         academic_year: "2025",
         exam_session: examSession,
       }));
+  
+      // Set loading state
       setStudentsManagementDetails({ isLoading: true });
+  
+      // Make the POST request
       await axios.post(
         `http://127.0.0.1:8000/api/results/${studentClassName}/`,
         payload
       );
+  
+      // Reset loading state and show success message
       setStudentsManagementDetails({ isLoading: false });
       alert("Scores successfully saved!");
     } catch (error) {
+      // Reset loading state and handle errors
       setStudentsManagementDetails({ isLoading: false });
       console.error("Error saving scores:", error);
-      alert("Error saving scores.");
+  
+      // Display error details if available
+      if (axios.isAxiosError(error) && error.response?.data) {
+        alert(`Error saving scores: ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert("Error saving scores.");
+      }
     }
   };
+  
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
@@ -279,61 +326,61 @@ totalScore:
     </Box>
         <form onSubmit={handleSubmit}>
           <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Index No</TableCell>
-                  <TableCell>Student</TableCell>
-                  <TableCell>Continuous Assessment</TableCell>
-                  <TableCell>Examination</TableCell>
-                  <TableCell>Total Score</TableCell>
-                  <TableCell>Absent</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {fetchedStudents.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell>{student.index_number}</TableCell>
-                    <TableCell>{student.full_name}</TableCell>
-                    <TableCell>
-                      <TextInput
-                        type="number"
-                        disabled={student.absent}
-                        value={student.continuousAssessment || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            student.id,
-                            "continuousAssessment",
-                            parseInt(e.target.value) || 0
-                          )
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextInput
-                        type="number"
-                        disabled={student.absent}
-                        value={student.examination || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            student.id,
-                            "examination",
-                            parseInt(e.target.value) || 0
-                          )
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>{student.totalScore}</TableCell>
-                    <TableCell>
-                      <Checkbox
-                        checked={student.absent}
-                        onChange={() => handleAbsentChange(student.id)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <Table>
+  <TableHead>
+    <TableRow>
+      <TableCell>Student Name</TableCell>
+      <TableCell>Continuous Assessment</TableCell>
+      <TableCell>Examination</TableCell>
+      <TableCell>Total Score</TableCell>
+      <TableCell>Absent</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    {fetchedStudents.map((student) => (
+      <TableRow key={student.id}>
+        <TableCell>{student.full_name}</TableCell>
+        
+        {/* Continuous Assessment */}
+        <TableCell>
+          <TextInput
+            value={
+              student.scores?.[selectedSubject]?.continuous || ""
+            }
+            onChange={(e) =>
+              handleInputChange(student.id, "continuousAssessment", selectedSubject, Number(e.target.value))
+            }
+          />
+        </TableCell>
+
+        {/* Examination */}
+        <TableCell>
+          <TextInput
+            value={student.scores?.[selectedSubject]?.exams || ""}
+            onChange={(e) =>
+              handleInputChange(student.id, "examination", selectedSubject, Number(e.target.value))
+            }
+          />
+        </TableCell>
+
+        {/* Total Score */}
+        <TableCell>
+          {student.scores?.[selectedSubject]?.total || 0}
+        </TableCell>
+
+        {/* Absent Checkbox */}
+        <TableCell>
+          <Checkbox
+            checked={student.absent}
+            onChange={() => handleAbsentChange(student.id)}
+          />
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+
+
           </TableContainer>
           <Box sx={{ textAlign: "center", marginTop: "1rem" }}>
             <Button variant="contained" type="submit">
