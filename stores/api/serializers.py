@@ -85,6 +85,35 @@ class ResultsSerializer(serializers.ModelSerializer):
     subject_name = serializers.CharField(source= 'subject.title')
     rank = serializers.SerializerMethodField()
 
+    def create(self, validated_data):
+        # Pop the subject title from the validated data
+        subject_title = validated_data.pop('subject')['title']
+
+        # Retrieve the subject instance using the title
+        try:
+            subject = Subject.objects.get(title=subject_title)
+        except Subject.DoesNotExist:
+            raise serializers.ValidationError({"subject": f"Subject with title '{subject_title}' does not exist."})
+
+        # Replace the subject key with the actual instance
+        validated_data['subject'] = subject
+
+        # Handle student lookup if needed
+        student = validated_data.get('student')
+
+        # Use update_or_create for saving the result
+        result, created = Results.objects.update_or_create(
+            student=student,
+            subject=subject,
+            academic_year=validated_data.get('academic_year'),
+            exam_session=validated_data.get('exam_session'),
+            defaults=validated_data
+        )
+        return result
+
+
+
+
     def get_rank(self, obj):
         # Filter results based on academic year, exam session, and class
         academic_year = obj.academic_year
@@ -109,9 +138,8 @@ class ResultsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'student_name','student_roll', 'student_class', 'academic_year', 
             'exam_session', 'continuous_assessment', 'exams_score', 'grade', 
-            'remarks', 'absent', 'published', 'student', 'subject','subject_name','total_score', 'rank'
+            'remarks', 'absent', 'published', 'student','subject_name','total_score', 'rank'
         ]
-fields = "__all__"
 
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()

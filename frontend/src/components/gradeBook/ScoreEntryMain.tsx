@@ -33,6 +33,9 @@ interface Student {
   id: number;
   index_number: string;
   full_name: string;
+  continuousAssessment?: number | "";
+  examination?: number | "";
+  totalScore?: number;
   scores?: {
     [subject: string]: {
       continuous?: number;
@@ -90,7 +93,7 @@ const ScoreEntryMain: React.FC = () => {
 
   // Fetch Students for Results Entry
   const fetchStudentsForResultsEntry = async () => {
-    alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${selectedSubject}`);
+    alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${subject}`);
     
     if (examSession && examType && studentClassName && selectedSubject) {
       try {
@@ -178,13 +181,15 @@ const ScoreEntryMain: React.FC = () => {
       // Create the payload
       const payload = fetchedStudents.map((student) => ({
         student: Number(student.id),
-        subject: selectedSubject,
+        subject_name: selectedSubject,
         continuous_assessment: student.scores?.[selectedSubject]?.continuous || 0,
         exams_score: student.scores?.[selectedSubject]?.exams || 0,
         absent: student.absent,
         academic_year: "2025",
         exam_session: examSession,
       }));
+
+      console.log("payload=", payload)
   
       // Set loading state
       setStudentsManagementDetails({ isLoading: true });
@@ -340,41 +345,44 @@ const ScoreEntryMain: React.FC = () => {
     {fetchedStudents.map((student) => (
       <TableRow key={student.id}>
         <TableCell>{student.full_name}</TableCell>
-        
-        {/* Continuous Assessment */}
         <TableCell>
-          <TextInput
-            value={
-              student.scores?.[selectedSubject]?.continuous || ""
-            }
-            onChange={(e) =>
-              handleInputChange(student.id, "continuousAssessment", selectedSubject, Number(e.target.value))
-            }
-          />
-        </TableCell>
-
-        {/* Examination */}
-        <TableCell>
-          <TextInput
-            value={student.scores?.[selectedSubject]?.exams || ""}
-            onChange={(e) =>
-              handleInputChange(student.id, "examination", selectedSubject, Number(e.target.value))
-            }
-          />
-        </TableCell>
-
-        {/* Total Score */}
-        <TableCell>
-          {student.scores?.[selectedSubject]?.total || 0}
-        </TableCell>
-
-        {/* Absent Checkbox */}
-        <TableCell>
-          <Checkbox
-            checked={student.absent}
-            onChange={() => handleAbsentChange(student.id)}
-          />
-        </TableCell>
+            <TextInput
+              value={student.scores?.[selectedSubject]?.continuous || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  student.id,
+                  "continuous",
+                  selectedSubject,
+                  parseFloat(e.target.value) || 0
+                )
+              }
+              disabled={student.absent} // Disable input if the student is marked absent
+            />
+          </TableCell>
+          <TableCell>
+            <TextInput
+              value={student.scores?.[selectedSubject]?.exams || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  student.id,
+                  "exams",
+                  selectedSubject,
+                  parseFloat(e.target.value) || 0
+                )
+              }
+              disabled={student.absent}
+            />
+          </TableCell>
+          <TableCell>
+            {(student.scores?.[selectedSubject]?.continuous || 0) +
+              (student.scores?.[selectedSubject]?.exams || 0)}
+          </TableCell>
+          <TableCell>
+            <Checkbox
+              checked={student.absent}
+              onChange={() => handleAbsentChange(student.id)}
+            />
+          </TableCell>
       </TableRow>
     ))}
   </TableBody>
