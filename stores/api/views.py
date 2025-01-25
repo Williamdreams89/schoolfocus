@@ -519,11 +519,17 @@ GRADE_POINTS = {
     'F': 0.0,
 }
 
+from collections import defaultdict
+from django.db.models import Sum, Count
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
 class ResultsSummaryView(APIView):
     def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
-        # Helper function to determine ordinal suffix
+        # Helper function for ordinal suffix
         def get_ordinal_suffix(rank):
-            if 10 <= rank % 100 <= 20:  # Handles 11th, 12th, 13th, etc.
+            if 10 <= rank % 100 <= 20:
                 return "th"
             elif rank % 10 == 1:
                 return "st"
@@ -534,7 +540,7 @@ class ResultsSummaryView(APIView):
             else:
                 return "th"
 
-        # Step 1: Fetch results for the specified filters
+        # Fetch results
         results = Results.objects.filter(
             student__student_class__name=student_class_name,
             academic_year=academic_year,
@@ -543,65 +549,56 @@ class ResultsSummaryView(APIView):
         ).select_related('student', 'subject')
 
         if not results.exists():
-            return Response({"detail": "No Results found for this specific class specified class."})
+            return Response({"detail": "No results found for the specified class."}, status=404)
 
-        # Step 2: Group results by student and prepare data
+        # Group data by student
         student_data = defaultdict(lambda: {
             "id": None,
             "name": "",
             "scores": {},
             "gpa": 0.0,
             "rank_title": "",
-            "attendance": 0,  # Placeholder for attendance
-            "principalRemark": "",  # Placeholder for principal's remark
-            "grand_total": 0,  # Placeholder for grand total
-            "total_score": 0,  # Total of all subjects' scores
-            "subject_count": 0,  # To count the subjects
+            "attendance": 0,
+            "principalRemark": "",
+            "grand_total": 0,
+            "total_score": 0,
+            "subject_count": 0,
         })
-        
+
         for result in results:
             student = result.student
             full_name = f"{student.last_name.upper()} {student.first_name.upper()}"
-            student_data[student.id]["id"] = student.id
-            student_data[student.id]["name"] = full_name
-            student_data[student.id]["scores"][result.subject.title] = {
+            student_info = student_data[student.id]
+            student_info["id"] = student.id
+            student_info["name"] = full_name
+            student_info["scores"][result.subject.title] = {
                 "continuous": result.continuous_assessment,
                 "exams": result.exams_score,
                 "total": result.total_score or (result.continuous_assessment + result.exams_score),
             }
+            student_info["gpa"] += GRADE_POINTS.get(result.grade, 0.0)
+            student_info["grand_total"] += result.total_score or (result.continuous_assessment + result.exams_score)
+            student_info["subject_count"] += 1
 
-            # GPA Calculation (sum grade points for each subject)
-            grade_point = GRADE_POINTS.get(result.grade, 0.0)
-            student_data[student.id]["gpa"] += grade_point
-
-            # Add to the grand total for the student
-            student_data[student.id]["grand_total"] += result.total_score or (result.continuous_assessment + result.exams_score)
-
-            # Increment the subject count for average calculation
-            student_data[student.id]["subject_count"] += 1
-
-        # Step 3: Calculate GPA, average score, and rank students
+        # Calculate GPA, average, and rank
         student_list = []
         for student_id, data in student_data.items():
             total_subjects = data["subject_count"]
             if total_subjects > 0:
-                # Calculate average GPA
                 data["gpa"] = round(data["gpa"] / total_subjects, 2)
-                # Calculate average score
                 data["average_score"] = round(data["grand_total"] / total_subjects, 2)
             student_list.append(data)
 
-        # Sort by GPA in descending order and assign ranks
-        student_list.sort(key=lambda x: x["gpa"], reverse=True)
+        # Sort by GPA, then by grand total as a tie-breaker
+        student_list.sort(key=lambda x: (-x["gpa"], -x["grand_total"]))
         for rank, student in enumerate(student_list, start=1):
             ordinal_suffix = get_ordinal_suffix(rank)
             student["rank_title"] = f"{rank}{ordinal_suffix}"
-
-            # Example attendance and principal's remark (replace with real logic)
-            student["attendance"] = 95  # Example value
+            student["attendance"] = 95  # Replace with real logic
             student["principalRemark"] = "Excellent" if student["gpa"] > 3.5 else "Good"
 
         return Response(student_list)
+
 
 class SubjectsInResultsView(APIView):
     def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):

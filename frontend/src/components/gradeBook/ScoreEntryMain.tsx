@@ -30,6 +30,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { APIContext } from "../../utils/contexts/ReactContext";
 import axios from "axios";
 import "./styles.css"
+import { useNavigate } from "react-router-dom";
 
 interface Student {
   id: number;
@@ -62,6 +63,7 @@ const ScoreEntryMain: React.FC = () => {
   const [subject, setSubject] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const isSmallDevice = useMediaQuery("(max-width:1045px)");
+  const navigate = useNavigate()
   const context = useContext(APIContext);
 
   if (!context) throw new Error("A context is required!");
@@ -88,10 +90,7 @@ const ScoreEntryMain: React.FC = () => {
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // alert(`subject change: ${event.target.value}`)
     setSelectedSubject(event.target.value)
-  };
-
-  const [forDataOne, setForDataOne] = React.useState<any []>([])
-  const [forDataTwo, setForDataTwo] = React.useState<any []>([])
+  }
 
   // Fetch Students for Results Entry
   const fetchStudentsForResultsEntry = async () => {
@@ -335,8 +334,8 @@ const ScoreEntryMain: React.FC = () => {
     <Divider />
     <Box sx={{height:'fit-content',padding:'1rem', width:'100%'}}>
         <Box sx={{display: 'flex', justifyContent:'right', gap:'3rem'}}>
-          <Button variant="outlined" size="large">Configure Score Division</Button>
-          <Button variant="contained" size="large" color="primary">Review & Publish Results</Button>
+          {/* <Button variant="outlined" size="large">Configure Score Division</Button> */}
+          <Button variant="contained" size="large" color="primary" onClick={()=>navigate("/Review&PublishResultsOptions")}>Review & Publish Results</Button>
         </Box>
     </Box>
         <form onSubmit={handleSubmit}>
@@ -373,8 +372,8 @@ const ScoreEntryMain: React.FC = () => {
           max={60}
           value={student.scores?.[selectedSubject]?.exams || 0}
           onChange={(value: any) => {
-            const clampedValue = Math.min(Math.max(value || 0, 0), 40); // Clamp value between 0 and 40
-            handleInputChange(student.id, "continuous", selectedSubject, clampedValue);
+            const clampedValue = Math.min(Math.max(value || 0, 0), 60); // Clamp value between 0 and 60
+            handleInputChange(student.id, "exams", selectedSubject, clampedValue);
           }}
           disabled={student.absent} // Disable input if the student is marked absent
         />
