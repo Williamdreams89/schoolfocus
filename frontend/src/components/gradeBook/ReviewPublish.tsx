@@ -8,6 +8,7 @@ import {
   MantineProvider,
   NativeSelect,
   SimpleGrid,
+  Modal,
 } from "@mantine/core";
 import "./styles.css";
 import {
@@ -18,12 +19,14 @@ import {
   AccordionDetails,
   Card,
   TableContainer,
+  Backdrop,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
 import { APIContext } from "../../utils/contexts/ReactContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useParams } from "react-router-dom";
+import ReportCard from "./ReportCard";
 
 interface Score {
   continuous: number;
@@ -73,6 +76,7 @@ export default function ReviewPublish() {
   const [examSession, setExamSession] = useState<string>("");
   const [academicYear, setAcademicYear] = useState<string>("");
   const [classList, setClassList] = useState<Class[]>([]);
+  const [open, setOpen] = React.useState<boolean>(false)
   const calculateGrandTotal = (student: Student) => {
     return Object.values(student.scores).reduce(
       (sum, score) => sum + (score.continuous || 0) + (score.exams || 0),
@@ -317,7 +321,7 @@ export default function ReviewPublish() {
                 </td>
                 <td>
                   <Button
-                    onClick={() => handlePreview(student)}
+                    onClick={() => setOpen(true)}
                     variant="outline"
                   >
                     Preview
@@ -328,6 +332,15 @@ export default function ReviewPublish() {
           </tbody>
         </Table>
       </TableContainer>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
+      {open&&<Backdrop
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0})}
+open={open}
+>
+
+      <Modal title="Student Report View" size={"65rem"} opened={open} style={{position:'absolute', zIndex:99999,}} onClose={()=>setOpen(false)}>
+        <ReportCard />
+      </Modal>
+</Backdrop>}
     </Box>
   );
 }

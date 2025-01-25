@@ -11,5 +11,42 @@
     padding: 8px;
   }
 
+  .report-bio{
+    width: fit-content;
+    border: 1px solid #eaeaea;
+    table-layout: fixed;
+    flex: 1;
+  }
+
+  .report-bio p{
+    border-bottom: 1px solid #eaeaea;
+    padding: 8px;
+  }
+
+  .report-cognitive{
+    width: fit-content;
+    border: 1px solid #eaeaea;
+    table-layout: fixed;
+    flex: 1;
+  }
+
+  .report-cognitive p{
+    border-bottom: 1px solid #eaeaea;
+    /* padding: 8px; */
+    display: flex;
+  }
+
+  .report-cognitive p .val-one{
+    flex: 1;
+    margin-left: 10px;
+  }
+
+
+  .report-cognitive p .val-two{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1rem;
+  }
 
   
