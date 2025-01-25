@@ -21,6 +21,7 @@ import {
 import {
   MantineProvider,
   NativeSelect,
+  NumberInput,
   SimpleGrid,
   TextInput,
 } from "@mantine/core";
@@ -28,6 +29,7 @@ import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { APIContext } from "../../utils/contexts/ReactContext";
 import axios from "axios";
+import "./styles.css"
 
 interface Student {
   id: number;
@@ -232,7 +234,7 @@ const ScoreEntryMain: React.FC = () => {
           Exam Score Entry
         </Typography>
       </Box>
-      <Accordion defaultExpanded>
+      <Accordion sx={{mb:'2rem'}} defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>
             <span style={{ color: "red" }}>* </span>Fetch Data Options
@@ -298,45 +300,53 @@ const ScoreEntryMain: React.FC = () => {
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        padding: "10px",
-        backgroundColor: "#f0f0f0", // Adjust as per your design
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        fontSize: "14px",
+        justifyContent: "space-between",
+        padding: "30px",
+        backgroundColor: "", // Adjust as per your design
+        // border: "1px solid #ccc",
+        // borderRadius: "4px",
         width:'100%'
       }}
     >
       <Typography
         sx={{
-          fontWeight: "bold",
+          // fontWeight: "bold",
+          fontSize: "18px",
           marginRight: "15px",
         }}
       >
         {studentClassName} Students
       </Typography>
-      <Divider orientation="vertical" flexItem />
+      {/* <Divider orientation="vertical" flexItem /> */}
       <Typography
         sx={{
           marginLeft: "15px",
           marginRight: "15px",
+          fontSize: "18px",
         }}
       >
-        Scores Entry for Subject: <b>{selectedSubject}</b>
+        Scores Entry for Subject: {selectedSubject}
       </Typography>
-      <Divider orientation="vertical" flexItem />
-      <Typography sx={{ marginLeft: "15px" }}>
-        Exam: <b>{examSession.toUpperCase()}, 2025-2026 ({examType})</b>
+      {/* <Divider orientation="vertical" flexItem /> */}
+      <Typography sx={{ marginLeft: "15px", fontSize: "18px", }}>
+        Exam: {examSession.toUpperCase()}, 2025-2026 ({examType})
       </Typography>
+    </Box>
+    <Divider />
+    <Box sx={{height:'fit-content',padding:'1rem', width:'100%'}}>
+        <Box sx={{display: 'flex', justifyContent:'right', gap:'3rem'}}>
+          <Button variant="outlined" size="large">Configure Score Division</Button>
+          <Button variant="contained" size="large" color="primary">Review & Publish Results</Button>
+        </Box>
     </Box>
         <form onSubmit={handleSubmit}>
           <TableContainer component={Paper}>
-          <Table>
+          <Table stickyHeader className="custom-table">
   <TableHead>
     <TableRow>
       <TableCell>Student Name</TableCell>
-      <TableCell>Continuous Assessment</TableCell>
-      <TableCell>Examination</TableCell>
+      <TableCell><Box sx={{display:'flex', flexDirection:'column'}}><span style={{fontSize:'17px', width:'300px'}}>Continuous Assessment</span><small>Max Score: 40</small></Box></TableCell>
+      <TableCell><Box sx={{display:'flex', flexDirection:'column'}}><span style={{fontSize:'17px', width:'300px'}}>Exam Score</span><small>Max Score: 60</small></Box></TableCell>
       <TableCell>Total Score</TableCell>
       <TableCell>Absent</TableCell>
     </TableRow>
@@ -346,32 +356,28 @@ const ScoreEntryMain: React.FC = () => {
       <TableRow key={student.id}>
         <TableCell>{student.full_name}</TableCell>
         <TableCell>
-            <TextInput
-              value={student.scores?.[selectedSubject]?.continuous || ""}
-              onChange={(e) =>
-                handleInputChange(
-                  student.id,
-                  "continuous",
-                  selectedSubject,
-                  parseFloat(e.target.value) || 0
-                )
-              }
-              disabled={student.absent} // Disable input if the student is marked absent
-            />
+        <NumberInput
+          min={0}
+          max={40}
+          value={student.scores?.[selectedSubject]?.continuous || 0}
+          onChange={(value: any) => {
+            const clampedValue = Math.min(Math.max(value || 0, 0), 40); // Clamp value between 0 and 40
+            handleInputChange(student.id, "continuous", selectedSubject, clampedValue);
+          }}
+          disabled={student.absent} // Disable input if the student is marked absent
+        />
           </TableCell>
           <TableCell>
-            <TextInput
-              value={student.scores?.[selectedSubject]?.exams || ""}
-              onChange={(e) =>
-                handleInputChange(
-                  student.id,
-                  "exams",
-                  selectedSubject,
-                  parseFloat(e.target.value) || 0
-                )
-              }
-              disabled={student.absent}
-            />
+          <NumberInput
+          min={0}
+          max={60}
+          value={student.scores?.[selectedSubject]?.exams || 0}
+          onChange={(value: any) => {
+            const clampedValue = Math.min(Math.max(value || 0, 0), 40); // Clamp value between 0 and 40
+            handleInputChange(student.id, "continuous", selectedSubject, clampedValue);
+          }}
+          disabled={student.absent} // Disable input if the student is marked absent
+        />
           </TableCell>
           <TableCell>
             {(student.scores?.[selectedSubject]?.continuous || 0) +
