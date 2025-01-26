@@ -20,6 +20,10 @@ import {
   Card,
   TableContainer,
   Backdrop,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Dialog,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
@@ -27,6 +31,52 @@ import { APIContext } from "../../utils/contexts/ReactContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useParams } from "react-router-dom";
 import ReportCard from "./ReportCard";
+import {Card as ManCard} from "@mantine/core"
+import {
+  Grid,
+  Image,
+  Divider,
+} from "@mantine/core";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import "./styles.css";
+import RoomIcon from '@mui/icons-material/Room';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+
+
+const studentData = {
+  name: "DANQUAH WILLIAM KWAFO",
+  regNo: "2025/000003",
+  gender: "M",
+  age: "",
+  class: "PRIMARY 6 - A",
+  email: "william.danquah@schoolsfocus.net",
+  position: "1st",
+  noOfSubjects: 3,
+  totalScore: "165 / 200",
+  average: "82.50%",
+  gpa: "5.00",
+  resultSummary: "Incomplete Result",
+};
+
+const data = {
+  labels: ["English Language", "Agricultural Science", "ICT"],
+  datasets: [
+    {
+      label: "Exam Performance",
+      data: [80, 85, 75],
+      backgroundColor: ["#3498db", "#2ecc71", "#e74c3c"],
+    },
+  ],
+};
 
 interface Score {
   continuous: number;
@@ -67,6 +117,86 @@ interface Class {
   label: string;
 }
 
+interface Skill {
+  id: number;
+  name: string;
+}
+
+
+interface CognitiveAssessmentFormProps {
+  student: Student;
+  onClose: () => void;
+}
+
+const CognitiveAssessmentForm: React.FC<CognitiveAssessmentFormProps> = ({ student, onClose }) => {
+  const [skills, setSkills] = useState<Skill[]>([
+    { "id": 1, "name": "Punctuality" },
+    { "id": 2, "name": "Attentiveness" },
+    { "id": 3, "name": "Neatness" },
+    { "id": 4, "name": "Honesty" },
+    { "id": 5, "name": "Politeness" },
+    { "id": 6, "name": "Perseverance" },
+    { "id": 7, "name": "Relationship with Others" },
+    { "id": 8, "name": "Handwriting" },
+    { "id": 9, "name": "Drawing & Painting" },
+    { "id": 10, "name": "Verbal Fluency" },
+    { "id": 11, "name": "Retentiveness" },
+    { "id": 12, "name": "Visual Memory" },
+    { "id": 13, "name": "Public Speaking" },
+    { "id": 14, "name": "Sports & Games" }
+  ]
+  );
+  const [scores, setScores] = useState<{ [skillId: number]: number }>({});
+
+  // React.useEffect(() => {
+  //   axios.get('/api/skills/').then((response) => setSkills(response.data));
+  // }, []);
+
+  const handleScoreChange = (skillId: number, score: number) => {
+    setScores({ ...scores, [skillId]: score });
+  };
+
+  const handleSubmit = () => {
+    const payload = Object.keys(scores).map((skillId) => ({
+      student: student.id,
+      skill: parseInt(skillId, 10),
+      score: scores[parseInt(skillId, 10)],
+    }));
+
+    axios.post('/api/skill-assessments/', payload).then(() => {
+      onClose();
+    });
+  };
+
+  return (
+    <Box p={3}>
+      <Typography variant="h6">{`Assessing ${student.name}`}</Typography>
+      {skills.map((skill) => (
+        <Box key={skill.id} mt={2}>
+          <Typography>{skill.name}</Typography>
+          <RadioGroup
+            row
+            value={scores[skill.id] || ''}
+            onChange={(e) => handleScoreChange(skill.id, parseInt(e.target.value, 10))}
+          >
+            {[1, 2, 3, 4, 5].map((score) => (
+              <FormControlLabel
+                key={score}
+                value={score}
+                control={<Radio />}
+                label={score.toString()}
+              />
+            ))}
+          </RadioGroup>
+        </Box>
+      ))}
+      <Button variant="contained" color="primary" onClick={handleSubmit}>
+        Submit
+      </Button>
+    </Box>
+  );
+};
+
 export default function ReviewPublish() {
   const isSmallerDevice = useMediaQuery("(max-width:1045px)")
   const [students, setStudents] = useState<Student[]>([]);
@@ -77,6 +207,7 @@ export default function ReviewPublish() {
   const [academicYear, setAcademicYear] = useState<string>("");
   const [classList, setClassList] = useState<Class[]>([]);
   const [open, setOpen] = React.useState<boolean>(false)
+
   const calculateGrandTotal = (student: Student) => {
     return Object.values(student.scores).reduce(
       (sum, score) => sum + (score.continuous || 0) + (score.exams || 0),
@@ -90,14 +221,21 @@ export default function ReviewPublish() {
     return (grandTotal / maxTotal) * 4.0; // GPA on a scale of 4.0
   };
 
-  const handlePreview = (student: Student) => {
-    alert(
-      `Previewing details for ${student.name}:\n` +
-        `Grand Total: ${calculateGrandTotal(student)}\n` +
-        `GPA: ${calculateGPA(student).toFixed(2)}\n` +
-        `Attendance: ${student.attendance}%\n` +
-        `Principal's Remark: ${student.principalRemark}`
-    );
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
+  const handlePreview = async (student: Student) => {
+    try {
+      // Just for clarity, though not necessary since student is already passed
+      const selectedStudentData = students.filter((s) => s.id === student.id)[0];
+      // const { data } = await axios.get(
+      //   `http://127.0.0.1:8000/api/results/student/${selectedStudentData.id}/`
+      // );
+      setSelectedStudent(selectedStudentData); // Set the selected student
+      // setReportCardData(data); // Set the fetched report card data
+      console.log("selected student results=", selectedStudentData)
+    } catch (error) {
+      console.error(`Error fetching student data: ${error}`);
+    }
   };
 
   const context = React.useContext(APIContext);
@@ -170,6 +308,14 @@ export default function ReviewPublish() {
       alert('error fetching results')
     }
   }
+
+  const handleOpenForm = (student: Student) => {
+    setSelectedStudent(student);
+  };
+
+  const handleCloseForm = () => {
+    setSelectedStudent(null);
+  };
 
   return (
     <Box
@@ -303,25 +449,12 @@ export default function ReviewPublish() {
                 <td>{student.average_score}</td>
                 <td>{student.rank_title}</td>
                 <td>{student.attendance}%</td>
-                <td style={{ width: "250px" }}>
-                  <Select
-                    width={"200px"}
-                    value={student.principalRemark}
-                    onChange={(value) =>
-                      setStudents((prevStudents) =>
-                        prevStudents.map((s) =>
-                          s.id === student.id
-                            ? { ...s, principalRemark: value! }
-                            : s
-                        )
-                      )
-                    }
-                    data={remarks}
-                  />
+                <td align="center" style={{ width: "250px" }}>
+                <Button onClick={() => handleOpenForm(student)}>Assess</Button>
                 </td>
                 <td>
                   <Button
-                    onClick={() => setOpen(true)}
+                    onClick={() => {handlePreview(student); setOpen(true)}}
                     variant="outline"
                   >
                     Preview
@@ -333,14 +466,173 @@ export default function ReviewPublish() {
         </Table>
       </TableContainer>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
       {open&&<Backdrop
-  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0})}
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0, overflowY:'scroll', height:'2000px'})}
 open={open}
 >
 
-      <Modal title="Student Report View" size={"65rem"} opened={open} style={{position:'absolute', zIndex:99999,}} onClose={()=>setOpen(false)}>
-        <ReportCard />
+      <Modal size={"65rem"} opened={open} style={{position:'absolute', zIndex:99999, overflowY:'hidden'}} onClose={()=>setOpen(false)}>
+      <ManCard shadow="sm" padding="lg">
+      <center style={{fontWeight:800, fontSize:'26px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
+      {/* Header Section */}
+      <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
+        <Image
+          src="/images/logo.png"
+          alt="School Logo"
+          style={{ width: "100px", objectFit: "cover" }}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            // justifyContent: "center",
+            // alignItems: "center",
+            position:'relative'
+          }}
+        >
+          <Box sx={{position:'absolute', display:'flex', flexDirection:'column', width:'100%', justifyContent:'center', alignItems:'center'}}><RoomIcon /> <span style={{fontSize:'17px'}}>Ejura</span></Box>
+          <Box sx={{flex: 3, display:'flex', alignItems:'center', gap:'2rem', mt:'1rem'}}>
+            <Text>
+              Website: www.lighthouse.edu
+              <Divider orientation="vertical" />
+            </Text>
+            <Text>Phone: 0302-987-654</Text>
+            <Text>
+              <Divider orientation="vertical" />
+              Email:admin@lighthouse.edu.gh
+            </Text>
+          </Box>
+        </Box>
+        <Image
+          src="/images/logo.png"
+          alt="School Logo"
+          style={{ width: "100px", objectFit: "cover" }}
+        />
+      </Box>
+
+
+      {/* Student Info Section */}
+      <Box sx={{display:'flex', justifyContent:'space-between', height:'fit-content', border:'1px solid #eaeaea', marginBottom:'rem'}}>
+      <Box className="report-bio">
+          <p>Name: {selectedStudent?.name}</p>
+          <p>Reg No.:  </p>
+          <p>Gender: Male</p>
+          <p>Date Of Birth: </p>
+          <p>Class Category: PRIMARY</p>
+          <p>Class: PRIMARY 6-A</p>
+          <p>Email: williamdanquah@gmail.com</p>
+          
+        </Box>
+        <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', padding:'10px'}}>
+          <img
+            src="images/avata.png"
+            alt="Student Photo"
+            width={"220px"}
+          />
+        </Box>
+        <Box className="report-bio">
+          <p>Position: {selectedStudent?.rank_title}</p>
+          <p>Student Average: {selectedStudent?.average_score}%</p>
+          <p>No. of Subjects: 8</p>
+          <p>Student's Total Score: </p>
+          <p>Student's Average Score:</p>
+          <p>Grade Point Average:</p>
+          <p>Grade Summary</p>
+        </Box>
+      </Box>
+      {/* Subject Table */}
+      <Box sx={{display:'flex'}}>
+        <Table className="custom-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Continuous Assessment</th>
+              <th>Examination</th>
+              <th>Total Score</th>
+              <th>Grade Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>English Language</td>
+              <td>40</td>
+              <td>40</td>
+              <td>80</td>
+              <td>Good</td>
+            </tr>
+            <tr>
+              <td>Agricultural Science</td>
+              <td>35</td>
+              <td>50</td>
+              <td>85</td>
+              <td>Excellent</td>
+            </tr>
+            <tr>
+              <td>ICT</td>
+              <td>30</td>
+              <td>45</td>
+              <td>75</td>
+              <td>Good</td>
+            </tr>
+          </tbody>
+        </Table>
+        <Box className="report-cognitive">
+          <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
+          <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Attentiveness</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Neatness</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Honesty</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Politeness</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Perseverance</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Relionship with others</span><span className="val-two">5</span></p>
+          <p style={{fontWeight:900}}>Psychomotor Skill Rating (5)</p>
+          <p><span className="val-one">Handwriting</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Drawing & Painting</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Verbal Fluency</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Retentiveness</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Visual Memory</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Public Speaking</span><span className="val-two">5</span></p>
+          <p><span className="val-one">Sports & Games</span><span className="val-two">5</span></p>
+          <p style={{fontWeight:900}}>Attendance Report</p>
+          <p><span className="val-one">No. of School days</span><span className="val-two">5</span></p>
+          <p><span className="val-one">No. of days present</span><span className="val-two">5</span></p>
+          <p><span className="val-one">No. of days absent</span><span className="val-two">5</span></p>
+        </Box>
+      </Box>
+      <Divider my="sm" />
+
+      {/* Performance Chart */}
+      <Text size="sm">Subject Performance Chart</Text>
+      <Bar data={data} />
+
+      {/* Footer Section */}
+      <Grid mt="md">
+        <Grid.Col span={6}>
+          <Text size="sm">Form Teacher:</Text>
+          <Divider my="xs" />
+          <Text size="sm">Form Teacher's Signature:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text size="sm">Principal:</Text>
+          <Divider my="xs" />
+          <Text size="sm">Principal's Signature:</Text>
+        </Grid.Col>
+      </Grid>
+    </ManCard>
       </Modal>
 </Backdrop>}
+{!!selectedStudent&&<Backdrop
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0, overflowY:'scroll', height:'2000px'})}
+open={open}
+>
+<Dialog open={!!selectedStudent} onClose={handleCloseForm} fullWidth>
+        {selectedStudent && (
+          <CognitiveAssessmentForm
+            student={selectedStudent}
+            onClose={handleCloseForm}
+          />
+        )}
+      </Dialog>
+  </Backdrop>}
     </Box>
   );
 }
