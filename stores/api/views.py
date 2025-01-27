@@ -17,6 +17,7 @@ from .serializers import FileUploadSerializer
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from django.utils import timezone
+from django.db import transaction
 
 def send_email(subject, body, to):
     email_msg = EmailMessage()
@@ -722,3 +723,96 @@ class ResultDetailAPIView(APIView):
 
         # Return the response
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class SkillAssessmentAPIView(APIView):
+    def get(self, request, student_class, academic_year, exam_session):
+        # Get students in the requested class
+        students = Student.objects.filter(student_class__name=student_class)
+
+        # Prepare response structure
+        response_data = []
+
+        for student in students:
+            # Get all skill assessments for this student
+            assessments = SkillAssessment.objects.filter(
+                student=student,
+                academic_year=academic_year,
+                exam_session=exam_session
+            ).select_related('skill__category')
+
+            # Group assessments by skill categories
+            skills_by_category = {}
+            for assessment in assessments:
+                category_name = assessment.skill.category.name
+                if category_name not in skills_by_category:
+                    skills_by_category[category_name] = {}
+                skills_by_category[category_name][assessment.skill.name] = assessment.score
+
+            # Append student data to response
+            response_data.append({
+                "id": student.id,
+                "name": f"{student.last_name.upper()} {student.first_name.upper()}",
+                "skills": skills_by_category
+            })
+
+        return Response(response_data)
+
+    def post(self, request, student_class, academic_year, exam_session):
+        # Validate that the required fields are in the request body
+        if not isinstance(request.data, list):
+            return Response({"error": "Invalid data format. Expected a list of students with skills."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with transaction.atomic():
+                for student_data in request.data:
+                    student_id = student_data.get("id")
+                    skills = student_data.get("skills")
+
+                    if not student_id or not skills:
+                        return Response(
+                            {"error": "'id' (student ID) and 'skills' are required for each student."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    # Validate student existence and class
+                    try:
+                        student = Student.objects.get(id=student_id, student_class__name=student_class)
+                    except Student.DoesNotExist:
+                        return Response(
+                            {"error": f"Student with ID {student_id} not found in class {student_class}."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+
+                    # Process each skill category and associated skills
+                    for category_name, skills_data in skills.items():
+                        try:
+                            category = SkillCategory.objects.get(name=category_name)
+                        except SkillCategory.DoesNotExist:
+                            return Response(
+                                {"error": f"Skill category '{category_name}' does not exist."},
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
+
+                        for skill_name, score in skills_data.items():
+                            try:
+                                skill = Skill.objects.get(name=skill_name, category=category)
+                            except Skill.DoesNotExist:
+                                return Response(
+                                    {"error": f"Skill '{skill_name}' in category '{category_name}' does not exist."},
+                                    status=status.HTTP_400_BAD_REQUEST,
+                                )
+
+                            # Create or update the SkillAssessment
+                            assessment, created = SkillAssessment.objects.update_or_create(
+                                student=student,
+                                skill=skill,
+                                academic_year=academic_year,
+                                exam_session=exam_session,
+                                defaults={"score": score},
+                            )
+
+                return Response({"message": "Skill assessments saved successfully."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

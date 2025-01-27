@@ -68,7 +68,7 @@ class Subject(models.Model):
 
     def __str__(self):
         return self.title
-    
+
 class Student(models.Model):
     # Guardian's Information
     guardian = models.ManyToManyField(GuadianOrParent, related_name="parents")
@@ -120,7 +120,38 @@ class Student(models.Model):
         return None
         
 
-    
+
+class SkillCategory(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Skill(models.Model):
+    category = models.ForeignKey(SkillCategory, on_delete=models.CASCADE, related_name="skills")
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class SkillAssessment(models.Model):
+    class ExamSession(models.TextChoices):
+        FIRST_TERM = 'First Term'
+        SECOND_TERM = 'Second Term'
+        THIRD_TERM = 'Third Term'
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="assessments")
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name="assessments")
+    score = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
+    academic_year = models.CharField(max_length=100, blank=True, default=tz.now().year)
+    exam_session = models.CharField(
+        max_length=20, choices=ExamSession.choices,
+        blank=True,
+        default=ExamSession.FIRST_TERM
+    )
+
+    def __str__(self):
+        return f"{self.student.user.get_full_name()} - {self.skill.name}: {self.score}"
+
 
 
 class Results(models.Model):
@@ -183,4 +214,23 @@ class Results(models.Model):
     
 
 
+
+"""
+[
+  "Punctuality",
+  "Attentiveness",
+  "Neatness",
+  "Honesty",
+  "Politeness",
+  "Perseverance",
+  "Relationship with Others",
+  "Handwriting",
+  "Drawing & Painting",
+  "Verbal Fluency",
+  "Retentiveness",
+  "Visual Memory",
+  "Public Speaking",
+  "Sports & Games",
+]
+"""
 

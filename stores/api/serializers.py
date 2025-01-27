@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent, Results, Subject, StudentClass, Tag
+from .models import Student, GuadianOrParent, Results, Subject, StudentClass, Tag, SkillAssessment
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -176,4 +176,10 @@ class IndexNumberGeneratorSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
+        fields = "__all__"
+
+
+class SkillAssessmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkillAssessment
         fields = "__all__"
