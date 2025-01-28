@@ -816,3 +816,59 @@ class SkillAssessmentAPIView(APIView):
 
         except Exception as e:
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class RecordAStudentSkillAssessmentAPIView(APIView):
+    def post(self, request, student_class, academic_year, exam_session):
+        # Validate that the required fields are in the request body
+        student_id = request.data.get("id")
+        skills = request.data.get("skills")
+
+        if not student_id or not skills:
+            return Response(
+                {"error": "'id' (student ID) and 'skills' are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            with transaction.atomic():
+                # Validate student existence and class
+                try:
+                    student = Student.objects.get(id=student_id, student_class__name=student_class)
+                except Student.DoesNotExist:
+                    return Response(
+                        {"error": f"Student with ID {student_id} not found in class {student_class}."},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                # Process each skill category and associated skills
+                for category_name, skills_data in skills.items():
+                    try:
+                        category = SkillCategory.objects.get(name=category_name)
+                    except SkillCategory.DoesNotExist:
+                        return Response(
+                            {"error": f"Skill category '{category_name}' does not exist."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    for skill_name, score in skills_data.items():
+                        try:
+                            skill = Skill.objects.get(name=skill_name, category=category)
+                        except Skill.DoesNotExist:
+                            return Response(
+                                {"error": f"Skill '{skill_name}' in category '{category_name}' does not exist."},
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
+
+                        # Create or update the SkillAssessment
+                        SkillAssessment.objects.update_or_create(
+                            student=student,
+                            skill=skill,
+                            academic_year=academic_year,
+                            exam_session=exam_session,
+                            defaults={"score": score},
+                        )
+
+                return Response({"message": "Skill assessments saved successfully."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -150,7 +150,7 @@ class SkillAssessment(models.Model):
     )
 
     def __str__(self):
-        return f"{self.student.user.get_full_name()} - {self.skill.name}: {self.score}"
+        return f"{self.student.full_name} - {self.skill.name}: {self.score}"
 
 
 

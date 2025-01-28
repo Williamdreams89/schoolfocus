@@ -39,5 +39,6 @@ urlpatterns = [
         ResultDetailAPIView.as_view(),
         name='result-detail'
     ),
-    path("skills/assessment/<str:student_class>/<str:academic_year>/<str:exam_session>/", SkillAssessmentAPIView.as_view())
+    path("skills/assessment/<str:student_class>/<str:academic_year>/<str:exam_session>/", SkillAssessmentAPIView.as_view()),
+    path("skills/assessment/entry/<str:student_class>/<str:academic_year>/<str:exam_session>/", RecordAStudentSkillAssessmentAPIView.as_view())
 ]

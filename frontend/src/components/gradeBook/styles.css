@@ -49,4 +49,8 @@
     margin-right: 1rem;
   }
 
+  .my-table td{
+    border-bottom: 1px solid #eaeaea;
+  }
+
   

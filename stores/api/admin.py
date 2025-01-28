@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, GuadianOrParent, Subject, StudentClass as Class, Results
+from .models import *
 
 class StudentsAdmin(admin.ModelAdmin):
     list_display = [
@@ -41,8 +41,21 @@ class ResultAdmin(admin.ModelAdmin):
 
     def Class(self, obj):
         return obj.student.student_class.name
+    
+class SkillCategoryAdmin(admin.ModelAdmin):
+    list_display = ["name"]
 
-admin.site.register(Class, ClassAdmin)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ["id","name", "category"]
+
+class SkillAssessmentAdmin(admin.ModelAdmin):
+    list_display = ["student", "skill", "score", "exam_session", "academic_year"]
+
+
+admin.site.register(StudentClass, ClassAdmin)
+admin.site.register(SkillCategory, SkillCategoryAdmin)
+admin.site.register(Skill, SkillAdmin)
+admin.site.register(SkillAssessment, SkillAssessmentAdmin)
 admin.site.register(Results, ResultAdmin)
 
 admin.site.register(Student, StudentsAdmin)

@@ -24,6 +24,11 @@ import {
   FormControlLabel,
   Radio,
   Dialog,
+  Paper,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
@@ -120,6 +125,12 @@ interface Class {
 interface Skill {
   id: number;
   name: string;
+  category: string;
+}
+
+interface CognitiveAssessmentFormProps {
+  student: Student;
+  onClose: () => void;
 }
 
 
@@ -130,69 +141,139 @@ interface CognitiveAssessmentFormProps {
 
 const CognitiveAssessmentForm: React.FC<CognitiveAssessmentFormProps> = ({ student, onClose }) => {
   const [skills, setSkills] = useState<Skill[]>([
-    { "id": 1, "name": "Punctuality" },
-    { "id": 2, "name": "Attentiveness" },
-    { "id": 3, "name": "Neatness" },
-    { "id": 4, "name": "Honesty" },
-    { "id": 5, "name": "Politeness" },
-    { "id": 6, "name": "Perseverance" },
-    { "id": 7, "name": "Relationship with Others" },
-    { "id": 8, "name": "Handwriting" },
-    { "id": 9, "name": "Drawing & Painting" },
-    { "id": 10, "name": "Verbal Fluency" },
-    { "id": 11, "name": "Retentiveness" },
-    { "id": 12, "name": "Visual Memory" },
-    { "id": 13, "name": "Public Speaking" },
-    { "id": 14, "name": "Sports & Games" }
-  ]
-  );
+    { id: 1, name: 'Punctuality', category: 'Affective Skills' },
+    { id: 2, name: 'Attentiveness', category: 'Affective Skills' },
+    { id: 3, name: 'Neatness', category: 'Affective Skills' },
+    { id: 4, name: 'Honesty', category: 'Affective Skills' },
+    { id: 5, name: 'Politeness', category: 'Affective Skills' },
+    { id: 8, name: 'Handwriting', category: 'Psychomotor Skills' },
+    { id: 9, name: 'Drawing & Painting', category: 'Psychomotor Skills' },
+    { id: 10, name: 'Verbal Fluency', category: 'Psychomotor Skills' },
+    { id: 12, name: 'Visual Memory', category: 'Psychomotor Skills' },
+    { id: 14, name: 'Sports & Games', category: 'Psychomotor Skills' },
+  ]);
   const [scores, setScores] = useState<{ [skillId: number]: number }>({});
-
-  // React.useEffect(() => {
-  //   axios.get('/api/skills/').then((response) => setSkills(response.data));
-  // }, []);
 
   const handleScoreChange = (skillId: number, score: number) => {
     setScores({ ...scores, [skillId]: score });
   };
 
-  const handleSubmit = () => {
-    const payload = Object.keys(scores).map((skillId) => ({
-      student: student.id,
-      skill: parseInt(skillId, 10),
-      score: scores[parseInt(skillId, 10)],
-    }));
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("Error getting context")
+  }
 
-    axios.post('/api/skill-assessments/', payload).then(() => {
-      onClose();
-    });
+  const {studentsManagementDetails, setStudentsManagementDetails} = context
+
+  const handleSubmit = () => {
+    const academic_year = localStorage.getItem("academicYear");
+    const exam_session = localStorage.getItem("examSession");
+    const selected_class = localStorage.getItem("selectedClass");
+  
+    // Transform scores into the required nested structure
+    const transformedSkills = skills.reduce((acc:any, skill) => {
+      const { id, name, category } = skill;
+  
+      if (scores[id] != null) { // Check if a score exists for this skill
+        if (!acc[category]) {
+          acc[category] = {};
+        }
+  
+        acc[category][name] = scores[id];
+      }
+  
+      return acc;
+    }, {});
+
+    console.log(`Transformed skills=`, transformedSkills)
+  
+    // Create the final payload
+    const payload = {
+      id: student.id, // Student ID
+      skills: transformedSkills, // Nested skills structure
+    };
+
+    console.log("assessment payload=", payload)
+  
+    // Send the API request
+    setStudentsManagementDetails({isLoading: true})
+    axios
+      .post(
+        `http://127.0.0.1:8000/api/skills/assessment/entry/${selected_class}/${academic_year}/${exam_session}/`,
+        payload
+      )
+      .then(() => {
+        setStudentsManagementDetails({isLoading: false})
+        alert('Saved successfully')
+        onClose();
+        localStorage.removeItem('academicYear')
+        localStorage.removeItem('selectedClass')
+        localStorage.removeItem('examSession')
+      })
+      .catch((error) => {
+        setStudentsManagementDetails({isLoading: true})
+        console.error("Error submitting assessment:", error);
+        alert("Error saving assessment")
+      });
   };
+  
+
+  const groupedSkills = skills.reduce<{ [key: string]: Skill[] }>((acc, skill) => {
+    if (!acc[skill.category]) acc[skill.category] = [];
+    acc[skill.category].push(skill);
+    return acc;
+  }, {});
 
   return (
     <Box p={3}>
-      <Typography variant="h6">{`Assessing ${student.name}`}</Typography>
-      {skills.map((skill) => (
-        <Box key={skill.id} mt={2}>
-          <Typography>{skill.name}</Typography>
-          <RadioGroup
-            row
-            value={scores[skill.id] || ''}
-            onChange={(e) => handleScoreChange(skill.id, parseInt(e.target.value, 10))}
-          >
-            {[1, 2, 3, 4, 5].map((score) => (
-              <FormControlLabel
-                key={score}
-                value={score}
-                control={<Radio />}
-                label={score.toString()}
-              />
+      <Typography variant="h6" gutterBottom>{`ASSESSING ${student.name}`}</Typography>
+      <TableContainer component={Paper}>
+        <Table className="my-table">
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell>Score</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.keys(groupedSkills).map((category) => (
+              <React.Fragment key={category}>
+                <TableRow>
+                  <TableCell colSpan={2} style={{ fontWeight: 'bold' }}>
+                    {category}
+                  </TableCell>
+                </TableRow>
+                {groupedSkills[category].map((skill) => (
+                  <TableRow key={skill.id}>
+                    <TableCell>{skill.name}</TableCell>
+                    <TableCell align="center">
+                      <RadioGroup
+                        row
+                        value={scores[skill.id] || ''}
+                        onChange={(e) => handleScoreChange(skill.id, parseInt(e.target.value, 10))}
+                      >
+                        {[1, 2, 3, 4, 5].map((score) => (
+                          <FormControlLabel
+                            key={score}
+                            value={score}
+                            control={<Radio />}
+                            label={score.toString()}
+                          />
+                        ))}
+                      </RadioGroup>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </React.Fragment>
             ))}
-          </RadioGroup>
-        </Box>
-      ))}
-      <Button variant="contained" color="primary" onClick={handleSubmit}>
-        Submit
-      </Button>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box mt={3} display="flex" justifyContent="flex-end">
+        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          Submit
+        </Button>
+      </Box>
     </Box>
   );
 };
@@ -267,6 +348,9 @@ export default function ReviewPublish() {
       const { data } = await axios.get(
         `http://127.0.0.1:8000/api/results/review_new/${selectedClassName}/${academicYear}/${examSession}/`
       );
+      localStorage.setItem('academicYear', `${academicYear}`)
+      localStorage.setItem('selectedClass', `${selectedClassName}`)
+      localStorage.setItem('examSession', `${examSession}`)
       console.log("results =", data);
       setStudents(data);
       setStudentsManagementDetails({ isLoading: false });
@@ -407,7 +491,7 @@ export default function ReviewPublish() {
                 Attendance (%)
               </th>
               <th align="center" style={{ width: "200px" }} rowSpan={2}>
-                Principal's Remark
+                Cognitive skills Assessment
               </th>
               <th align="center" style={{ width: "100px" }} rowSpan={2}>
                 Actions
