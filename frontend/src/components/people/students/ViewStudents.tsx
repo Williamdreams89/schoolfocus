@@ -379,19 +379,21 @@ const cancelDelete = () => {
         </Box>
         <Typography variant="h6">Students</Typography>
       </Box>
-      <DataGrid
-        style={{height:'max-content'}}
-        rowHeight={100}
-        rows={rows}
-        columns={columns}
-        loading={studentsManagementDetails.isLoading}
-        paginationModel={paginationModel}
-        onPaginationModelChange={(model) => setPaginationModel(model)}
-        // components={{
-        //   Toolbar: GridToolbar,
-        // }}
-        // checkboxSelection
-      />
+      <Box sx={{backgroundColor:'red'}}>
+        <DataGrid
+          
+          rowHeight={100}
+          rows={rows}
+          columns={columns}
+          loading={studentsManagementDetails.isLoading}
+          paginationModel={paginationModel}
+          onPaginationModelChange={(model) => setPaginationModel(model)}
+          // components={{
+          //   Toolbar: GridToolbar,
+          // }}
+          // checkboxSelection
+        />
+      </Box>
       </Box>: <Box sx={{width: '100%', height:"400px", display:'flex', justifyContent:'center', alignItems:'center'}}>No Student Found!</Box>}
       
       {deleteModalOpen &&<Backdrop

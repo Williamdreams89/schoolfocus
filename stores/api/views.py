@@ -339,7 +339,7 @@ class StudentListView(generics.ListAPIView):
             student_class__academic_year=academic_year
         )
 
-        return queryset.order_by("-date_added")
+        return queryset.order_by("date_added")
 
 
 class ParentOrGuardianView(generics.ListCreateAPIView):

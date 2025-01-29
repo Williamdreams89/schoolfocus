@@ -94,7 +94,7 @@ const ScoreEntryMain: React.FC = () => {
 
   // Fetch Students for Results Entry
   const fetchStudentsForResultsEntry = async () => {
-    alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${subject}`);
+    // alert(`ExamSession:${examSession}; examType:${examType}; studentClassName:${studentClassName}; subject:${subject}`);
     
     if (examSession && examType && studentClassName && selectedSubject) {
       try {
@@ -131,10 +131,10 @@ const ScoreEntryMain: React.FC = () => {
         setFetchedStudents([]);
         setStudentsManagementDetails({ isLoading: false });
         console.error("Error fetching students:", error);
-        alert("No students found in the specified class.");
+        // alert("No students found in the specified class.");
       }
     } else {
-      alert("All fields must be filled.");
+      // alert("All fields must be filled.");
     }
   };
   
@@ -211,9 +211,9 @@ const ScoreEntryMain: React.FC = () => {
   
       // Display error details if available
       if (axios.isAxiosError(error) && error.response?.data) {
-        alert(`Error saving scores: ${JSON.stringify(error.response.data)}`);
+        // alert(`Error saving scores: ${JSON.stringify(error.response.data)}`);
       } else {
-        alert("Error saving scores.");
+        // alert("Error saving scores.");
       }
     }
   };

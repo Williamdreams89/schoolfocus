@@ -209,6 +209,7 @@ const CognitiveAssessmentForm: React.FC<CognitiveAssessmentFormProps> = ({ stude
         localStorage.removeItem('academicYear')
         localStorage.removeItem('selectedClass')
         localStorage.removeItem('examSession')
+        setStudentsManagementDetails({isLoading: false})
       })
       .catch((error) => {
         setStudentsManagementDetails({isLoading: true})
