@@ -86,6 +86,7 @@ const data = {
 interface Score {
   continuous: number;
   exams: number;
+  total: number;
 }
 
 interface Subject {
@@ -96,14 +97,20 @@ interface Subject {
 interface Student {
   id: number;
   name: string;
+  dob?: string;
+  index_number?: string;
+  email?: string;
   scores: {
     [subject: string]: Score;
   };
-  attendance: number; // Percentage of attendance
-  principalRemark: string; // Principal's remark
+  attendance: number;
+  principalRemark: string;
   average_score?: number;
   rank_title?: string;
+  data?: any;
 }
+
+
 
 // const subjects = [
 //   { name: "English Language", maxContinuous: 40, maxExams: 60 },
@@ -111,11 +118,14 @@ interface Student {
 //   { name: "Fine Art", maxContinuous: 40, maxExams: 60 },
 // ];
 
-const remarks = [
-  { value: "Excellent", label: "Excellent performance" },
-  { value: "Good", label: "Good performance" },
-  { value: "Needs Improvement", label: "Needs improvement" },
-];
+// Function to determine the grade remark
+const getGradeRemark = (totalScore: number): string => {
+  if (totalScore >= 85) return "Excellent";
+  if (totalScore >= 75) return "Very Good";
+  if (totalScore >= 65) return "Good";
+  if (totalScore >= 50) return "Pass";
+  return "Fail";
+};
 
 interface Class {
   value: string;
@@ -599,9 +609,9 @@ open={open}
       <Box sx={{display:'flex', justifyContent:'space-between', height:'fit-content', border:'1px solid #eaeaea', marginBottom:'rem'}}>
       <Box className="report-bio">
           <p>Name: {selectedStudent?.name}</p>
-          <p>Reg No.:  </p>
+          <p>Reg No.: {selectedStudent?.index_number} </p>
           <p>Gender: Male</p>
-          <p>Date Of Birth: </p>
+          <p>Date Of Birth: {selectedStudent?.dob}</p>
           <p>Class Category: PRIMARY</p>
           <p>Class: PRIMARY 6-A</p>
           <p>Email: williamdanquah@gmail.com</p>
@@ -626,43 +636,32 @@ open={open}
       </Box>
       {/* Subject Table */}
       <Box sx={{display:'flex'}}>
-        <TableContainer className="custom-table" style={{flex: 3}}>
-          <Table style={{height:'100%'}}>
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Continuous Assessment</th>
-                <th>Examination</th>
-                <th>Total Score</th>
-                <th>Grade Remark</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>English Language</td>
-                <td>40</td>
-                <td>40</td>
-                <td>80</td>
-                <td>Good</td>
-              </tr>
-              <tr>
-                <td>Agricultural Science</td>
-                <td>35</td>
-                <td>50</td>
-                <td>85</td>
-                <td>Excellent</td>
-              </tr>
-              <tr>
-                <td>ICT</td>
-                <td>30</td>
-                <td>45</td>
-                <td>75</td>
-                <td>Good</td>
-              </tr>
-            </tbody>
-          </Table>
+      <TableContainer className="custom-table" style={{ flex: 3 }}>
+  <Table style={{ height: "100%" }}>
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Continuous Assessment</th>
+        <th>Examination</th>
+        <th>Total Score</th>
+        <th>Grade Remark</th>
+      </tr>
+    </thead>
+    <tbody>
+      {selectedStudent?.scores &&
+        Object.entries(selectedStudent.scores).map(([subject, score], index) => (
+          <tr key={index}>
+            <td>{subject}</td>
+            <td>{score.continuous}</td>
+            <td>{score.exams}</td>
+            <td>{score.total}</td>
+            <td>{getGradeRemark(score.total)}</td>
+          </tr>
+        ))}
+    </tbody>
+  </Table>
+</TableContainer>
 
-        </TableContainer>
         <Box className="report-cognitive">
           <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
           <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
@@ -690,7 +689,7 @@ open={open}
 
       {/* Performance Chart */}
       <Text size="sm">Subject Performance Chart</Text>
-      <Bar data={data} />
+      <Bar data={selectedStudent?.data} />
 
       {/* Footer Section */}
       <Grid mt="md">

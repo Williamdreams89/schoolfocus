@@ -29,7 +29,9 @@ class ParentAdmin(admin.ModelAdmin):
                     ]
     
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'code']
+    def display_active_for_classes(self, obj):
+        return ", ".join([_class.name for _class in obj.active_classes.all()])
+    list_display = ['id', 'title', 'code', "display_active_for_classes"]
 
 admin.site.register(Subject, SubjectAdmin)
 

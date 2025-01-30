@@ -150,13 +150,9 @@ class FileUploadSerializer(serializers.Serializer):
         return value
 
 class SubjectSerializer(serializers.ModelSerializer):
-    active_for = serializers.SerializerMethodField()
     class Meta:
         model = Subject
-        fields = ['title', 'code', 'active_for']
-
-    def get_active_for(self, obj):
-        return obj.get_active_classes_count()
+        fields = ['title', 'code']
 
 class ClassSerializer(serializers.ModelSerializer):
     class Meta:

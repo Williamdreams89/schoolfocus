@@ -526,6 +526,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
+import random
+
 class ResultsSummaryView(APIView):
     def get(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
         # Helper function for ordinal suffix
@@ -540,6 +542,10 @@ class ResultsSummaryView(APIView):
                 return "rd"
             else:
                 return "th"
+
+        # Helper function to generate random hex colors
+        def generate_random_colors(n):
+            return [f"#{random.randint(0, 0xFFFFFF):06x}" for _ in range(n)]
 
         # Fetch results
         results = Results.objects.filter(
@@ -556,6 +562,9 @@ class ResultsSummaryView(APIView):
         student_data = defaultdict(lambda: {
             "id": None,
             "name": "",
+            "dob": "",
+            "index_number": "",
+            "email": "",
             "scores": {},
             "gpa": 0.0,
             "rank_title": "",
@@ -564,6 +573,7 @@ class ResultsSummaryView(APIView):
             "grand_total": 0,
             "total_score": 0,
             "subject_count": 0,
+            "data": {}  # Placeholder for the chart data
         })
 
         for result in results:
@@ -572,22 +582,45 @@ class ResultsSummaryView(APIView):
             student_info = student_data[student.id]
             student_info["id"] = student.id
             student_info["name"] = full_name
+            student_info["email"] = student.email
+            student_info["index_number"] = student.index_number
+            student_info["dob"] = student.date_of_birth
+
+            total_score = result.total_score or (result.continuous_assessment + result.exams_score)
             student_info["scores"][result.subject.title] = {
                 "continuous": result.continuous_assessment,
                 "exams": result.exams_score,
-                "total": result.total_score or (result.continuous_assessment + result.exams_score),
+                "total": total_score,
             }
+
             student_info["gpa"] += GRADE_POINTS.get(result.grade, 0.0)
-            student_info["grand_total"] += result.total_score or (result.continuous_assessment + result.exams_score)
+            student_info["grand_total"] += total_score
             student_info["subject_count"] += 1
 
-        # Calculate GPA, average, and rank
+        # Process each student's data
         student_list = []
         for student_id, data in student_data.items():
             total_subjects = data["subject_count"]
             if total_subjects > 0:
                 data["gpa"] = round(data["gpa"] / total_subjects, 2)
                 data["average_score"] = round(data["grand_total"] / total_subjects, 2)
+
+            # Prepare "data" key
+            labels = list(data["scores"].keys())  # Subject titles
+            total_scores = [score["total"] for score in data["scores"].values()]  # Corresponding scores
+            background_colors = generate_random_colors(len(labels))  # Generate random colors
+
+            data["data"] = {
+                "labels": labels,
+                "datasets": [
+                    {
+                        "label": "Exam Performance",
+                        "data": total_scores,
+                        "backgroundColor": background_colors,
+                    }
+                ],
+            }
+
             student_list.append(data)
 
         # Sort by GPA, then by grand total as a tie-breaker
@@ -649,6 +682,22 @@ class SubjectListView(APIView):
             created_subjects.append(subject_instance)
         return Response({'created_subjects': len(created_subjects)}, status=status.HTTP_201_CREATED)
     
+
+# Fetch subjects based of student classes in active classes in the Subject model
+class SubjectListByClassView(APIView):
+    def get(self, request):
+        class_name = request.query_params.get('class_name')
+        
+        if not class_name:
+            return Response({"error": "class_name query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            student_class = StudentClass.objects.get(name=class_name)
+            subjects = Subject.objects.filter(active_classes=student_class, is_active=True)
+            serializer = SubjectSerializer(subjects, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except StudentClass.DoesNotExist:
+            return Response({"error": "Student class not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class StudentClassAPIView(generics.ListCreateAPIView):
