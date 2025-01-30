@@ -3,6 +3,7 @@
     width: fit-content;
     border: 1px solid #eaeaea;
     table-layout: fixed;
+    /* background-color: aqua; */
   }
   
   .custom-table td,
@@ -27,7 +28,8 @@
     width: fit-content;
     border: 1px solid #eaeaea;
     table-layout: fixed;
-    flex: 1;
+    /* flex: 1; */
+
   }
 
   .report-cognitive p{

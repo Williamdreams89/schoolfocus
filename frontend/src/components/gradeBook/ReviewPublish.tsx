@@ -626,40 +626,43 @@ open={open}
       </Box>
       {/* Subject Table */}
       <Box sx={{display:'flex'}}>
-        <Table className="custom-table">
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>Continuous Assessment</th>
-              <th>Examination</th>
-              <th>Total Score</th>
-              <th>Grade Remark</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>English Language</td>
-              <td>40</td>
-              <td>40</td>
-              <td>80</td>
-              <td>Good</td>
-            </tr>
-            <tr>
-              <td>Agricultural Science</td>
-              <td>35</td>
-              <td>50</td>
-              <td>85</td>
-              <td>Excellent</td>
-            </tr>
-            <tr>
-              <td>ICT</td>
-              <td>30</td>
-              <td>45</td>
-              <td>75</td>
-              <td>Good</td>
-            </tr>
-          </tbody>
-        </Table>
+        <TableContainer className="custom-table" style={{flex: 3}}>
+          <Table style={{height:'100%'}}>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Continuous Assessment</th>
+                <th>Examination</th>
+                <th>Total Score</th>
+                <th>Grade Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>English Language</td>
+                <td>40</td>
+                <td>40</td>
+                <td>80</td>
+                <td>Good</td>
+              </tr>
+              <tr>
+                <td>Agricultural Science</td>
+                <td>35</td>
+                <td>50</td>
+                <td>85</td>
+                <td>Excellent</td>
+              </tr>
+              <tr>
+                <td>ICT</td>
+                <td>30</td>
+                <td>45</td>
+                <td>75</td>
+                <td>Good</td>
+              </tr>
+            </tbody>
+          </Table>
+
+        </TableContainer>
         <Box className="report-cognitive">
           <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
           <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
