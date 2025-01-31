@@ -299,6 +299,7 @@ export default function ReviewPublish() {
   const [academicYear, setAcademicYear] = useState<string>("");
   const [classList, setClassList] = useState<Class[]>([]);
   const [open, setOpen] = React.useState<boolean>(false)
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
 
   const calculateGrandTotal = (student: Student) => {
     return Object.values(student.scores).reduce(
@@ -561,7 +562,7 @@ export default function ReviewPublish() {
         </Table>
       </TableContainer>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
       {open&&<Backdrop
-  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0, overflowY:'scroll', height:'2000px'})}
+  sx={(theme) => ({  zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0,})}
 open={open}
 >
 
@@ -689,7 +690,9 @@ open={open}
 
       {/* Performance Chart */}
       <Text size="sm">Subject Performance Chart</Text>
-      <Bar data={selectedStudent?.data} />
+      <Box>
+        <Bar data={selectedStudent?.data} />
+      </Box>
 
       {/* Footer Section */}
       <Grid mt="md">
@@ -709,7 +712,7 @@ open={open}
 </Backdrop>}
 {!!selectedStudent&&<Backdrop
   sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0, overflowY:'scroll', height:'2000px'})}
-open={open}
+open={openDialog}
 >
 <Dialog open={!!selectedStudent} onClose={handleCloseForm} fullWidth>
         {selectedStudent && (
