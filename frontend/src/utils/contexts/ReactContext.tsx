@@ -8,7 +8,8 @@ interface StudentsManagementDetails{
     reload?: boolean;
     selectedAcademicYear?: string;
     selectedStudentClass?: string;
-    selectedExamSession?:string
+    selectedExamSession?:string;
+    studentsResults?: any;
 }
 
 interface APIContextTypes{
@@ -26,8 +27,10 @@ const MyContext = ({children}:{children: React.ReactNode}) =>{
         reload: false,
         selectedAcademicYear: "",
         selectedExamSession: "",
-        selectedStudentClass: ""
+        selectedStudentClass: "",
+        studentsResults: []
     })
+    
     return <APIContext.Provider value={{studentsManagementDetails, setStudentsManagementDetails}}>
         {children}
     </APIContext.Provider>

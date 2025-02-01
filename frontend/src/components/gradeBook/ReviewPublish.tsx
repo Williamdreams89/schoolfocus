@@ -54,6 +54,9 @@ import {
 } from "chart.js";
 import "./styles.css";
 import RoomIcon from '@mui/icons-material/Room';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { RoomServiceOutlined } from '@mui/icons-material';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -366,7 +369,8 @@ export default function ReviewPublish() {
       localStorage.setItem('examSession', `${examSession}`)
       console.log("results =", data);
       setStudents(data);
-      setStudentsManagementDetails({ isLoading: false });
+      setStudentsManagementDetails({...studentsManagementDetails, studentsResults: data})
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading: false });
     } catch (error) {
       setStudentsManagementDetails({ isLoading: false });
       // alert(`${error}`);

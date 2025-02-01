@@ -32,6 +32,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "html2canvas": "^1.4.1",
     "idb": "^8.0.1",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
@@ -79,7 +80,9 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.0",
-    "cross-env":"^7.0.3"
+    "cross-env": "^7.0.3"
   },
-  "resolutions": {"mini-css-extract-plugin": "2.4.7"}
+  "resolutions": {
+    "mini-css-extract-plugin": "2.4.7"
+  }
 }
