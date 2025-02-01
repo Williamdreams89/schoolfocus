@@ -28,7 +28,8 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody
+  TableBody, 
+  Button as MUIButton
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
@@ -373,6 +374,19 @@ export default function ReviewPublish() {
     }
   };
 
+  const handlePublishResults  = async (event: React.FormEvent) => {
+    event.preventDefault()
+    try{
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading:true})
+      const response = await axios.post(`http://127.0.0.1:8000/api/results/review_new/${selectedClassName}/${academicYear}/${examSession}/`)
+      console.log('response body:', response.data)
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+    }catch(error){
+      alert('error during publishing')
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+    }
+  }
+
     const fetchSubjects = async () => {
       try {
         setStudentsManagementDetails({ isLoading: true });
@@ -470,7 +484,7 @@ export default function ReviewPublish() {
           </Card>
         </AccordionDetails>
       </Accordion>
-      {students.length !==0 ?<TableContainer sx={{ mt: "1rem" }}>
+      {students.length !==0 ?<Box><Box sx={{display:'flex', justifyContent:'end'}}><MUIButton sx={{mt:'2rem'}} variant="outlined" onClick={handlePublishResults}>Publish Students Results</MUIButton></Box><TableContainer sx={{ mt: "1rem" }}>
         <Table className="custom-table" withColumnBorders>
           <thead>
             <tr>
@@ -560,7 +574,8 @@ export default function ReviewPublish() {
             ))}
           </tbody>
         </Table>
-      </TableContainer>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
+      </TableContainer>
+      </Box>: <Box sx={{width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center'}}>Results Not Available!!</Box>}
       {open&&<Backdrop
   sx={(theme) => ({  zIndex: theme.zIndex.drawer + 1, display:'flex', flexDirection:'column', gap:'1rem', position:'fixed',  top:0, left:0,})}
 open={open}

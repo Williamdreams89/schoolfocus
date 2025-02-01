@@ -103,6 +103,8 @@ class Student(models.Model):
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
     tag = models.ManyToManyField(Tag, blank=True, null=True)
 
+    # Student Fee Status Tag
+    debtor = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

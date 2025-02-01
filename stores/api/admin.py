@@ -12,7 +12,7 @@ class StudentsAdmin(admin.ModelAdmin):
                      'student_class',
                      'gender',
                      'display_guardian',
-                     'registration_number'
+                     'debtor'
                     ]
     def display_guardian(self, obj):
         # Join all parent names into a single string
@@ -39,7 +39,7 @@ class ClassAdmin(admin.ModelAdmin):
     list_display = ['name',]
 
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ["student",'Class', "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks"]
+    list_display = ["student",'Class', "academic_year", "exam_session", "subject", "continuous_assessment", "exams_score", "grade", "score", "remarks", "published"]
 
     def Class(self, obj):
         return obj.student.student_class.name

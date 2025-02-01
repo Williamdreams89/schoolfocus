@@ -552,7 +552,8 @@ class ResultsSummaryView(APIView):
             student__student_class__name=student_class_name,
             academic_year=academic_year,
             exam_session=exam_session,
-            published=False,
+            published=True,
+            student__debtor = False
         ).select_related('student', 'subject')
 
         if not results.exists():
@@ -632,6 +633,23 @@ class ResultsSummaryView(APIView):
             student["principalRemark"] = "Excellent" if student["gpa"] > 3.5 else "Good"
 
         return Response(student_list)
+    
+    def post(self, request, student_class_name, academic_year, exam_session, *args, **kwargs):
+        """
+        Updates the 'published' field to True for all results where student__debtor=False.
+        """
+        updated_count = Results.objects.filter(
+            student__student_class__name=student_class_name,
+            academic_year=academic_year,
+            exam_session=exam_session,
+            student__debtor=False,
+            # published=False,
+        ).update(published=True)
+
+        if updated_count == 0:
+            return Response({"detail": "No results were updated."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": f"{updated_count} results have been successfully published."}, status=status.HTTP_200_OK)
 
 
 class SubjectsInResultsView(APIView):

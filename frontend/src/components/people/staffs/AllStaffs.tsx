@@ -32,10 +32,20 @@ const StaffTable = () => {
     axios
       .get("/api/staffs") // Replace with your API endpoint
       .then((response) => {
-        setStaffs(response.data);
+        if(new Array(response.data).length > 0){
+          setStaffs(response.data);
+          setLoading(false)
+        }else{
+          setStaffs([])
+          setLoading(false)
+        }
         setLoading(false);
       })
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => {
+        console.error("Error fetching data:", error)
+        setStaffs([])
+        setLoading(false)
+      });
   }, []);
 
   // Handle search functionality
