@@ -552,8 +552,8 @@ class ResultsSummaryView(APIView):
             student__student_class__name=student_class_name,
             academic_year=academic_year,
             exam_session=exam_session,
-            published=True,
-            student__debtor = False
+            # published=True,
+            # student__debtor = False
         ).select_related('student', 'subject')
 
         if not results.exists():
@@ -659,7 +659,7 @@ class SubjectsInResultsView(APIView):
             student__student_class__name=student_class_name,
             academic_year=academic_year,
             exam_session=exam_session,
-            published=False,
+            # published=False,
         ).select_related('subject').values('subject__id', 'subject__title').distinct()
 
         if not subjects:

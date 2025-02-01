@@ -394,6 +394,7 @@ export default function ReviewPublish() {
           `http://127.0.0.1:8000/api/results/subjects/${selectedClassName}/${academicYear}/${examSession}/`
         );
         setSubjects(data);
+        console.log("subjects=", data)
         setStudentsManagementDetails({ isLoading: false });
       } catch (error) {
         setStudentsManagementDetails({ isLoading: false });
