@@ -5,6 +5,7 @@ import CustomDatePicker from './CustomDatePicker';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '.././theme/ColorModeIconDropdown';
+import {BsGear} from "react-icons/bs"
 
 import Search from './Search';
 import NavLogoDisplay from './NavLogoDisplay';
@@ -30,6 +31,10 @@ export default function Header() {
         <CustomDatePicker />
         <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />
+        </MenuButton>
+        
+        <MenuButton aria-label="Open System Settings">
+          <BsGear />
         </MenuButton>
         <ColorModeIconDropdown />
       </Stack>

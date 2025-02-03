@@ -100,12 +100,16 @@ const StudentDetailPage = () => {
     
     const {setStudentsManagementDetails, studentsManagementDetails} = context;
     const studentID = studentsManagementDetails.getIDForStudentDetailPage
+    const [studentIsInClass, setStudentIsInClass] = React.useState<string>("")
     const [studentProfilePic, setStudentProfilePic] = React.useState<any>(null)
     React.useEffect(() =>{
       const fetchStudentDetailData = async () =>{
         try{
           setStudentsManagementDetails({isLoading: true})
           const {data} = await axios.get(`http://127.0.0.1:8000/api/student/${id}/`)
+          setStudentIsInClass(data.student_class_name)
+          localStorage.setItem("stu_grr", `${data.student_class_name}`)
+          console.log(`student id class==`, data.student_class_name)
           if (data.profile_pic) {
             const response = await fetch(data.profile_pic, { mode: "cors" });
             const blob = await response.blob();
@@ -155,8 +159,8 @@ const getGradeRemark = (totalScore: number): string => {
   React.useEffect(() => {
     const fetchStudentResults = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/results/review_new/JHS%203/2025/First%20Term/");
-  
+        const response = await axios.get(`http://127.0.0.1:8000/api/results/review_new/${studentIsInClass}/${new Date().getFullYear()}/First%20Term/`);
+        console.log("student class zzzzz=", studentIsInClass)
         // Convert `id` from params to a number
         const studentId = Number(id);
   
@@ -171,7 +175,7 @@ const getGradeRemark = (totalScore: number): string => {
     };
   
     fetchStudentResults();
-  }, [id]); // Ensure useEffect re-runs when id changes
+  }, [studentIsInClass]); // Ensure useEffect re-runs when id changes
   
     
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -473,7 +477,7 @@ const getGradeRemark = (totalScore: number): string => {
                   <Box className="report-bio">
                     <p>Class:{studentDetailData?.student_class_name}</p>
                     <p>Position: {studentResultDetailData?.rank_title}</p>
-                    <p>Student's Average Score:{studentResultDetailData?.average_score}</p>
+                    <p>Student's Average Score:{studentResultDetailData?.average_score}%</p>
                   </Box>
                 </Box>
                 {/* Subject Table */}
@@ -530,7 +534,7 @@ const getGradeRemark = (totalScore: number): string => {
 
                 {/* Performance Chart */}
                 <Text size="sm" style={{fontWeight:900, textAlign:'center', marginTop:'1rem'}}>Subject Performance Chart</Text>
-                <Box sx={{height:'260px', width:'100%'}}>
+                <Box sx={{height:'260px', width:'100%', justifyContent:'center', display:'flex'}}>
                   {/* <Bar data={data}  /> */}
                   {studentResultDetailData?.data?<Bar data={studentResultDetailData?.data} />:<p>Chart data not available</p>} 
                 </Box>
