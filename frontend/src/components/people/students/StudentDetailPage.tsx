@@ -420,7 +420,7 @@ const getGradeRemark = (totalScore: number): string => {
           </TabPanel>
           <TabPanel value={"4"}>
           <>
-          {new Array(studentResultDetailData?.scores).length <0 ?<>
+          {studentResultDetailData?.scores ?<>
               <ManCard shadow="sm" padding="sm" style={{position:'relative' }} ref={contentRef} >
                 <img style={{position:'absolute', zIndex:9999, height:'800px', width:'560px', opacity:"10%", top:'20%', left:'10%'}} src='/images/logo.png' />
                 <center style={{fontWeight:800, fontSize:'20px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
@@ -502,7 +502,7 @@ const getGradeRemark = (totalScore: number): string => {
                   ))}
               </tbody>
             </Table>
-          </TableContainer>
+                </TableContainer>
                   <Box className="report-cognitive">
                     <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
                     <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
@@ -532,7 +532,7 @@ const getGradeRemark = (totalScore: number): string => {
                 <Text size="sm" style={{fontWeight:900, textAlign:'center', marginTop:'1rem'}}>Subject Performance Chart</Text>
                 <Box sx={{height:'260px', width:'100%'}}>
                   {/* <Bar data={data}  /> */}
-                  <Bar data={studentResultDetailData?.data} /> 
+                  {studentResultDetailData?.data?<Bar data={studentResultDetailData?.data} />:<p>Chart data not available</p>} 
                 </Box>
 
                 {/* Footer Section */}
