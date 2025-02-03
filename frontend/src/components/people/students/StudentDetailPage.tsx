@@ -24,6 +24,17 @@ import ResultsGeneration from './details/results/ResultsGeneration'
 import { Image, Text, Card as ManCard, Grid as ManGrid } from '@mantine/core';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -89,11 +100,18 @@ const StudentDetailPage = () => {
     
     const {setStudentsManagementDetails, studentsManagementDetails} = context;
     const studentID = studentsManagementDetails.getIDForStudentDetailPage
+    const [studentProfilePic, setStudentProfilePic] = React.useState<any>(null)
     React.useEffect(() =>{
       const fetchStudentDetailData = async () =>{
         try{
           setStudentsManagementDetails({isLoading: true})
           const {data} = await axios.get(`http://127.0.0.1:8000/api/student/${id}/`)
+          if (data.profile_pic) {
+            const response = await fetch(data.profile_pic, { mode: "cors" });
+            const blob = await response.blob();
+            const objectURL = URL.createObjectURL(blob);
+            setStudentProfilePic(objectURL);
+          }
           setStudentDetailData(data)
           setStudentsManagementDetails({isLoading: false})
         }catch(error){
@@ -102,7 +120,12 @@ const StudentDetailPage = () => {
       }
 
       fetchStudentDetailData()
-    }, [])
+      return () => {
+        if (studentProfilePic) {
+          URL.revokeObjectURL(studentProfilePic);
+        }
+      };
+    }, [id])
 
     const contentRef = React.useRef<HTMLDivElement>(null);
   const generatePDF = async () => {
@@ -155,6 +178,8 @@ const getGradeRemark = (totalScore: number): string => {
         setValue(newValue);
     };
     const isSmallDevice = useMediaQuery("(max-width:1045px)")
+
+    
   return (
     <>
     <NavbarBreadcrumbs />
@@ -395,145 +420,137 @@ const getGradeRemark = (totalScore: number): string => {
           </TabPanel>
           <TabPanel value={"4"}>
           <>
-    <ManCard shadow="sm" padding="lg" ref={contentRef} >
-      <center style={{fontWeight:800, fontSize:'26px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
-      {/* Header Section */}
-      <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
-        
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            // justifyContent: "center",
-            // alignItems: "center",
-            position:'relative'
-          }}
-        >
-          <Box sx={{position:'absolute', display:'flex', flexDirection:'column', width:'100%', justifyContent:'center', alignItems:'center'}}><RoomServiceOutlined /> <span style={{fontSize:'17px'}}>Ejura</span></Box>
-          <Box sx={{flex: 3, display:'flex', alignItems:'center', gap:'2rem', mt:'1rem'}}>
-            <Text>
-              Website: www.lighthouse.edu
-              <Divider orientation="vertical" />
-            </Text>
-            <Text>Phone: 0302-987-654</Text>
-            <Text>
-              <Divider orientation="vertical" />
-              Email:admin@lighthouse.edu.gh
-            </Text>
-          </Box>
-        </Box>
-        <Image
-          src="/images/logo.png"
-          alt="School Logo"
-          style={{ width: "100px", objectFit: "cover" }}
-        />
-      </Box>
+          {new Array(studentResultDetailData?.scores).length <0 ?<>
+              <ManCard shadow="sm" padding="sm" style={{position:'relative' }} ref={contentRef} >
+                <img style={{position:'absolute', zIndex:9999, height:'800px', width:'560px', opacity:"10%", top:'20%', left:'10%'}} src='/images/logo.png' />
+                <center style={{fontWeight:800, fontSize:'20px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
+                {/* Header Section */}
+                <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
+                  
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      // justifyContent: "center",
+                      // alignItems: "center",
+                      position:'relative'
+                    }}
+                  >
+                    
+                    <Box sx={{flex: 3, display:'flex', alignItems:'center', gap:'6rem', mt:'.51rem', mb:'.51rem'}}>
+                      <Text>
+                        Website: www.lighthouse.edu
+                      </Text>
+                      <Text>Phone: 0302-987-654</Text>
+                      <Text>Ejura</Text>
+                    </Box>
+                  </Box>
+                  {/* <Image
+                    src="/images/logo.png"
+                    alt="School Logo"
+                    style={{ width: "100px", objectFit: "cover" }}
+                  /> */}
+                </Box>
 
 
-      {/* Student Info Section */}
-      <Box sx={{display:'flex', justifyContent:'space-between', height:'fit-content', border:'1px solid #eaeaea', marginBottom:'rem'}}>
-      <Box className="report-bio">
-          <p>Name: {studentResultDetailData?.name}</p>
-          <p>Reg No.: {studentResultDetailData?.index_number} </p>
-          <p>Gender: Male</p>
-          <p>Date Of Birth: {studentResultDetailData?.dob} </p>
-          <p>Class Category: PRIMARY</p>
-          <p>Class: {studentDetailData.class_name}</p>
-          <p>Email: williamdanquah@gmail.com</p>
-          
-        </Box>
-        <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', padding:'10px'}}>
-          <img
-            src="images/avata.png"
-            alt="Student Photo"
-            width={"220px"}
-          />
-        </Box>
-        <Box className="report-bio">
-          <p>Position: </p>
-          <p>Student Average</p>
-          <p>No. of Subjects: 8</p>
-          <p>Student's Total Score: </p>
-          <p>Student's Average Score:</p>
-          <p>Grade Point Average:</p>
-          <p>Grade Summary</p>
-        </Box>
-      </Box>
-      {/* Subject Table */}
-      <Box sx={{display:'flex'}}>
-      <TableContainer className="custom-table" style={{ flex: 3 }}>
-  <Table style={{ height: "100%" }}>
-    <thead>
-      <tr>
-        <th>Subject</th>
-        <th>Continuous Assessment</th>
-        <th>Exams</th>
-        <th>Total</th>
-        <th>Grade Remark</th>
-      </tr>
-    </thead>
-    <tbody>
-      {studentResultDetailData?.scores &&
-        Object.entries(studentResultDetailData.scores).map(([subject, score], index) => (
-          <tr key={index}>
-            <td>{subject}</td>
-            <td>{score.continuous}</td>
-            <td>{score.exams}</td>
-            <td>{score.total}</td>
-            <td>{getGradeRemark(score.total)}</td>
-          </tr>
-        ))}
-    </tbody>
-  </Table>
-</TableContainer>
+                {/* Student Info Section */}
+                <Box sx={{display:'flex', justifyContent:'space-between', height:'fit-content', border:'1px solid #eaeaea', marginBottom:'rem'}}>
+                <Box className="report-bio">
+                    <p>Name: {studentResultDetailData?.name}</p>
+                    <p>Reg No.: {studentResultDetailData?.index_number} </p>
+                    <p>Gender: Male</p>
+                    <p>Date Of Birth: {studentResultDetailData?.dob} </p>
+                    
+                    
+                  </Box>
+                  <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', padding:'10px'}}>
+                    <Image
+                      src={`${studentProfilePic}`}
+                      alt="Student Photo"
+                      height={"140px"}
+                    />
+                  </Box>
+                  <Box className="report-bio">
+                    <p>Class:{studentDetailData?.student_class_name}</p>
+                    <p>Position: {studentResultDetailData?.rank_title}</p>
+                    <p>Student's Average Score:{studentResultDetailData?.average_score}</p>
+                  </Box>
+                </Box>
+                {/* Subject Table */}
+                <Box sx={{display:'flex', height:'40%'}}>
+                <TableContainer className="custom-table" style={{ flex: 3 }}>
+            <Table style={{ height: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Continuous Assessment</th>
+                  <th>Exams</th>
+                  <th>Total</th>
+                  <th>Grade Remark</th>
+                </tr>
+              </thead>
+              <tbody style={{textAlign:'center'}}>
+                {studentResultDetailData?.scores &&
+                  Object.entries(studentResultDetailData.scores).map(([subject, score], index) => (
+                    <tr key={index}>
+                      <td>{subject}</td>
+                      <td>{score.continuous}</td>
+                      <td>{score.exams}</td>
+                      <td>{score.total}</td>
+                      <td>{getGradeRemark(score.total)}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          </TableContainer>
+                  <Box className="report-cognitive">
+                    <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
+                    <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Attentiveness</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Neatness</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Honesty</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Politeness</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Perseverance</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Relionship with others</span><span className="val-two">5</span></p>
+                    <p style={{fontWeight:900}}>Psychomotor Skill Rating (5)</p>
+                    <p><span className="val-one">Handwriting</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Drawing & Painting</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Verbal Fluency</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Retentiveness</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Visual Memory</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Public Speaking</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">Sports & Games</span><span className="val-two">5</span></p>
+                    <p style={{fontWeight:900}}>Attendance Report</p>
+                    <p><span className="val-one">No. of School days</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">No. of days present</span><span className="val-two">5</span></p>
+                    <p><span className="val-one">No. of days absent</span><span className="val-two">5</span></p>
+                  </Box>
+                </Box>
+                <Divider  />
 
-        <Box className="report-cognitive">
-          <p style={{fontWeight:900}}>Affective Skill Rating (5)</p>
-          <p><span className="val-one">Punctuality</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Attentiveness</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Neatness</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Honesty</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Politeness</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Perseverance</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Relionship with others</span><span className="val-two">5</span></p>
-          <p style={{fontWeight:900}}>Psychomotor Skill Rating (5)</p>
-          <p><span className="val-one">Handwriting</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Drawing & Painting</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Verbal Fluency</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Retentiveness</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Visual Memory</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Public Speaking</span><span className="val-two">5</span></p>
-          <p><span className="val-one">Sports & Games</span><span className="val-two">5</span></p>
-          <p style={{fontWeight:900}}>Attendance Report</p>
-          <p><span className="val-one">No. of School days</span><span className="val-two">5</span></p>
-          <p><span className="val-one">No. of days present</span><span className="val-two">5</span></p>
-          <p><span className="val-one">No. of days absent</span><span className="val-two">5</span></p>
-        </Box>
-      </Box>
-      <Divider  />
+                {/* Performance Chart */}
+                <Text size="sm" style={{fontWeight:900, textAlign:'center', marginTop:'1rem'}}>Subject Performance Chart</Text>
+                <Box sx={{height:'260px', width:'100%'}}>
+                  {/* <Bar data={data}  /> */}
+                  <Bar data={studentResultDetailData?.data} /> 
+                </Box>
 
-      {/* Performance Chart */}
-      <Text size="sm">Subject Performance Chart</Text>
-      <Box>
-        {/* <Bar data={data}  /> */}
-        Bar Graph 
-      </Box>
-
-      {/* Footer Section */}
-      <Grid mt="md">
-        <Grid>
-          <Text size="sm">Form Teacher:</Text>
-          <Divider />
-          <Text size="sm">Form Teacher's Signature:</Text>
-        </Grid>
-        <Grid>
-          <Text size="sm">Principal:</Text>
-          <Divider  />
-          <Text size="sm">Principal's Signature:</Text>
-        </Grid>
-      </Grid>
-    </ManCard>
-    <Button variant='outlined' onClick={generatePDF}>Generate PDF</Button>
+                {/* Footer Section */}
+                {/* <Grid mt="md">
+                  <Grid>
+                    <Text size="sm">Form Teacher:</Text>
+                    <Divider />
+                    <Text size="sm">Form Teacher's Signature:</Text>
+                  </Grid>
+                  <Grid>
+                    <Text size="sm">Principal:</Text>
+                    <Divider  />
+                    <Text size="sm">Principal's Signature:</Text>
+                  </Grid>
+                </Grid> */}
+              </ManCard>
+              <Button variant='outlined' onClick={generatePDF}>Generate PDF</Button>
+            </>: <Box><p>Results slip not available for this student</p></Box>}
     </>
           </TabPanel>
           <TabPanel value={"5"}></TabPanel>
