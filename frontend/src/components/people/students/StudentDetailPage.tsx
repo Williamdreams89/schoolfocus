@@ -267,7 +267,7 @@ const getGradeRemark = (totalScore: number): string => {
             />
           </TabList>
           <TabPanel value={"1"}>
-          <Card>
+          <Card sx={{bgcolor:'white'}}>
         <Box display="flex" flexDirection="row" alignItems="center">
           <CardMedia
             component="img"
