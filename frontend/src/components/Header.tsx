@@ -9,6 +9,7 @@ import {BsGear} from "react-icons/bs"
 
 import Search from './Search';
 import NavLogoDisplay from './NavLogoDisplay';
+import { NavLink } from 'react-router-dom';
 
 export default function Header() {
   return (
@@ -33,9 +34,11 @@ export default function Header() {
           <NotificationsRoundedIcon />
         </MenuButton>
         
+        <NavLink to="/system-settings">
         <MenuButton aria-label="Open System Settings">
           <BsGear />
         </MenuButton>
+        </NavLink>
         <ColorModeIconDropdown />
       </Stack>
     </Stack>

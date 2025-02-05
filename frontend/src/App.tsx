@@ -59,6 +59,7 @@ import StudentDetailPage from "./components/people/students/StudentDetailPage";
 import ReviewPublish from "./components/gradeBook/ReviewPublish";
 import Subjects from "./components/academics/subjects/Subjects";
 import ReportCard from "./components/gradeBook/ReportCard";
+import SystemSettings from "./components/settings/SystemSettings";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -233,6 +234,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/reportcard' element={<ReportCard />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
+                      <Route path='/system-settings' element={<SystemSettings />} />
                   </Route>
                 </Routes>
             </Stack>

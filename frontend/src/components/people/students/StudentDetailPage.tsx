@@ -154,6 +154,13 @@ const getGradeRemark = (totalScore: number): string => {
   if (totalScore >= 50) return "Pass";
   return "Fail";
 };
+const getOverallRemark = (totalScore: any): string => {
+  if (totalScore >= 85) return "Excellent";
+  if (totalScore >= 75) return "Very Good";
+  if (totalScore >= 65) return "Good";
+  if (totalScore >= 50) return "Pass";
+  return "Fail";
+};
     
 
   React.useEffect(() => {
@@ -220,7 +227,7 @@ const getGradeRemark = (totalScore: number): string => {
           </Box>
         <Card sx={{width:'100%',  maxWidth: { sm: "100%", md: "1700px" }}}>
         <TabContext value={value}>
-        <TabList onChange={handleTabChange} aria-label="lab API tabs example"
+        <TabList onChange={handleTabChange} aria-label="lab API tabs example" 
         
   variant="scrollable"
   scrollButtons="auto"
@@ -464,8 +471,8 @@ const getGradeRemark = (totalScore: number): string => {
                     <p>Reg No.: {studentResultDetailData?.index_number} </p>
                     <p>Gender: Male</p>
                     <p>Date Of Birth: {studentResultDetailData?.dob} </p>
-                    
-                    
+                    <p>Class Category: undefined</p>
+                    <p>Class:{studentDetailData?.student_class_name}</p>
                   </Box>
                   <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', padding:'10px'}}>
                     <Image
@@ -475,9 +482,12 @@ const getGradeRemark = (totalScore: number): string => {
                     />
                   </Box>
                   <Box className="report-bio">
-                    <p>Class:{studentDetailData?.student_class_name}</p>
                     <p>Position: {studentResultDetailData?.rank_title}</p>
+                    <p>No. of Subjects: undefined</p>
+                    <p>Student's Total Score: undefined</p>
                     <p>Student's Average Score:{studentResultDetailData?.average_score}%</p>
+                    <p>Summary Remark: {getOverallRemark(studentResultDetailData?.average_score)}</p>
+                    <p>Date Printed: undefined</p>
                   </Box>
                 </Box>
                 {/* Subject Table */}
