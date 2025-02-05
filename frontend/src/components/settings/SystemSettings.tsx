@@ -268,6 +268,22 @@ const SystemSettings = () => {
                 </Box>
             </Box> 
         </TabPanel>
+        <TabPanel sx={{width:'100%'}} value={"4"}>
+            <Card sx={{display:'flex',justifyContent:'center', width:'100%', height:'100%', alignItems:'center'}}>
+                <Box sx={{display:'flex', justifyContent:'center',width:'400px', height:'400px', alignItems:'center', flexDirection:'column'}}>
+                    <Typography variant="h1">404</Typography>
+                    <Typography variant="h6">Page Under Development</Typography>
+                </Box>
+            </Card>
+        </TabPanel>
+        <TabPanel sx={{width:'100%'}} value={"5"}>
+            <Card sx={{display:'flex',justifyContent:'center', width:'100%', height:'100%', alignItems:'center'}}>
+                <Box sx={{display:'flex', justifyContent:'center',width:'400px', height:'400px', alignItems:'center', flexDirection:'column'}}>
+                    <Typography variant="h1">404</Typography>
+                    <Typography variant="h6">Page Under Development</Typography>
+                </Box>
+            </Card>
+        </TabPanel>
       </TabContext>
     </React.Fragment>
   );
