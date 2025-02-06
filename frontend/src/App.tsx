@@ -60,6 +60,7 @@ import ReviewPublish from "./components/gradeBook/ReviewPublish";
 import Subjects from "./components/academics/subjects/Subjects";
 import ReportCard from "./components/gradeBook/ReportCard";
 import SystemSettings from "./components/settings/SystemSettings";
+import axios from "axios";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -154,6 +155,26 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
 
   const {studentsManagementDetails, setStudentsManagementDetails} = context;
 
+  // System Settings Fetcher
+  const [systemSettingsData, setSystemSettingsData] = React.useState<any>()
+  React.useEffect(()=>{
+      const fetchSystemSettingsData = async () => {
+        try{
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:true})
+          const {data} = await axios.get(`http://127.0.0.1:8000/api/system-settings/`)
+          setSystemSettingsData(data)
+          console.log("systennn=", systemSettingsData)
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+          
+        }catch(error){
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+          alert(`${error}`)
+        }
+      }
+  
+      fetchSystemSettingsData()
+    },[])
+
   return (
     <div>
       {isLocked ? (
@@ -199,7 +220,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
             >
               {!isAuthPage &&
                    (
-                    <Header />
+                    <Header data = {systemSettingsData} />
                   )}
                 <Routes>
                   <Route path='/auth/login' element = {<LoginPage />} />

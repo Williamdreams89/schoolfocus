@@ -51,3 +51,27 @@ export interface Class{
   value: string;
   label: string
 }
+
+export interface SystemSettings {
+  id: number;
+  active_services: string;
+  school_name: string;
+  school_motto: string;
+  mission: string;
+  vision: string;
+  core_values: string;
+  school_email: string | null;
+  school_phone: string | null;
+  fees_support_contact: string | null;
+  school_address: string;
+  country: string;
+  city_state: string;
+  currency_symbol: string;
+  absence_sms_to_parent: boolean;
+  head_staff_title: string;
+  user: number;
+}
+
+export interface Props {
+  data: SystemSettings[];
+}

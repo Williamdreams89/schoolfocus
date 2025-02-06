@@ -17,9 +17,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { APIContext } from "../../utils/contexts/ReactContext";
 
-interface SystemSettings{
-  school_name: string;
-}
+
+
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");

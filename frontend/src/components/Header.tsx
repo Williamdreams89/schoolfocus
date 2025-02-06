@@ -10,8 +10,11 @@ import {BsGear} from "react-icons/bs"
 import Search from './Search';
 import NavLogoDisplay from './NavLogoDisplay';
 import { NavLink } from 'react-router-dom';
+import { Props } from './people/students/types';
 
-export default function Header() {
+
+
+const Header: React.FC<Props> = ({data}) => {
   return (
     <Stack
       direction="row"
@@ -26,7 +29,7 @@ export default function Header() {
       spacing={2}
     >
       {/* <NavbarBreadcrumbs /> */}
-      <NavLogoDisplay />
+      <NavLogoDisplay data = {data} />
       <Stack direction="row" sx={{ gap: 1 }}>
         <Search />
         <CustomDatePicker />
@@ -44,3 +47,5 @@ export default function Header() {
     </Stack>
   );
 }
+
+export default Header
