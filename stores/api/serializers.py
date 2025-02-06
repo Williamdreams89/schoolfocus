@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, GuadianOrParent, Results, Subject, StudentClass, Tag, SkillAssessment
+from .models import *
 
 class GuadianOrParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -179,3 +179,34 @@ class SkillAssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillAssessment
         fields = "__all__"
+
+
+class AcademicSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcademiccSession
+        fields = '__all__'
+
+class SystemSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemSettings
+        fields = '__all__'
+
+class SystemImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageSettings
+        fields = '__all__'
+
+class EmailSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailSettings
+        fields = '__all__'
+
+class SmsSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMSSettings
+        fields = '__all__'
+
+class UserPrivilegesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPrivilege
+        fields = '__all__'

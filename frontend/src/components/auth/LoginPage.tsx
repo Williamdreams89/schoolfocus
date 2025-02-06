@@ -15,13 +15,43 @@ import axios from "axios";
 import { TextInput } from "@mantine/core";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
+import { APIContext } from "../../utils/contexts/ReactContext";
+
+interface SystemSettings{
+  school_name: string;
+}
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [systemSettingsData,setSystemSettingsData] = React.useState<any>("")
   const navigate = useNavigate()
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("There is no context")
+  }
+  const {setStudentsManagementDetails, studentsManagementDetails} = context
+
+  React.useEffect(()=>{
+    const fetchSystemSettingsData = async () => {
+      try{
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:true})
+        const {data} = await axios.get(`http://127.0.0.1:8000/api/system-settings/`)
+        setSystemSettingsData(data)
+        setStudentsManagementDetails({...studentsManagementDetails, fetchedSystemSettings: data})
+        console.log("systennn=", systemSettingsData)
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+        
+      }catch(error){
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+        alert(`${error}`)
+      }
+    }
+
+    fetchSystemSettingsData()
+  },[])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -75,7 +105,7 @@ const LoginPage: React.FC = () => {
           sx={{ width: 100, height: 100, marginBottom: 2 }}
         />
         <Typography variant="h4" fontWeight="bold" textAlign="center">
-          DREAMS INTERNATIONAL COMPLEX
+          {systemSettingsData[0]?.school_name}
         </Typography>
         <Box mt={2}>
           <Typography>📧 wdanquah@stu.ucc.edu.gh | 📞 +233543921309</Typography>

@@ -939,3 +939,83 @@ class RecordAStudentSkillAssessmentAPIView(APIView):
 
         except Exception as e:
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+# Academic Session Views
+class AcademicSessionListView(generics.ListAPIView):
+    queryset = AcademicSession.objects.all()
+    serializer_class = AcademicSessionSerializer
+
+class AcademicSessionRetrieveView(generics.RetrieveAPIView):
+    queryset = AcademiccSession.objects.all()
+    serializer_class = AcademicSessionSerializer
+
+class AcademicSessionUpdateView(generics.UpdateAPIView):
+    queryset = AcademicSession.objects.all()
+    serializer_class = AcademicSessionSerializer
+
+# System Settings Views
+class SystemSettingsListView(generics.ListAPIView):
+    queryset = SystemSettings.objects.all()
+    serializer_class = SystemSettingsSerializer
+
+class SystemSettingsRetrieveView(generics.RetrieveAPIView):
+    queryset = SystemSettings.objects.all()
+    serializer_class = SystemSettingsSerializer
+
+class SystemSettingsUpdateView(generics.UpdateAPIView):
+    queryset = SystemSettings.objects.all()
+    serializer_class = SystemSettingsSerializer
+
+# System Images Views
+class SystemImagesListView(generics.ListAPIView):
+    queryset = ImageSettings.objects.all()
+    serializer_class = SystemImagesSerializer
+
+class SystemImagesRetrieveView(generics.RetrieveAPIView):
+    queryset = ImageSettings.objects.all()
+    serializer_class = SystemImagesSerializer
+
+class SystemImagesUpdateView(generics.UpdateAPIView):
+    queryset = ImageSettings.objects.all()
+    serializer_class = SystemImagesSerializer
+
+# Email Settings Views
+class EmailSettingsListView(generics.ListAPIView):
+    queryset = EmailSettings.objects.all()
+    serializer_class = EmailSettingsSerializer
+
+class EmailSettingsRetrieveView(generics.RetrieveAPIView):
+    queryset = EmailSettings.objects.all()
+    serializer_class = EmailSettingsSerializer
+
+class EmailSettingsUpdateView(generics.UpdateAPIView):
+    queryset = EmailSettings.objects.all()
+    serializer_class = EmailSettingsSerializer
+
+# SMS Settings Views
+class SmsSettingsListView(generics.ListAPIView):
+    queryset = SMSSettings.objects.all()
+    serializer_class = SmsSettingsSerializer
+
+class SmsSettingsRetrieveView(generics.RetrieveAPIView):
+    queryset = SMSSettings.objects.all()
+    serializer_class = SmsSettingsSerializer
+
+class SmsSettingsUpdateView(generics.UpdateAPIView):
+    queryset = SMSSettings.objects.all()
+    serializer_class = SmsSettingsSerializer
+
+# User Privileges Views
+class UserPrivilegesListView(generics.ListAPIView):
+    queryset = UserPrivilege.objects.all()
+    serializer_class = UserPrivilegesSerializer
+
+class UserPrivilegesRetrieveView(generics.RetrieveAPIView):
+    queryset = UserPrivilege.objects.all()
+    serializer_class = UserPrivilegesSerializer
+
+class UserPrivilegesUpdateView(generics.UpdateAPIView):
+    queryset = UserPrivilege.objects.all()
+    serializer_class = UserPrivilegesSerializer
+

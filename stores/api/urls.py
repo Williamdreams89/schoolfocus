@@ -42,4 +42,28 @@ urlpatterns = [
     path("skills/assessment/<str:student_class>/<str:academic_year>/<str:exam_session>/", SkillAssessmentAPIView.as_view()),
     path("skills/assessment/entry/<str:student_class>/<str:academic_year>/<str:exam_session>/", RecordAStudentSkillAssessmentAPIView.as_view()),
     path('subjects-by-class/', SubjectListByClassView.as_view(), name='subjects-by-class'),
+
+    path('academic-sessions/', AcademicSessionListView.as_view(), name='academic-session-list'),
+    path('academic-sessions/<int:pk>/', AcademicSessionRetrieveView.as_view(), name='academic-session-retrieve'),
+    path('academic-sessions/<int:pk>/update/', AcademicSessionUpdateView.as_view(), name='academic-session-update'),
+
+    path('system-settings/', SystemSettingsListView.as_view(), name='system-settings-list'),
+    path('system-settings/<int:pk>/', SystemSettingsRetrieveView.as_view(), name='system-settings-retrieve'),
+    path('system-settings/<int:pk>/update/', SystemSettingsUpdateView.as_view(), name='system-settings-update'),
+
+    path('system-images/', SystemImagesListView.as_view(), name='system-images-list'),
+    path('system-images/<int:pk>/', SystemImagesRetrieveView.as_view(), name='system-images-retrieve'),
+    path('system-images/<int:pk>/update/', SystemImagesUpdateView.as_view(), name='system-images-update'),
+
+    path('email-settings/', EmailSettingsListView.as_view(), name='email-settings-list'),
+    path('email-settings/<int:pk>/', EmailSettingsRetrieveView.as_view(), name='email-settings-retrieve'),
+    path('email-settings/<int:pk>/update/', EmailSettingsUpdateView.as_view(), name='email-settings-update'),
+
+    path('sms-settings/', SmsSettingsListView.as_view(), name='sms-settings-list'),
+    path('sms-settings/<int:pk>/', SmsSettingsRetrieveView.as_view(), name='sms-settings-retrieve'),
+    path('sms-settings/<int:pk>/update/', SmsSettingsUpdateView.as_view(), name='sms-settings-update'),
+
+    path('user-privileges/', UserPrivilegesListView.as_view(), name='user-privileges-list'),
+    path('user-privileges/<int:pk>/', UserPrivilegesRetrieveView.as_view(), name='user-privileges-retrieve'),
+    path('user-privileges/<int:pk>/update/', UserPrivilegesUpdateView.as_view(), name='user-privileges-update'),
 ]

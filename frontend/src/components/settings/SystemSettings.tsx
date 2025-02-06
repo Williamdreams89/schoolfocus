@@ -14,10 +14,18 @@ import { FiPlusSquare, FiSettings } from "react-icons/fi";
 import React from "react";
 import { Shuffle } from "@mui/icons-material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { NativeSelect, SimpleGrid, TextInput, Button as ManButton } from "@mantine/core";
+import {
+  NativeSelect,
+  SimpleGrid,
+  TextInput,
+  Button as ManButton,
+} from "@mantine/core";
 
 const SystemSettings = () => {
   const [value, setValue] = React.useState("1");
+  const [imagePreview, setImagePreview] = React.useState<string>("/images/logo.png");
+  const [imagePreview2, setImagePreview2] = React.useState<string>("/images/pale-education.png");
+  const [imagePreview3, setImagePreview3] = React.useState<string>("/images/logo.png");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -118,7 +126,7 @@ const SystemSettings = () => {
             <Box
               sx={{
                 display: "flex",
-                gap: "1rem",
+                gap: "3rem",
                 alignItems: "center",
                 justifyContent: "left",
                 border: "1px solid #eaeaea",
@@ -131,6 +139,7 @@ const SystemSettings = () => {
                   borderRadius: "2rem",
                   padding: "15px",
                   width: "fit-content",
+                  boxShadow: "10px 10px 5px 0px rgba(0,0,0,0.75);-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);-moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75)"
                 }}
               >
                 <p>
@@ -153,8 +162,8 @@ const SystemSettings = () => {
             </Box>
             <Box
               sx={{
-                mt: "2.3rem",
-                mb: "2.3rem",
+                mt: ".3rem",
+                mb: ".3rem",
                 padding: "1.3rem",
                 border: "1px solid #eaeaea",
               }}
@@ -232,57 +241,190 @@ const SystemSettings = () => {
             </Box>
           </Card>
         </TabPanel>
-        <TabPanel sx={{width:'100%'}} value={"2"}>
-           <Box sx={{padding:'2rem', border:'1px solid #eaeaea'}}>
-                  <Typography variant="h3" sx={{mb:'1rem'}}> <FiSettings /> System Settings</Typography>
-                  <Divider sx={{mb:'2rem'}} />
-                <SimpleGrid
-                    cols={{ base: 1, sm: 1, lg: 2 }}
-                    spacing={{ base: 10, sm: "xl" }}
-                    verticalSpacing={{ base: "md", sm: "xl" }}
-                    style={{border:"1px solid #eaeaea", padding:'2rem'}}
-                    component={"form"}
-                >
-                    <NativeSelect
-                    label="Active Services"
-                    data={["", "School Portal and Website", "School Portal Only"]}
-                    required
-                    />
-                    <TextInput label="School Name" />
-                    <TextInput label="School Motto / Slogan / Tagline" />
-                    <TextInput label="Our Mission" />
-                    <TextInput label="Our Vision" />
-                    <TextInput label="Our Core Values" />
-                    <TextInput label="School Email" />
-                    <TextInput label="School Phone" />
-                    <TextInput label="Fees Payment Support Contact Desk" />
-                    <TextInput label="School Address" />
-                    <TextInput label="Country" />
-                    <TextInput label="City/State" />
-                    <TextInput label="Currency Symbol" />
-                    <NativeSelect data={["", "Enable", "Disable"]} label="Absence on Attendance SMS to Parent" />
-                    <TextInput label="School Head staff title" />
-                </SimpleGrid>
-                <Box sx={{display:'flex', justifyContent:'center', width:'100%', mt:'2rem'}}>
-                    <ManButton>Save</ManButton>
-                </Box>
-            </Box> 
+        <TabPanel sx={{ width: "100%" }} value={"2"}>
+          <Box sx={{ padding: "2rem", border: "1px solid #eaeaea" }}>
+            <Typography variant="h3" sx={{ mb: "1rem" }}>
+              {" "}
+              <FiSettings /> System Settings
+            </Typography>
+            <Divider sx={{ mb: "2rem" }} />
+            <SimpleGrid
+              cols={{ base: 1, sm: 1, lg: 2 }}
+              spacing={{ base: 10, sm: "xl" }}
+              verticalSpacing={{ base: "md", sm: "xl" }}
+              style={{ border: "1px solid #eaeaea", padding: "2rem" }}
+              component={"form"}
+            >
+              <NativeSelect
+                label="Active Services"
+                data={["", "School Portal and Website", "School Portal Only"]}
+                required
+              />
+              <TextInput label="School Name" />
+              <TextInput label="School Motto / Slogan / Tagline" />
+              <TextInput label="Our Mission" />
+              <TextInput label="Our Vision" />
+              <TextInput label="Our Core Values" />
+              <TextInput label="School Email" />
+              <TextInput label="School Phone" />
+              <TextInput label="Fees Payment Support Contact Desk" />
+              <TextInput label="School Address" />
+              <TextInput label="Country" />
+              <TextInput label="City/State" />
+              <TextInput label="Currency Symbol" />
+              <NativeSelect
+                data={["", "Enable", "Disable"]}
+                label="Absence on Attendance SMS to Parent"
+              />
+              <TextInput label="School Head staff title" />
+            </SimpleGrid>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                mt: "2rem",
+              }}
+            >
+              <ManButton>Save</ManButton>
+            </Box>
+          </Box>
         </TabPanel>
-        <TabPanel sx={{width:'100%'}} value={"4"}>
-            <Card sx={{display:'flex',justifyContent:'center', width:'100%', height:'100%', alignItems:'center'}}>
-                <Box sx={{display:'flex', justifyContent:'center',width:'400px', height:'400px', alignItems:'center', flexDirection:'column'}}>
-                    <Typography variant="h1">404</Typography>
-                    <Typography variant="h6">Page Under Development</Typography>
-                </Box>
-            </Card>
+        <TabPanel sx={{ width: "100%" }} value={"3"}>
+          <Box>
+            <Typography variant="h2">Image Settings</Typography>
+          </Box>
+
+          <Divider />
+          <SimpleGrid
+            cols={{ base: 1, sm: 1, lg: 3 }}
+            spacing={{ base: 10, sm: "xl" }}
+            verticalSpacing={{ base: "md", sm: "xl" }}
+            style={{ padding: "2rem" }}
+          >
+            <Box style={{ border: "1px solid #eaeaea", padding: "2rem", display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center' }}>
+            <h2>School Logo</h2>
+            <img
+                src={imagePreview}
+                style={{ width: "200px", height: "200px", border:'1px solid #eaeaea' }}
+                alt="some-img"
+              />
+              <button style={{ width: "200px", position: "relative" }}>
+                Select Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </button>
+            </Box>
+            <Box style={{ border: "1px solid #eaeaea", padding: "2rem", display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center' }}>
+            <h3>Additional Logo for Results</h3>
+            <img
+                src={imagePreview2}
+                style={{ width: "200px", height: "200px", border:'1px solid #eaeaea' }}
+                alt="some-img"
+              />
+              <button style={{ width: "200px", position: "relative" }}>
+                Select Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </button>
+            </Box>
+            <Box style={{ border: "1px solid #eaeaea", padding: "2rem", display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center' }}>
+            <h2>Site Icon</h2>
+            <img
+                src={imagePreview3}
+                style={{ width: "200px", height: "200px", border:'1px solid #eaeaea' }}
+                alt="some-img"
+              />
+              <button style={{ width: "200px", position: "relative" }}>
+                Select Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </button>
+            </Box>
+          </SimpleGrid>
         </TabPanel>
-        <TabPanel sx={{width:'100%'}} value={"5"}>
-            <Card sx={{display:'flex',justifyContent:'center', width:'100%', height:'100%', alignItems:'center'}}>
-                <Box sx={{display:'flex', justifyContent:'center',width:'400px', height:'400px', alignItems:'center', flexDirection:'column'}}>
-                    <Typography variant="h1">404</Typography>
-                    <Typography variant="h6">Page Under Development</Typography>
-                </Box>
-            </Card>
+        <TabPanel sx={{ width: "100%" }} value={"4"}>
+          <Card
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "400px",
+                height: "400px",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Typography variant="h1">404</Typography>
+              <Typography variant="h6">Page Under Development</Typography>
+            </Box>
+          </Card>
+        </TabPanel>
+        <TabPanel sx={{ width: "100%" }} value={"5"}>
+          <Card
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "400px",
+                height: "400px",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Typography variant="h1">404</Typography>
+              <Typography variant="h6">Page Under Development</Typography>
+            </Box>
+          </Card>
         </TabPanel>
       </TabContext>
     </React.Fragment>

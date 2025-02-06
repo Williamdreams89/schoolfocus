@@ -2,6 +2,88 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
 
+class AcademiccSession(models.Model):
+    session = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    start_year = models.PositiveIntegerField(blank=True, null=True)
+    end_year = models.PositiveIntegerField(blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.session} ({self.start_year}-{self.end_year})"
+
+class AcademicTerm(models.Model):
+    term_name = models.CharField(max_length=50, blank=True, null=True)
+    _session = models.ForeignKey(AcademiccSession, on_delete=models.CASCADE, related_name='terms', blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+
+    def __str__(self):
+        return f"{self.term_name} - {self.session}"
+
+class SystemSettings(models.Model):
+    active_services = models.CharField(
+        max_length=50,
+        choices=[('portal_website', 'School Portal and Website'), ('portal_only', 'School Portal Only')],
+        default='portal_website'
+    )
+    school_name = models.CharField(max_length=255, blank=True, null=True)
+    school_motto = models.TextField(blank=True, null=True)
+    mission = models.TextField(blank=True, null=True)
+    vision = models.TextField(blank=True, null=True)
+    core_values = models.TextField(blank=True, null=True)
+    school_email = models.EmailField(blank=True, null=True)
+    school_phone = models.CharField(max_length=20, blank=True, null=True)
+    fees_support_contact = models.CharField(max_length=20, blank=True, null=True)
+    school_address = models.TextField(blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    city_state = models.CharField(max_length=100, blank=True, null=True)
+    currency_symbol = models.CharField(max_length=10, blank=True, null=True)
+    absence_sms_to_parent = models.BooleanField(default=False, blank=True, null=True)
+    head_staff_title = models.CharField(max_length=100, blank=True, null=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+
+class ImageSettings(models.Model):
+    school_logo = models.ImageField(upload_to='images/', blank=True, null=True)
+    pale_education_logo = models.ImageField(upload_to='images/', blank=True, null=True)
+    other_logo = models.ImageField(upload_to='images/', blank=True, null=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+
+class EmailSettings(models.Model):
+    smtp_server = models.CharField(max_length=255, blank=True, null=True)
+    smtp_port = models.PositiveIntegerField(blank=True, null=True)
+    email_username = models.CharField(max_length=255, blank=True, null=True)
+    email_password = models.CharField(max_length=255, blank=True, null=True)
+    use_tls = models.BooleanField(default=True, blank=True, null=True)
+    use_ssl = models.BooleanField(default=False, blank=True, null=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+
+class SMSSettings(models.Model):
+    provider_name = models.CharField(max_length=255, blank=True, null=True)
+    api_key = models.CharField(max_length=255, blank=True, null=True)
+    sender_id = models.CharField(max_length=20, blank=True, null=True)
+    enable_sms = models.BooleanField(default=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+
+
+class UserPrivilege(models.Model):
+    role = models.CharField(max_length=50)
+    can_access_system_settings = models.BooleanField(default=False)
+    can_manage_sessions = models.BooleanField(default=False)
+    can_send_emails = models.BooleanField(default=False)
+    can_send_sms = models.BooleanField(default=False)
+    can_manage_users = models.BooleanField(default=False)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.role
+
+
 
 class GuadianOrParent(models.Model):
     class RelationshipChoices(models.TextChoices):
@@ -214,25 +296,4 @@ class Results(models.Model):
 
         super().save(*args, **kwargs)
     
-
-
-
-"""
-[
-  "Punctuality",
-  "Attentiveness",
-  "Neatness",
-  "Honesty",
-  "Politeness",
-  "Perseverance",
-  "Relationship with Others",
-  "Handwriting",
-  "Drawing & Painting",
-  "Verbal Fluency",
-  "Retentiveness",
-  "Visual Memory",
-  "Public Speaking",
-  "Sports & Games",
-]
-"""
 

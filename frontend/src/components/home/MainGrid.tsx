@@ -11,6 +11,7 @@ import FeePaymentBarChart from './FeePaymentChart';
 import SessionsChart from './SessionsChart';
 import StatCard, {StatCardProps} from './StatCard';
 import IncomeExpenditureTable from './CustomDataGrid';
+import { APIContext } from '../../utils/contexts/ReactContext';
 
 const data: StatCardProps[] = [
   {
@@ -67,6 +68,15 @@ const data: StatCardProps[] = [
 ];
 
 export default function MainGrid() {
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error("No context found")
+  }
+  const {studentsManagementDetails, setStudentsManagementDetails} = context
+
+  React.useEffect(()=>{
+    console.log("studentMSDATA= ",studentsManagementDetails.fetchedSystemSettings)
+  },[])
   React.useEffect(()=>{
     document.title = "Home"
   })

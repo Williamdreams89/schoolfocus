@@ -10,6 +10,7 @@ interface StudentsManagementDetails{
     selectedStudentClass?: string;
     selectedExamSession?:string;
     studentsResults?: any;
+    fetchedSystemSettings?: any
 }
 
 interface APIContextTypes{
@@ -28,7 +29,8 @@ const MyContext = ({children}:{children: React.ReactNode}) =>{
         selectedAcademicYear: "",
         selectedExamSession: "",
         selectedStudentClass: "",
-        studentsResults: []
+        studentsResults: [],
+        fetchedSystemSettings: []
     })
     
     return <APIContext.Provider value={{studentsManagementDetails, setStudentsManagementDetails}}>

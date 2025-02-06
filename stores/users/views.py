@@ -18,6 +18,8 @@ from .utils import Utils
 from sms import send_sms
 import smtplib
 from email.message import EmailMessage
+from api.serializers import SystemSettingsSerializer
+from api.models import SystemSettings
 
 def send_email(subject, body, to):
     email_msg = EmailMessage()
@@ -86,19 +88,38 @@ class VerifyEmailAPIView(views.APIView):
         except jwt.exceptions.ExpiredSignatureError as error:
             return Response("Token in email has been expired")
     
+
 class UserLoginAPIView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
+
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data
+
         try:
             user = User.objects.get(email=serializer.data["email"])
             rToken = RefreshToken.for_user(user)
             access_token = str(rToken.access_token)
-            return Response({"tokens":{"refresh_token": str(rToken), "access_token": access_token}, "username":user.full_name, "user_id":user.id, 'user_role':user.user_type, }, status=status.HTTP_200_OK)
+
+            # Fetch SystemSettings linked to the user
+            system_settings = SystemSettings.objects.filter(user=user).first()
+            system_settings_data = SystemSettingsSerializer(system_settings).data if system_settings else None
+
+            return Response({
+                "tokens": {
+                    "refresh_token": str(rToken),
+                    "access_token": access_token
+                },
+                "username": user.full_name,
+                "user_id": user.id,
+                "user_role": user.user_type,
+                "system_settings": system_settings_data
+            }, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(str(e), status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class PasswordResetRequestAPIView(generics.GenericAPIView):
     serializer_class = PasswordResetRequestSerializer

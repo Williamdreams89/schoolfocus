@@ -53,7 +53,21 @@ class SkillAdmin(admin.ModelAdmin):
 class SkillAssessmentAdmin(admin.ModelAdmin):
     list_display = ["student", "skill", "score", "exam_session", "academic_year"]
 
+class AcademicSessionAdmin(admin.ModelAdmin):
+    pass
 
+class AcademicTermAdmin(admin.ModelAdmin):
+    pass
+
+class SystemSettingsAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(SystemSettings)
+admin.site.register(ImageSettings)
+admin.site.register(AcademiccSession)
+admin.site.register(AcademicTerm)
+admin.site.register(SMSSettings)
+admin.site.register(EmailSettings)
 admin.site.register(StudentClass, ClassAdmin)
 admin.site.register(SkillCategory, SkillCategoryAdmin)
 admin.site.register(Skill, SkillAdmin)
