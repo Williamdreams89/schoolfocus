@@ -57,6 +57,7 @@ import RoomIcon from '@mui/icons-material/Room';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { RoomServiceOutlined } from '@mui/icons-material';
+import { Props } from "../people/students/types";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -293,7 +294,7 @@ const CognitiveAssessmentForm: React.FC<CognitiveAssessmentFormProps> = ({ stude
   );
 };
 
-export default function ReviewPublish() {
+const ReviewPublish:React.FC<Props> =({data}) => {
   const isSmallerDevice = useMediaQuery("(max-width:1045px)")
   const [students, setStudents] = useState<Student[]>([]);
   const [subjects, setSubjects] = React.useState<Subject[]>([]);
@@ -588,7 +589,7 @@ open={open}
 
       <Modal size={"65rem"} opened={open} style={{position:'absolute', zIndex:99999, overflowY:'hidden'}} onClose={()=>setOpen(false)}>
       <ManCard shadow="sm" padding="lg">
-      <center style={{fontWeight:800, fontSize:'26px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
+      <center style={{fontWeight:800, fontSize:'26px'}}>{data[0]?.school_name}</center>
       {/* Header Section */}
       <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
         <Image
@@ -746,3 +747,5 @@ open={openDialog}
     </Box>
   );
 }
+
+export default ReviewPublish

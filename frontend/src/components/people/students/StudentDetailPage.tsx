@@ -33,6 +33,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from 'react-chartjs-2';
+import { Props } from './types';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -87,7 +88,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
     data?: any;
   }
 
-const StudentDetailPage = () => {
+const StudentDetailPage: React.FC<Props> = ({data}) => {
     const [value, setValue] = React.useState("1");
     const { id } = useParams<{ id: string }>()
     const [studentDetailData, setStudentDetailData] = React.useState<any>()
@@ -434,7 +435,7 @@ const getOverallRemark = (totalScore: any): string => {
           {studentResultDetailData?.scores ?<>
               <ManCard shadow="sm" padding="sm" style={{position:'relative' }} ref={contentRef} >
                 <img style={{position:'absolute', zIndex:9999, height:'800px', width:'560px', opacity:"10%", top:'20%', left:'10%'}} src='/images/logo.png' />
-                <center style={{fontWeight:800, fontSize:'20px'}}>DREAMS INTERNATIONAL SCHOOL COMPLEX</center>
+                <center style={{fontWeight:800, fontSize:'20px'}}>{new String(data[0]?.school_name).toUpperCase()}</center>
                 {/* Header Section */}
                 <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
                   

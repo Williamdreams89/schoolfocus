@@ -229,7 +229,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/' element = {<MainGrid />} />
                       <Route path='/people' element={<People />} />
                       <Route path='/people/students' element={<ViewStudents />} />
-                      <Route path='/people/student/:id' element={<StudentDetailPage />} />
+                      <Route path='/people/student/:id' element={<StudentDetailPage data={systemSettingsData} />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
                       <Route path='/people/students/enrollment' element={<StudentEnrollment />} />
                       <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />
@@ -249,8 +249,8 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
                       <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
                       <Route path='/printResults' element={<PrintResults />} />
-                      <Route path='/Review&PublishResultsOptions' element={<ReviewPublish />} />
-                      <Route path='/Review&PublishResults' element={<ResultsTable />} />
+                      <Route path='/Review&PublishResultsOptions' element={<ReviewPublish data={systemSettingsData} />} />
+                      <Route path='/Review&PublishResults' element={<ResultsTable data={systemSettingsData} />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
                       <Route path='/reportcard' element={<ReportCard />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
