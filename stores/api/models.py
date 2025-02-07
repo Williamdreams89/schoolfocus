@@ -3,24 +3,32 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
 
 class AcademiccSession(models.Model):
-    session = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    _session = models.CharField(max_length=20, unique=True, default="Nothing")
     start_year = models.PositiveIntegerField(blank=True, null=True)
     end_year = models.PositiveIntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.session} ({self.start_year}-{self.end_year})"
+        return f"{self._session} ({self.start_year}-{self.end_year})"
+
+    def save(self, *args, **kwargs):
+        if self.start_year and self.end_year:
+            self._session = f"{self.start_year} - {self.end_year}"
+        else:
+            self._session = "Undefined"
+
+        super().save(*args, **kwargs)
 
 class AcademicTerm(models.Model):
     term_name = models.CharField(max_length=50, blank=True, null=True)
-    _session = models.ForeignKey(AcademiccSession, on_delete=models.CASCADE, related_name='terms', blank=True, null=True)
+    session = models.ForeignKey(AcademiccSession, on_delete=models.CASCADE, related_name='terms', default=1)
     is_active = models.BooleanField(default=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
 
     def __str__(self):
-        return f"{self.term_name} - {self.session}"
+        return f"{self.term_name} - {self.session._session}"
 
 class SystemSettings(models.Model):
     active_services = models.CharField(

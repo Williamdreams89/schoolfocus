@@ -2,10 +2,12 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {
+  Backdrop,
   Box,
   Button,
   Card,
   Divider,
+  Slide,
   Tab,
   TableContainer,
   Typography,
@@ -20,19 +22,73 @@ import {
   TextInput,
   Button as ManButton,
 } from "@mantine/core";
+import { TermSessionProps } from "../people/students/types";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { TransitionProps } from '@mui/material/transitions';
 
-const SystemSettings = () => {
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
+
+
+const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData}) => {
   const [value, setValue] = React.useState("1");
   const [imagePreview, setImagePreview] = React.useState<string>("/images/logo.png");
   const [imagePreview2, setImagePreview2] = React.useState<string>("/images/pale-education.png");
   const [imagePreview3, setImagePreview3] = React.useState<string>("/images/logo.png");
+  const [rowTerm, setRowTerm] = React.useState<any>([])
+  const [rowSession, setRowSession] = React.useState<any>([])
+  const [termSwitcherOpen,setTermSwitcherOpen] = React.useState<boolean>(false)
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-  const columns: GridColDef<(typeof rows)[number]>[] = [
-    { field: "id", headerName: "ID" },
+
+  React.useEffect(()=>{
+    setRowTerm(academicSettingsData)
+    setRowSession(academicSessionSettingsData)
+  },[])
+
+  const columns : GridColDef<(typeof rowTerm)[number]>[] = [
+    {field: "id", headerName:'ID'},
+    {
+      field: "term_name",
+      headerName: "Term Name",
+      width: 180,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "session",
+      headerName: "session",
+      width: 180,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "is_active",
+      headerName: "Status",
+      width: 180,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+  ]
+  const columnsSessions: GridColDef<(typeof rowSession)[number]>[] = [
+    { field: "id", headerName: "ID" },
+    {
+      field: "_session",
       headerName: "Session",
       width: 180,
       editable: true,
@@ -57,7 +113,7 @@ const SystemSettings = () => {
       headerAlign: "center",
     },
     {
-      field: "status",
+      field: "is_active",
       headerName: "Status",
       sortable: false,
       width: 200,
@@ -66,50 +122,6 @@ const SystemSettings = () => {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-    {
-      id: 2,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-    {
-      id: 3,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-    {
-      id: 4,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-    {
-      id: 5,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-    {
-      id: 6,
-      session: "2023-2024",
-      start_year: "2023",
-      end_year: "2024",
-      status: false,
-    },
-  ];
   return (
     <React.Fragment>
       <TabContext value={value}>
@@ -155,10 +167,46 @@ const SystemSettings = () => {
                   <span style={{ fontWeight: 900 }}>2025</span>
                 </p>
               </Box>
-              <Button variant="contained">
+              <Button onClick={()=>setTermSwitcherOpen(true)} variant="contained">
                 <Shuffle />
                 <span>Switch Session/Term</span>
               </Button>
+              {termSwitcherOpen &&<Dialog
+        open={termSwitcherOpen}
+        onClose={()=>setTermSwitcherOpen(false)}
+        maxWidth = {'lg'}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        TransitionComponent={Transition}
+        keepMounted
+        PaperProps={{
+          sx:{
+            position:'absolute', 
+            top:'10%',
+            padding:'2rem'
+          }
+        }}
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Change Academic Session / Term"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <SimpleGrid cols={{ base: 1, sm: 1, lg: 3 }}
+      spacing={{ base: 10, sm: 'md' }}
+      verticalSpacing={{ base: 'md', sm: 'xl' }}>
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Session" data={["", "2023-2024", "2025-2026",]} />
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Year" data={["", "2023", "2024", "2025",]} />
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Term" data={["", "First Term", "Second Term",]} />
+      </SimpleGrid>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+          <ManButton onClick={()=>setTermSwitcherOpen(false)}>
+            Switch Over
+          </ManButton>
+        </DialogActions>
+      </Dialog>}
             </Box>
             <Box
               sx={{
@@ -185,8 +233,8 @@ const SystemSettings = () => {
                   </Button>
                 </Box>
                 <DataGrid
-                  rows={rows}
-                  columns={columns}
+                  rows={rowSession}
+                  columns={columnsSessions}
                   initialState={{
                     pagination: {
                       paginationModel: {
@@ -224,7 +272,7 @@ const SystemSettings = () => {
                   </Button>
                 </Box>
                 <DataGrid
-                  rows={rows}
+                  rows={rowTerm}
                   columns={columns}
                   initialState={{
                     pagination: {

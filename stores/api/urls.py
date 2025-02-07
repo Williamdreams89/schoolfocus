@@ -46,6 +46,9 @@ urlpatterns = [
     path('academic-sessions/', AcademicSessionListView.as_view(), name='academic-session-list'),
     path('academic-sessions/<int:pk>/', AcademicSessionRetrieveView.as_view(), name='academic-session-retrieve'),
     path('academic-sessions/<int:pk>/update/', AcademicSessionUpdateView.as_view(), name='academic-session-update'),
+    path('academic-term/', AcademicTermListView.as_view(), name='academic-term-list'),
+    path('academic-term/<int:pk>/', AcademicTermRetrieveView.as_view(), name='academic-term-retrieve'),
+    path('academic-term/<int:pk>/update/', AcademicTermUpdateView.as_view(), name='academic-term-update'),
 
     path('system-settings/', SystemSettingsListView.as_view(), name='system-settings-list'),
     path('system-settings/<int:pk>/', SystemSettingsRetrieveView.as_view(), name='system-settings-retrieve'),

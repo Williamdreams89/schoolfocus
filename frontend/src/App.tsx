@@ -157,6 +157,8 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
 
   // System Settings Fetcher
   const [systemSettingsData, setSystemSettingsData] = React.useState<any>()
+  const [AcademicSessionTermSettingsData, setAcademicSessionTermSettingsData] = React.useState<any>()
+  const [AcademicSessionSettingsData, setAcademicSessionSettingsData] = React.useState<any>()
   React.useEffect(()=>{
       const fetchSystemSettingsData = async () => {
         try{
@@ -174,6 +176,25 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
   
       fetchSystemSettingsData()
     },[])
+
+    React.useEffect(()=>{
+      const fetchAcademicSessionTerm = async () => {
+        try{
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:true})
+          const {data} = await axios.get(`http://127.0.0.1:8000/api/academic-term/`)
+          const response = await axios.get(`http://127.0.0.1:8000/api/academic-sessions/`)
+          setAcademicSessionTermSettingsData(data)
+          setAcademicSessionSettingsData(response.data)
+          console.log("academic session=", data)
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+          
+        }catch(error){
+          setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+          alert(`${error}`)
+        }
+      }
+      fetchAcademicSessionTerm()
+    }, [])
 
   return (
     <div>
@@ -255,7 +276,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/reportcard' element={<ReportCard />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
-                      <Route path='/system-settings' element={<SystemSettings />} />
+                      <Route path='/system-settings' element={<SystemSettings academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                   </Route>
                 </Routes>
             </Stack>

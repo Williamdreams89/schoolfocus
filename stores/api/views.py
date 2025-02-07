@@ -942,8 +942,8 @@ class RecordAStudentSkillAssessmentAPIView(APIView):
         
 
 # Academic Session Views
-class AcademicSessionListView(generics.ListAPIView):
-    queryset = AcademicSession.objects.all()
+class AcademicSessionListView(generics.ListCreateAPIView):
+    queryset = AcademiccSession.objects.all()
     serializer_class = AcademicSessionSerializer
 
 class AcademicSessionRetrieveView(generics.RetrieveAPIView):
@@ -953,6 +953,18 @@ class AcademicSessionRetrieveView(generics.RetrieveAPIView):
 class AcademicSessionUpdateView(generics.UpdateAPIView):
     queryset = AcademicSession.objects.all()
     serializer_class = AcademicSessionSerializer
+# Academic Term Views
+class AcademicTermListView(generics.ListAPIView):
+    queryset = AcademicTerm.objects.all()
+    serializer_class = AcademicTermSerializer
+
+class AcademicTermRetrieveView(generics.RetrieveAPIView):
+    queryset = AcademicTerm.objects.all()
+    serializer_class = AcademicTermSerializer
+
+class AcademicTermUpdateView(generics.UpdateAPIView):
+    queryset = AcademicTerm.objects.all()
+    serializer_class = AcademicTermSerializer
 
 # System Settings Views
 class SystemSettingsListView(generics.ListAPIView):

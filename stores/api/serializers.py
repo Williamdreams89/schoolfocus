@@ -181,6 +181,11 @@ class SkillAssessmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class AcademicTermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcademicTerm
+        fields = '__all__'
+        
 class AcademicSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AcademiccSession

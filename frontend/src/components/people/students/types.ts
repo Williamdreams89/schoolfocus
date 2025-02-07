@@ -75,3 +75,23 @@ export interface SystemSettings {
 export interface Props {
   data: SystemSettings[];
 }
+
+export interface AcademicTerm{
+  session: string;
+  start_year: string;
+  end_year : string;
+  active: boolean
+}
+
+export interface AcademicSession{
+  _session: string;
+  start_year: string;
+  end_year : string;
+  active: boolean
+}
+
+export interface TermSessionProps{
+  academicSettingsData: AcademicTerm;
+  academicSessionSettingsData: AcademicSession
+}
+
