@@ -993,6 +993,13 @@ class SystemSettingsUpdateView(generics.UpdateAPIView):
     queryset = SystemSettings.objects.all()
     serializer_class = SystemSettingsSerializer
 
+    def get_object(self):
+        # Get the first available object
+        obj = self.get_queryset().first()
+        if obj is None:
+            raise Http404("No system settings found")
+        return obj
+
 # System Images Views
 class SystemImagesListView(generics.ListAPIView):
     queryset = ImageSettings.objects.all()

@@ -250,7 +250,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                   <Route element={<ProtectedRoute />}>
                       <Route element={<NavBreadCrumbs items={[{label:'', href:''}]} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/' element = {<MainGrid />} />
-                      <Route path='/people' element={<People academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/people' element={<People data = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/people/students' element={<ViewStudents />} />
                       <Route path='/people/student/:id' element={<StudentDetailPage data={systemSettingsData} />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
@@ -278,7 +278,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/reportcard' element={<ReportCard />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
-                      <Route path='/system-settings' element={<SystemSettings academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/system-settings' element={<SystemSettings data = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                   </Route>
                 </Routes>
             </Stack>

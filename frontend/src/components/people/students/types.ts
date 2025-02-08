@@ -60,15 +60,16 @@ export interface SystemSettings {
   mission: string;
   vision: string;
   core_values: string;
-  school_email: string | null;
-  school_phone: string | null;
-  fees_support_contact: string | null;
+  school_email: string;
+  school_phone: string;
+  fees_support_contact: string;
   school_address: string;
   country: string;
   city_state: string;
   currency_symbol: string;
   absence_sms_to_parent: boolean;
   head_staff_title: string;
+  school_website: string;
   user: number;
 }
 
@@ -95,6 +96,7 @@ export interface AcademicSession{
 
 export interface TermSessionProps{
   academicSettingsData: AcademicTerm;
-  academicSessionSettingsData: AcademicSession
+  academicSessionSettingsData: AcademicSession;
+  data: SystemSettings []
 }
 

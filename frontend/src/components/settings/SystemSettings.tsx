@@ -56,7 +56,7 @@ interface AcademicTerm{
 }
 
 
-const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData}) => {
+const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData, data}) => {
   const [value, setValue] = React.useState("1");
   const [imagePreview, setImagePreview] = React.useState<string>("/images/logo.png");
   const [imagePreview2, setImagePreview2] = React.useState<string>("/images/pale-education.png");
@@ -72,15 +72,25 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
   const [termSwitcherOpen,setTermSwitcherOpen] = React.useState<boolean>(false)
 
   const [activeAcademicData, setActiveAcademic] = React.useState<any>()
-    React.useEffect(() => {
-      if (academicSettingsData && Array.isArray(academicSettingsData)) {
-        const activeTerm = academicSettingsData.find((term: AcademicTerm) => term.is_active === true);
-        console.log("mappppa=", activeTerm);
-        setActiveAcademic(activeTerm)
-      } else {
-        console.log("academicSettingsData is not an array:", academicSettingsData);
-      }
-    }, [academicSettingsData]);
+  React.useEffect(() => {
+    if (academicSettingsData && Array.isArray(academicSettingsData)) {
+      const activeTerm = academicSettingsData.find((term: AcademicTerm) => term.is_active === true);
+      console.log("mappppa=", activeTerm);
+      setActiveAcademic(activeTerm);
+    } else {
+      console.log("academicSettingsData is not an array:", academicSettingsData);
+    }
+  
+    console.log("system just data=", data);
+  
+    // Ensure data is an array and has at least one element
+    if (Array.isArray(data) && data.length > 0) {
+      setFormData(data[0]); // Set only the first object from the array
+    } else {
+      console.warn("data array is empty or not an array");
+    }
+  }, [academicSettingsData, data]);
+  
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -226,7 +236,20 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async (event:React.FormEvent) => {
+    event.preventDefault()
+    try{
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading: true})
+      const response = await axios.put(`http://127.0.0.1:8000/api/system-settings/update/`, formData)
+      console.log("saved=", response.data)
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+      alert("success")
+      window.location.reload()
+    }catch(error){
+      setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+      alert("failed saving system data")
+
+    }
     console.log("Form Data Submitted:", formData);
     // Send formData to an API using axios or fetch
   }
@@ -488,7 +511,7 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
                 mt: "2rem",
               }}
             >
-              <ManButton>Save</ManButton>
+              <ManButton onClick={handleSubmit}>Save</ManButton>
             </Box>
           </Box>
         </TabPanel>

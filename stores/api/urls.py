@@ -56,6 +56,8 @@ urlpatterns = [
     path('system-settings/', SystemSettingsListView.as_view(), name='system-settings-list'),
     path('system-settings/<int:pk>/', SystemSettingsRetrieveView.as_view(), name='system-settings-retrieve'),
     path('system-settings/<int:pk>/update/', SystemSettingsUpdateView.as_view(), name='system-settings-update'),
+    path("system-settings/update/", SystemSettingsUpdateView.as_view(), name="system-settings-update"),
+
 
     path('system-images/', SystemImagesListView.as_view(), name='system-images-list'),
     path('system-images/<int:pk>/', SystemImagesRetrieveView.as_view(), name='system-images-retrieve'),
