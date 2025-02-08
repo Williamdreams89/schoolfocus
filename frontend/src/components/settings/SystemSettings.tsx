@@ -197,6 +197,41 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
     },
   ];
 
+  const [formData, setFormData] = React.useState({
+    active_services: "portal_website",
+    school_name: "",
+    school_motto: "",
+    mission: "",
+    vision: "",
+    core_values: "",
+    school_email: "",
+    school_phone: "",
+    fees_support_contact: "",
+    school_address: "",
+    country: "",
+    city_state: "",
+    currency_symbol: "",
+    school_website: "",
+    absence_sms_to_parent: false, // Boolean field
+    head_staff_title: "",
+  });
+
+  // Handle input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    console.log("Form Data Submitted:", formData);
+    // Send formData to an API using axios or fetch
+  }
+
+
   return (
     <React.Fragment>
       <NavBreadCrumbs academicSessionSettingsData={academicSessionSettingsData} academicSettingsData={academicSettingsData} items={[{label: "General Settings"}]} />
@@ -408,27 +443,42 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
               component={"form"}
             >
               <NativeSelect
-                label="Active Services"
-                data={["", "School Portal and Website", "School Portal Only"]}
-                required
-              />
-              <TextInput label="School Name" />
-              <TextInput label="School Motto / Slogan / Tagline" />
-              <TextInput label="Our Mission" />
-              <TextInput label="Our Vision" />
-              <TextInput label="Our Core Values" />
-              <TextInput label="School Email" />
-              <TextInput label="School Phone" />
-              <TextInput label="Fees Payment Support Contact Desk" />
-              <TextInput label="School Address" />
-              <TextInput label="Country" />
-              <TextInput label="City/State" />
-              <TextInput label="Currency Symbol" />
-              <NativeSelect
-                data={["", "Enable", "Disable"]}
-                label="Absence on Attendance SMS to Parent"
-              />
-              <TextInput label="School Head staff title" />
+          label="Active Services"
+          name="active_services"
+          data={[
+            { value: "portal_website", label: "School Portal and Website" },
+            { value: "portal_only", label: "School Portal Only" },
+          ]}
+          required
+          value={formData.active_services}
+          onChange={handleChange}
+        />
+        <TextInput label="School Name" name="school_name" value={formData.school_name} onChange={handleChange} />
+        <TextInput label="School Motto / Slogan / Tagline" name="school_motto" value={formData.school_motto} onChange={handleChange} />
+        <TextInput label="Our Mission" name="mission" value={formData.mission} onChange={handleChange} />
+        <TextInput label="Our Vision" name="vision" value={formData.vision} onChange={handleChange} />
+        <TextInput label="Our Core Values" name="core_values" value={formData.core_values} onChange={handleChange} />
+        <TextInput label="School Email" name="school_email" value={formData.school_email} onChange={handleChange} />
+        <TextInput label="School Phone" name="school_phone" value={formData.school_phone} onChange={handleChange} />
+        <TextInput label="Fees Payment Support Contact Desk" name="fees_support_contact" value={formData.fees_support_contact} onChange={handleChange} />
+        <TextInput label="School Address" name="school_address" value={formData.school_address} onChange={handleChange} />
+        <TextInput label="Country" name="country" value={formData.country} onChange={handleChange} />
+        <TextInput label="City/State" name="city_state" value={formData.city_state} onChange={handleChange} />
+        <TextInput label="Currency Symbol" name="currency_symbol" value={formData.currency_symbol} onChange={handleChange} />
+        <TextInput label="School Website" name="school_website" value={formData.school_website} onChange={handleChange} />
+        
+        <NativeSelect
+          label="Absence on Attendance SMS to Parent"
+          name="absence_sms_to_parent"
+          data={[
+            { value: "true", label: "Enable" },
+            { value: "false", label: "Disable" },
+          ]}
+          value={formData.absence_sms_to_parent.toString()} // Convert boolean to string for select
+          onChange={(e) => setFormData({ ...formData, absence_sms_to_parent: e.target.value === "true" })}
+        />
+
+        <TextInput label="School Head staff title" name="head_staff_title" value={formData.head_staff_title} onChange={handleChange} />
             </SimpleGrid>
             <Box
               sx={{
