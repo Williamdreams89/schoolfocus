@@ -31,6 +31,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { TransitionProps } from '@mui/material/transitions';
 import { APIContext } from "../../utils/contexts/ReactContext";
 import axios from "axios";
+import NavBreadCrumbs from "../NavbarBreadcrumbs";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -44,6 +45,14 @@ const Transition = React.forwardRef(function Transition(
 interface DataProps{
   label: string;
   value: string
+}
+
+interface AcademicTerm{
+  id: any;
+  _session: string;
+  start_year: string;
+  end_year : string;
+  is_active: any
 }
 
 
@@ -61,6 +70,17 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
   const [fetchedAcademicYear, setFetchedAcademicYear] = React.useState<any>()
   const [fetchedAcademicTerms, setFetchedAcademicTerms] = React.useState<{ value: string; label: string }[]>([]) 
   const [termSwitcherOpen,setTermSwitcherOpen] = React.useState<boolean>(false)
+
+  const [activeAcademicData, setActiveAcademic] = React.useState<any>()
+    React.useEffect(() => {
+      if (academicSettingsData && Array.isArray(academicSettingsData)) {
+        const activeTerm = academicSettingsData.find((term: AcademicTerm) => term.is_active === true);
+        console.log("mappppa=", activeTerm);
+        setActiveAcademic(activeTerm)
+      } else {
+        console.log("academicSettingsData is not an array:", academicSettingsData);
+      }
+    }, [academicSettingsData]);
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -90,24 +110,23 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
   }
 
   React.useEffect(()=>{
+    console.log("dataaaapaaa=", academicSessionSettingsData)
+  }, [])
+
+  React.useEffect(()=>{
     setRowTerm(academicSettingsData)
     setRowSession(academicSessionSettingsData)
     const sessionList = rowSession.map((session:any)=>({label:session._session, value: session.id}))
     setFetchedSessions(sessionList)
-    console.log("fetched session data=", fetchedSessions)
   },[handleSwitchOver])
 
-  React.useEffect(()=>{
-    const sessions = new Array(academicSessionSettingsData).filter((session)=> session.id === selectedSession)
-    console.log("selected section data=", sessions)
-  },[selectedSession, handleSwitchOver])
 
   const columns : GridColDef<(typeof rowTerm)[number]>[] = [
     {field: "id", headerName:'ID'},
     {
       field: "term_name",
       headerName: "Term Name",
-      width: 180,
+      width: 180, 
       editable: true,
       align: "center",
       headerAlign: "center",
@@ -156,7 +175,7 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
     {
       field: "end_year",
       headerName: "End Year",
-      type: "number",
+      // type: "number",
       width: 180,
       editable: true,
       align: "center",
@@ -180,6 +199,7 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
 
   return (
     <React.Fragment>
+      <NavBreadCrumbs academicSessionSettingsData={academicSessionSettingsData} academicSettingsData={academicSettingsData} items={[{label: "General Settings"}]} />
       <TabContext value={value}>
         <TabList variant="fullWidth" onChange={handleTabChange}>
           <Tab label="Academic Session" sx={{ width: "10rem" }} value={"1"} />
@@ -212,15 +232,15 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
               >
                 <p>
                   Active Academic Session:{" "}
-                  <span style={{ fontWeight: 900 }}>2025-2026</span>
+                  <span style={{ fontWeight: 900 }}>{activeAcademicData?._session}</span>
                 </p>
                 <p>
                   Active Academic Year:{" "}
-                  <span style={{ fontWeight: 900 }}>2025</span>
+                  <span style={{ fontWeight: 900 }}>{new String(activeAcademicData?._session).split("-")[0]}</span>
                 </p>
                 <p>
                   Active Academic Term:{" "}
-                  <span style={{ fontWeight: 900 }}>2025</span>
+                  <span style={{ fontWeight: 900 }}>{activeAcademicData?.term_name}</span>
                 </p>
               </Box>
               <Button onClick={()=>setTermSwitcherOpen(true)} variant="contained">

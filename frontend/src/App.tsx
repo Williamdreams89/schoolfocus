@@ -61,6 +61,7 @@ import Subjects from "./components/academics/subjects/Subjects";
 import ReportCard from "./components/gradeBook/ReportCard";
 import SystemSettings from "./components/settings/SystemSettings";
 import axios from "axios";
+import NavBreadCrumbs from "./components/NavbarBreadcrumbs";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -247,8 +248,9 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                   <Route path='/auth/login' element = {<LoginPage />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   <Route element={<ProtectedRoute />}>
+                      <Route element={<NavBreadCrumbs items={[{label:'', href:''}]} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/' element = {<MainGrid />} />
-                      <Route path='/people' element={<People />} />
+                      <Route path='/people' element={<People academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/people/students' element={<ViewStudents />} />
                       <Route path='/people/student/:id' element={<StudentDetailPage data={systemSettingsData} />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />

@@ -90,7 +90,7 @@ export interface AcademicSession{
   start_year: string;
   end_year : string;
   academic_year: string;
-  active: boolean
+  is_active: boolean
 }
 
 export interface TermSessionProps{
