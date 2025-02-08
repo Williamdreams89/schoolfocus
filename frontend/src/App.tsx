@@ -185,7 +185,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
           const response = await axios.get(`http://127.0.0.1:8000/api/academic-sessions/`)
           setAcademicSessionTermSettingsData(data)
           setAcademicSessionSettingsData(response.data)
-          console.log("academic session=", data)
+          console.log("academic session=", response.data)
           setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
           
         }catch(error){
@@ -195,7 +195,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
       }
       fetchAcademicSessionTerm()
     }, [])
-
+    
   return (
     <div>
       {isLocked ? (

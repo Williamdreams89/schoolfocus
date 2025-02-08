@@ -1,24 +1,38 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
+from django.core.exceptions import ValidationError
 
 class AcademiccSession(models.Model):
     _session = models.CharField(max_length=20, unique=True, default="Nothing")
     start_year = models.PositiveIntegerField(blank=True, null=True)
     end_year = models.PositiveIntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
+    academic_year = models.PositiveIntegerField(blank=True, null=True)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self._session} ({self.start_year}-{self.end_year})"
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['start_year','end_year', '_session', 'is_active'], name='unique_active_session')
+        ]
 
     def save(self, *args, **kwargs):
         if self.start_year and self.end_year:
             self._session = f"{self.start_year} - {self.end_year}"
+            self.academic_year = self.start_year
         else:
             self._session = "Undefined"
 
+        if self.is_active:
+            # Deactivate all other sessions
+            AcademiccSession.objects.exclude(pk=self.pk).update(is_active=False)
+
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self._session} ({self.start_year}-{self.end_year})"
+
+    
 
 class AcademicTerm(models.Model):
     term_name = models.CharField(max_length=50, blank=True, null=True)
@@ -26,9 +40,17 @@ class AcademicTerm(models.Model):
     is_active = models.BooleanField(default=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['term_name', 'session', 'is_active'], name='unique_active_term_per_session')
+        ]
 
-    def __str__(self):
-        return f"{self.term_name} - {self.session._session}"
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # Deactivate other terms within the same session
+            AcademicTerm.objects.filter(session=self.session).exclude(pk=self.pk).update(is_active=False)
+
+        super().save(*args, **kwargs)
 
 class SystemSettings(models.Model):
     active_services = models.CharField(

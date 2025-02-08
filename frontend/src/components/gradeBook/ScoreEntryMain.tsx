@@ -90,6 +90,7 @@ const ScoreEntryMain: React.FC = () => {
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // alert(`subject change: ${event.target.value}`)
     setSelectedSubject(event.target.value)
+    alert(`${event.target.value}`)
   }
 
   // Fetch Students for Results Entry

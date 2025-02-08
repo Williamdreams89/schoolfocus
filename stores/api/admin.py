@@ -54,7 +54,7 @@ class SkillAssessmentAdmin(admin.ModelAdmin):
     list_display = ["student", "skill", "score", "exam_session", "academic_year"]
 
 class AcademicSessionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["_session",'start_year', 'end_year', "academic_year", "is_active"]
 
 class AcademicTermAdmin(admin.ModelAdmin):
     pass
@@ -64,7 +64,7 @@ class SystemSettingsAdmin(admin.ModelAdmin):
 
 admin.site.register(SystemSettings)
 admin.site.register(ImageSettings)
-admin.site.register(AcademiccSession)
+admin.site.register(AcademiccSession, AcademicSessionAdmin)
 admin.site.register(AcademicTerm)
 admin.site.register(SMSSettings)
 admin.site.register(EmailSettings)

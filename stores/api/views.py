@@ -953,7 +953,21 @@ class AcademicSessionRetrieveView(generics.RetrieveAPIView):
 class AcademicSessionUpdateView(generics.UpdateAPIView):
     queryset = AcademicSession.objects.all()
     serializer_class = AcademicSessionSerializer
+
 # Academic Term Views
+class AcademicTermsBySessionView(generics.ListAPIView):
+    serializer_class = AcademicTermSerializer
+
+    def get_queryset(self):
+        session_id = self.kwargs.get("session_id")  # Get session ID from URL
+        return AcademicTerm.objects.filter(session_id=session_id)  # Filter terms
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({"message": "No terms found for this session"}, status=status.HTTP_404_NOT_FOUND)
+        return super().list(request, *args, **kwargs)
+    
 class AcademicTermListView(generics.ListAPIView):
     queryset = AcademicTerm.objects.all()
     serializer_class = AcademicTermSerializer
@@ -1031,3 +1045,45 @@ class UserPrivilegesUpdateView(generics.UpdateAPIView):
     queryset = UserPrivilege.objects.all()
     serializer_class = UserPrivilegesSerializer
 
+
+# Activations 
+class InactiveAcademicSessionsView(generics.ListAPIView):
+    queryset = AcademiccSession.objects.filter(is_active=False)  # Fetch only inactive sessions
+    serializer_class = AcademicSessionSerializer
+
+class ActivateSessionAndTermView(APIView):
+    def post(self, request, session_id=None, term_id=None):
+        if not session_id:
+            return Response({"error": "session_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        response_data = {}
+
+        try:
+            with transaction.atomic():  # Ensures all or nothing commit
+                # Deactivate all sessions before activating the new one
+                AcademiccSession.objects.update(is_active=False)
+
+                # Activate the selected session
+                session = AcademiccSession.objects.get(id=session_id)
+                session.is_active = True
+                session.save()
+                response_data["session"] = "Academic session activated successfully."
+
+                if term_id:
+                    # Deactivate all terms in the given session before activating the new one
+                    AcademicTerm.objects.filter(session_id=session_id).update(is_active=False)
+
+                    # Activate the selected term
+                    term = AcademicTerm.objects.get(id=term_id, session_id=session_id)
+                    term.is_active = True
+                    term.save()
+                    response_data["term"] = "Academic term activated successfully."
+
+        except AcademiccSession.DoesNotExist:
+            return Response({"error": "Session not found."}, status=status.HTTP_404_NOT_FOUND)
+        except AcademicTerm.DoesNotExist:
+            return Response({"error": "Term not found or does not belong to the session."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(response_data, status=status.HTTP_200_OK)

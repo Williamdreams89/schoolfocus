@@ -77,16 +77,19 @@ export interface Props {
 }
 
 export interface AcademicTerm{
-  session: string;
-  start_year: string;
-  end_year : string;
-  active: boolean
-}
-
-export interface AcademicSession{
+  id: any;
   _session: string;
   start_year: string;
   end_year : string;
+  is_active: any
+}
+
+export interface AcademicSession{
+  id: any;
+  _session: string;
+  start_year: string;
+  end_year : string;
+  academic_year: string;
   active: boolean
 }
 

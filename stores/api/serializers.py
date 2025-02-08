@@ -182,9 +182,13 @@ class SkillAssessmentSerializer(serializers.ModelSerializer):
 
 
 class AcademicTermSerializer(serializers.ModelSerializer):
+    _session = serializers.SerializerMethodField()
     class Meta:
         model = AcademicTerm
-        fields = '__all__'
+        fields = ['id', 'term_name', "session", '_session', 'is_active']
+
+    def get__session(self, obj):
+        return obj.session._session
         
 class AcademicSessionSerializer(serializers.ModelSerializer):
     class Meta:

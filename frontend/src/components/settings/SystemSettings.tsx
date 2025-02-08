@@ -15,7 +15,7 @@ import {
 import { FiPlusSquare, FiSettings } from "react-icons/fi";
 import React from "react";
 import { Shuffle } from "@mui/icons-material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   NativeSelect,
   SimpleGrid,
@@ -29,6 +29,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { TransitionProps } from '@mui/material/transitions';
+import { APIContext } from "../../utils/contexts/ReactContext";
+import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,6 +41,10 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
+interface DataProps{
+  label: string;
+  value: string
+}
 
 
 const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData}) => {
@@ -48,15 +54,53 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
   const [imagePreview3, setImagePreview3] = React.useState<string>("/images/logo.png");
   const [rowTerm, setRowTerm] = React.useState<any>([])
   const [rowSession, setRowSession] = React.useState<any>([])
+  const [fetchedSessions, setFetchedSessions] = React.useState<DataProps []>([])
+  const [selectedSession, setSelectedSession] = React.useState<any>("")
+  const [selectedYear, setSelectedYear] = React.useState<any>("")
+  const [selectedTerm, setSelectedTerm] = React.useState<any>("")
+  const [fetchedAcademicYear, setFetchedAcademicYear] = React.useState<any>()
+  const [fetchedAcademicTerms, setFetchedAcademicTerms] = React.useState<{ value: string; label: string }[]>([]) 
   const [termSwitcherOpen,setTermSwitcherOpen] = React.useState<boolean>(false)
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
+  const context = React.useContext(APIContext)
+  if(!context){
+    throw new Error('There must be context')
+  }
+  const {studentsManagementDetails, setStudentsManagementDetails} = context
+
+  const handleSwitchOver = async (event: React.FormEvent) => {
+    event.preventDefault()
+    if(new String(selectedSession).length>0,new String(selectedYear).length>0, new String(selectedTerm).length>0){
+      try{
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:true})
+        const {data} = await axios.post(`http://127.0.0.1:8000/api/academic/settings/activate/${selectedSession}/${selectedTerm}/`)
+        console.log("Activation data=", data)
+        window.location.reload()
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+        setTermSwitcherOpen(false)
+      }catch(error){
+        setStudentsManagementDetails({...studentsManagementDetails, isLoading:false})
+        alert(error)
+      }
+    } 
+    
+  }
+
   React.useEffect(()=>{
     setRowTerm(academicSettingsData)
     setRowSession(academicSessionSettingsData)
-  },[])
+    const sessionList = rowSession.map((session:any)=>({label:session._session, value: session.id}))
+    setFetchedSessions(sessionList)
+    console.log("fetched session data=", fetchedSessions)
+  },[handleSwitchOver])
+
+  React.useEffect(()=>{
+    const sessions = new Array(academicSessionSettingsData).filter((session)=> session.id === selectedSession)
+    console.log("selected section data=", sessions)
+  },[selectedSession, handleSwitchOver])
 
   const columns : GridColDef<(typeof rowTerm)[number]>[] = [
     {field: "id", headerName:'ID'},
@@ -69,8 +113,8 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
       headerAlign: "center",
     },
     {
-      field: "session",
-      headerName: "session",
+      field: "_session",
+      headerName: "Session",
       width: 180,
       editable: true,
       align: "center",
@@ -83,6 +127,12 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
       editable: true,
       align: "center",
       headerAlign: "center",
+      renderCell: (params: GridRenderCellParams<any>) =>{
+        const status = params.value as boolean
+        return <div>
+          {status === false?<div></div>: <Button variant="outlined" size="small" sx={{width:'180px', margin:'auto'}}>Active Academic Session</Button>}
+        </div>
+      }
     },
   ]
   const columnsSessions: GridColDef<(typeof rowSession)[number]>[] = [
@@ -119,6 +169,12 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
       width: 200,
       align: "center",
       headerAlign: "center",
+      renderCell: (params: GridRenderCellParams<any>) =>{
+        const status = params.value
+        return <div>
+          {status === false?<div></div>: <Button variant="outlined" size="small" sx={{width:'180px', margin:'auto'}}>Active Academic Session</Button>}
+        </div>
+      }
     },
   ];
 
@@ -195,15 +251,43 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
             <SimpleGrid cols={{ base: 1, sm: 1, lg: 3 }}
       spacing={{ base: 10, sm: 'md' }}
       verticalSpacing={{ base: 'md', sm: 'xl' }}>
-        <NativeSelect style={{width:'300px'}} label = "Active Academic Session" data={["", "2023-2024", "2025-2026",]} />
-        <NativeSelect style={{width:'300px'}} label = "Active Academic Year" data={["", "2023", "2024", "2025",]} />
-        <NativeSelect style={{width:'300px'}} label = "Active Academic Term" data={["", "First Term", "Second Term",]} />
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Session" data={fetchedSessions.map((session)=>({value: session.value, label:session.label}))} onChange={(event)=>{setSelectedSession(event.target.value); alert(`${event.target.value}`); 
+        const academicYearFetch = async () => {
+          try{
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: true})
+            const response = await axios.get(`http://127.0.0.1:8000/api/academic-sessions/${event.target.value}/`) 
+            setFetchedAcademicYear(response.data.academic_year)
+            setSelectedYear(response.data.academic_year)
+            console.log('aca yearsss =', response.data.academic_year)
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+          }catch(error){
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+            alert("Network error")
+          }
+        };
+        const academicTermsFetch = async () => {
+          try{
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: true})
+            const response = await axios.get(`http://127.0.0.1:8000/api/academic-terms-by-session/${event.target.value}/`) 
+            setFetchedAcademicTerms(response.data.map((term: any) => ({ value: term.id, label: term.term_name })))
+            console.log('aca yearsss =', response.data.academic_year)
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+          }catch(error){
+            setStudentsManagementDetails({...studentsManagementDetails, isLoading: false})
+            alert("Network error")
+          }
+        };
+        academicTermsFetch()
+        academicYearFetch()
+      }} />
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Year" data={fetchedAcademicYear ? [{ value: fetchedAcademicYear, label: fetchedAcademicYear }] : [{ value: "", label: "Select Academic Year" }]} onChange={(event)=>{alert(`${event.target.value}`)}}  />
+        <NativeSelect style={{width:'300px'}} label = "Active Academic Term" data={fetchedAcademicTerms.length > 0 ? fetchedAcademicTerms : [{ value: "", label: "Select Term" }]} onChange={(event)=>{setSelectedTerm(event.target.value)}} />
       </SimpleGrid>
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-          <ManButton onClick={()=>setTermSwitcherOpen(false)}>
-            Switch Over
+          <ManButton onClick={handleSwitchOver}>
+          {studentsManagementDetails.isLoading=== true?"...please wait":"Switch Over"}
           </ManButton>
         </DialogActions>
       </Dialog>}
