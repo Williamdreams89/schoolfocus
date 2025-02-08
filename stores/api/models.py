@@ -72,6 +72,7 @@ class SystemSettings(models.Model):
     currency_symbol = models.CharField(max_length=10, blank=True, null=True)
     absence_sms_to_parent = models.BooleanField(default=False, blank=True, null=True)
     head_staff_title = models.CharField(max_length=100, blank=True, null=True)
+    school_website = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
 
