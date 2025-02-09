@@ -74,7 +74,9 @@ export interface SystemSettings {
 }
 
 export interface Props {
-  data: SystemSettings[];
+  academicSettingsData: AcademicTerm;
+  academicSessionSettingsData: AcademicSession;
+  SystemSettingData: SystemSettings []
 }
 
 export interface AcademicTerm{
@@ -97,6 +99,6 @@ export interface AcademicSession{
 export interface TermSessionProps{
   academicSettingsData: AcademicTerm;
   academicSessionSettingsData: AcademicSession;
-  data: SystemSettings []
+  SystemSettingData: SystemSettings []
 }
 

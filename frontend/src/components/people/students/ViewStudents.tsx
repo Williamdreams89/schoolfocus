@@ -34,7 +34,8 @@ import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import PrintIcon from '@mui/icons-material/Print';
 import { useNavigate } from "react-router-dom";
 import { APIContext } from "../../../utils/contexts/ReactContext";
-import { StudentData } from "./types";
+import { Props, StudentData } from "./types";
+import NavBreadCrumbs from "../../NavbarBreadcrumbs";
 
 type StudentRow = {
   id: number;
@@ -86,7 +87,7 @@ function NavbarBreadcrumbs() {
 }
 
 
-const ViewStudents = () => {
+const ViewStudents:React.FC<Props> = ({SystemSettingData, academicSessionSettingsData, academicSettingsData}) => {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -329,7 +330,8 @@ const cancelDelete = () => {
   
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-      <NavbarBreadcrumbs />
+      <NavBreadCrumbs academicSessionSettingsData={academicSessionSettingsData} academicSettingsData={academicSettingsData} items={[{label:'People', href:'/people'}, {label:'View Student'}]} />
+      <div style={{marginBottom:'2rem'}} />
       <Card
         sx={{ display: "flex", alignItems: "center", gap: "1rem", mb: ".3rem", justifyContent:'space-between' }}
       >

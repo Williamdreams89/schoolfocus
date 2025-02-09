@@ -56,7 +56,7 @@ interface AcademicTerm{
 }
 
 
-const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData, data}) => {
+const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, academicSessionSettingsData, SystemSettingData}) => {
   const [value, setValue] = React.useState("1");
   const [imagePreview, setImagePreview] = React.useState<string>("/images/logo.png");
   const [imagePreview2, setImagePreview2] = React.useState<string>("/images/pale-education.png");
@@ -81,15 +81,15 @@ const SystemSettings: React.FC<TermSessionProps> = ({academicSettingsData, acade
       console.log("academicSettingsData is not an array:", academicSettingsData);
     }
   
-    console.log("system just data=", data);
+    console.log("system just data=", SystemSettingData);
   
     // Ensure data is an array and has at least one element
-    if (Array.isArray(data) && data.length > 0) {
-      setFormData(data[0]); // Set only the first object from the array
+    if (Array.isArray(SystemSettingData) && SystemSettingData.length > 0) {
+      setFormData(SystemSettingData[0]); // Set only the first object from the array
     } else {
       console.warn("data array is empty or not an array");
     }
-  }, [academicSettingsData, data]);
+  }, [academicSettingsData, SystemSettingData]);
   
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);

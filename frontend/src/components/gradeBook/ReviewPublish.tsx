@@ -294,7 +294,7 @@ const CognitiveAssessmentForm: React.FC<CognitiveAssessmentFormProps> = ({ stude
   );
 };
 
-const ReviewPublish:React.FC<Props> =({data}) => {
+const ReviewPublish:React.FC<Props> =({SystemSettingData, academicSessionSettingsData, academicSettingsData}) => {
   const isSmallerDevice = useMediaQuery("(max-width:1045px)")
   const [students, setStudents] = useState<Student[]>([]);
   const [subjects, setSubjects] = React.useState<Subject[]>([]);
@@ -589,7 +589,7 @@ open={open}
 
       <Modal size={"65rem"} opened={open} style={{position:'absolute', zIndex:99999, overflowY:'hidden'}} onClose={()=>setOpen(false)}>
       <ManCard shadow="sm" padding="lg">
-      <center style={{fontWeight:800, fontSize:'26px'}}>{data[0]?.school_name}</center>
+      <center style={{fontWeight:800, fontSize:'26px'}}>{SystemSettingData[0]?.school_name}</center>
       {/* Header Section */}
       <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
         <Image

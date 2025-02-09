@@ -242,17 +242,17 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
             >
               {!isAuthPage &&
                    (
-                    <Header data = {systemSettingsData} />
+                    <Header SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />
                   )}
                 <Routes>
                   <Route path='/auth/login' element = {<LoginPage />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   <Route element={<ProtectedRoute />}>
                       <Route element={<NavBreadCrumbs items={[{label:'', href:''}]} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
-                      <Route path='/' element = {<MainGrid />} />
-                      <Route path='/people' element={<People data = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
-                      <Route path='/people/students' element={<ViewStudents />} />
-                      <Route path='/people/student/:id' element={<StudentDetailPage data={systemSettingsData} />} />
+                      <Route path='/' element = {<MainGrid SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/people' element={<People SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/people/students' element={<ViewStudents SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/people/student/:id' element={<StudentDetailPage SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/people/students/addStudent' element={<StudentAddForm />} />
                       <Route path='/people/students/enrollment' element={<StudentEnrollment />} />
                       <Route path='/people/students/bulkenroll' element={<BulEnrollStudent />} />
@@ -272,13 +272,13 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
                       <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
                       <Route path='/printResults' element={<PrintResults />} />
-                      <Route path='/Review&PublishResultsOptions' element={<ReviewPublish data={systemSettingsData} />} />
-                      <Route path='/Review&PublishResults' element={<ResultsTable data={systemSettingsData} />} />
+                      <Route path='/Review&PublishResultsOptions' element={<ReviewPublish SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/Review&PublishResults' element={<ResultsTable SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
                       <Route path='/reportcard' element={<ReportCard />} />
                       <Route path='/scoreEntryOptions' element={<ScoreEntryMain />} />
                       <Route path='/studentScoreEntry' element={<ScoreEntryMain />} />
-                      <Route path='/system-settings' element={<SystemSettings data = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
+                      <Route path='/system-settings' element={<SystemSettings SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                   </Route>
                 </Routes>
             </Stack>

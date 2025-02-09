@@ -14,7 +14,7 @@ import { Props } from './people/students/types';
 
 
 
-const Header: React.FC<Props> = ({data}) => {
+const Header: React.FC<Props> = ({SystemSettingData, academicSessionSettingsData, academicSettingsData}) => {
   return (
     <Stack
       direction="row"
@@ -29,7 +29,7 @@ const Header: React.FC<Props> = ({data}) => {
       spacing={2}
     >
       {/* <NavbarBreadcrumbs /> */}
-      <NavLogoDisplay data = {data} />
+      <NavLogoDisplay academicSessionSettingsData={academicSessionSettingsData} SystemSettingData = {SystemSettingData} academicSettingsData = {academicSettingsData}  />
       <Stack direction="row" sx={{ gap: 1 }}>
         <Search />
         <CustomDatePicker />

@@ -34,37 +34,10 @@ import {
 } from "chart.js";
 import { Bar } from 'react-chartjs-2';
 import { Props } from './types';
+import NavBreadCrumbs from '../../NavbarBreadcrumbs';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-
-const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-    width: '100%',
-    margin: theme.spacing(1, 0),
-    [`& .${breadcrumbsClasses.separator}`]: {
-      color: (theme).palette.action.disabled,
-      margin: 1,
-    },
-    [`& .${breadcrumbsClasses.ol}`]: {
-      alignItems: 'left',
-    },
-  }));
-  
-  export function NavbarBreadcrumbs() {
-    return (
-      <StyledBreadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextRoundedIcon fontSize="small" />}
-      >
-        <Typography variant="body1">People</Typography>
-        <Typography variant="body1">
-          Student
-        </Typography>
-        <Typography variant="body1">View Student</Typography>
-        <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>William</Typography>
-      </StyledBreadcrumbs>
-    );
-  }
 
   interface Score {
     continuous: number;
@@ -88,7 +61,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
     data?: any;
   }
 
-const StudentDetailPage: React.FC<Props> = ({data}) => {
+const StudentDetailPage: React.FC<Props> = ({SystemSettingData, academicSessionSettingsData, academicSettingsData}) => {
     const [value, setValue] = React.useState("1");
     const { id } = useParams<{ id: string }>()
     const [studentDetailData, setStudentDetailData] = React.useState<any>()
@@ -194,7 +167,7 @@ const getOverallRemark = (totalScore: any): string => {
     
   return (
     <>
-    <NavbarBreadcrumbs />
+    <NavBreadCrumbs academicSessionSettingsData={academicSessionSettingsData} academicSettingsData={academicSettingsData} items={[{label:'People', href:'/people'}, {label:'Student', href:'/people/students'},{label:'View Student', href:''}]} />
     {!isSmallDevice?<Box sx={{display:'flex', gap:'1rem', justifyItems:'center', width:'100%'}}>
         <Box display="flex" flexDirection="column" alignItems="center">
           <CardMedia
@@ -435,7 +408,7 @@ const getOverallRemark = (totalScore: any): string => {
           {studentResultDetailData?.scores ?<>
               <ManCard shadow="sm" padding="sm" style={{position:'relative' }} ref={contentRef} >
                 <img style={{position:'absolute', zIndex:9999, height:'800px', width:'560px', opacity:"10%", top:'20%', left:'10%'}} src='/images/logo.png' />
-                <center style={{fontWeight:800, fontSize:'20px'}}>{new String(data[0]?.school_name).toUpperCase()}</center>
+                <center style={{fontWeight:800, fontSize:'20px'}}>{new String(SystemSettingData[0]?.school_name).toUpperCase()}</center>
                 {/* Header Section */}
                 <Box sx={{ display: "flex", justifyContent:'space-between', width:'100%', }}>
                   

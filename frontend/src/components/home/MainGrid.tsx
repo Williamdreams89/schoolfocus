@@ -12,6 +12,8 @@ import SessionsChart from './SessionsChart';
 import StatCard, {StatCardProps} from './StatCard';
 import IncomeExpenditureTable from './CustomDataGrid';
 import { APIContext } from '../../utils/contexts/ReactContext';
+import NavBreadCrumbs from '../NavbarBreadcrumbs';
+import { TermSessionProps } from '../people/students/types';
 
 const data: StatCardProps[] = [
   {
@@ -67,7 +69,7 @@ const data: StatCardProps[] = [
   
 ];
 
-export default function MainGrid() {
+const MainGrid: React.FC<TermSessionProps> =({SystemSettingData, academicSessionSettingsData, academicSettingsData})=> {
   const context = React.useContext(APIContext)
   if(!context){
     throw new Error("No context found")
@@ -82,7 +84,7 @@ export default function MainGrid() {
   })
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-      {/* cards */}
+      <NavBreadCrumbs academicSessionSettingsData={academicSessionSettingsData} academicSettingsData={academicSettingsData} items={[{label: "Dashboard", href:"/"}]} />     {/* cards */}
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         Overview
       </Typography>
@@ -124,3 +126,5 @@ export default function MainGrid() {
     </Box>
   );
 }
+
+export default MainGrid
