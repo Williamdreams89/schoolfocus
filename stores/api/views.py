@@ -586,6 +586,8 @@ class ResultsSummaryView(APIView):
             student_info["email"] = student.email
             student_info["index_number"] = student.index_number
             student_info["dob"] = student.date_of_birth
+            student_info["student_class_name"] = student.student_class.name
+            student_info["profile_pic"] = student.profile_pic.url if student.profile_pic else None  # Add this line
 
             total_score = result.total_score or (result.continuous_assessment + result.exams_score)
             student_info["scores"][result.subject.title] = {

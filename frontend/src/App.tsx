@@ -271,7 +271,7 @@ const App: React.FC = (props: { disableCustomTheme?: boolean }) => {
                       <Route path='/viewStudentCognitiveSkill' element={<CognitiveSkillsAssessment />} />
                       <Route path='/updateStudentCognitiveSkill' element={<UpdateCognitiveSkills />} />
                       <Route path='/cognitiveAssessment' element={<ClassCognitiveAssessment />} />
-                      <Route path='/printResults' element={<PrintResults />} />
+                      <Route path='/printResults' element={<PrintResults SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/Review&PublishResultsOptions' element={<ReviewPublish SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/Review&PublishResults' element={<ResultsTable SystemSettingData = {systemSettingsData} academicSettingsData = {AcademicSessionTermSettingsData} academicSessionSettingsData={AcademicSessionSettingsData} />} />
                       <Route path='/publishResults' element={<PublishResultForm />} />
