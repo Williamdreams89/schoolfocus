@@ -218,10 +218,13 @@ React.useEffect(() => {
         }
   
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        
       } catch (error) {
         console.error(`Error generating PDF for ${student.name}:`, error);
       }
     }
+
+    pdf.save(`${filterData?.student_class_name}.pdf`);
   
     // Open print dialog and wait until it is closed
     const blobUrl = pdf.output("bloburl");
